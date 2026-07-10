@@ -1,0 +1,18 @@
+{
+  "name": "ascension",
+  "description": "Merged AI development framework — god mode breadth + Superpowers depth",
+  "owner": {
+    "name": "mattkeenan91"
+  },
+  "plugins": [
+    {
+      "name": "ascension",
+      "description": "36 composable skills fusing god mode's breadth (reference-first design, agent orchestration, UX/security/architecture) with Superpowers' subagent-driven execution (file handoffs, compaction-safe progress ledgers) and a zero-dependency visual brainstorming companion.",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "mattkeenan91"
+      }
+    }
+  ]
+}

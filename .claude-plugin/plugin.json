@@ -1,0 +1,11 @@
+{
+  "name": "ascension",
+  "description": "A merged AI development framework: god mode's 36-skill breadth (reference-first design, agent orchestration, UX/security/architecture) fused with Superpowers' battle-tested depth (subagent-driven execution with file handoffs and compaction-safe progress ledgers, plus a zero-dependency visual brainstorming companion).",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "mattkeenan91"
+  },
+  "keywords": ["skills", "ascension", "ai-development", "agent-orchestration", "reference-first", "subagent-driven-development", "ux-design", "code-quality", "tdd", "debugging", "architecture", "security", "brainstorming"],
+  "credits": "Base: god mode by David. Depth: Superpowers by Jesse Vincent / Prime Radiant (MIT). Merged and rebranded as ascension."
+}
