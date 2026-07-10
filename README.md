@@ -2,7 +2,7 @@
 
 A merged AI development framework for coding agents. **Ascension takes god mode's breadth and fuses it with Superpowers' depth** — one coherent, self-triggering methodology.
 
-- **Base (breadth):** [god mode](https://github.com/) — 36 composable skills spanning intent discovery, reference-first design, spec-driven planning, UX/security/architecture, agent orchestration, and automated quality gates.
+- **Base (breadth):** god mode — 36 composable skills spanning intent discovery, reference-first design, spec-driven planning, UX/security/architecture, agent orchestration, and automated quality gates.
 - **Depth (grafted in from [Superpowers](https://github.com/obra/superpowers)):**
   - **Subagent-driven execution done right** — `delegated-execution` now hands work to subagents as *files* (task briefs, report files, review packages) instead of pasting task text into the controller's context, uses explicit builder status codes (`DONE` / `DONE_WITH_CONCERNS` / `BLOCKED` / `NEEDS_CONTEXT`), and keeps a **compaction-safe progress ledger** so a controller never re-dispatches completed tasks after a context reset. Includes the `sdd-workspace`, `task-brief`, and `review-package` scripts.
   - **Visual brainstorming companion** — a zero-dependency local server that renders mockups, diagrams, and clickable options in the browser during `intent-discovery`. Makes **no network requests** (all telemetry removed).
@@ -20,7 +20,7 @@ The core loop: **rationale → intent-discovery → reference-engine → design 
 From an interactive `claude` terminal:
 
 ```
-/plugin marketplace add C:\Users\mattk\claude-plugins\ascension
+/plugin marketplace add themattkeenan/ascension
 /plugin install ascension
 ```
 
