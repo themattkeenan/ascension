@@ -101,6 +101,7 @@ git pull
 
 # Integrate the feature branch
 git merge <feature-branch>
+# If this stops with conflicts, call the Skill tool with "ascension:merge-conflicts"
 
 # Validate the merged state
 <test command>

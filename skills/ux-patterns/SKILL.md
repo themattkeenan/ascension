@@ -90,7 +90,7 @@ Every UI project must define these tokens BEFORE any component code:
 | Token Category | What to Define | Why It Matters |
 |---|---|---|
 | **Colors** | Primary, secondary, neutral scale (50-950), semantic (error, success, warning, info) | Eliminates "random color" syndrome |
-| **Typography** | Font family (max 2), size scale (xs through 4xl), weight scale (normal, medium, semibold, bold), line heights | Typography is 95% of visual quality |
+| **Typography** | Font family (max 2), size scale (xs through 4xl), weight scale (normal, medium, semibold, bold), line heights | Typography carries most of the perceived visual quality |
 | **Spacing** | Base unit (4px or 8px), scale (xs: 4px through 3xl: 64px) | Systematic spacing produces a professional feel |
 | **Border Radius** | Scale: none, sm, md, lg, full | Ensures consistent component shapes |
 | **Shadows** | 3-4 elevation levels (sm, md, lg, xl) | Establishes clear depth hierarchy |

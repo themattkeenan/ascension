@@ -157,6 +157,12 @@ git commit -m "feat: add specific feature"
 - Reference relevant skills by name (e.g., `ascension:test-first`)
 - DRY, YAGNI, TDD, frequent commits
 
+## Too big for one session?
+
+A plan whose tasks will not each fit in a fresh context window is not a plan yet — it is a map. Call the Skill tool with "ascension:work-tickets" to slice it into tracer bullets with explicit blocking edges, each sized to one context window and verifiable on its own.
+
+The tell: a task whose description needs the previous task's conversation to make sense. That is a ticket boundary in the wrong place.
+
 ## Execution Handoff
 
 After saving the plan, offer the user a choice:
@@ -182,6 +188,8 @@ After saving the plan, offer the user a choice:
 
 **Required workflow skills:**
 - **ascension:intent-discovery** - Produces the spec/design that feeds into this skill
+- **ascension:work-tickets** - Slices a plan too big for one session into tracer bullets
+- **ascension:context-economy** - What to do at the boundary between plan and execution
 - **ascension:workspace-isolation** - REQUIRED: Set up isolated workspace before planning
 - **ascension:task-runner** - Executes the plan this skill produces
 - **ascension:delegated-execution** - Alternative execution via subagents in same session

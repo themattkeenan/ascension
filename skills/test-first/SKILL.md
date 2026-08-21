@@ -5,72 +5,46 @@ description: Use when implementing any feature or bugfix, before writing impleme
 
 # Test-First Development
 
-## Overview
+Write the test first. Watch it fail. Write the minimum code to pass. Repeat.
 
-Write the test first. Observe it fail. Write the minimum code to pass.
+The failure is the point: a test you never watched fail is a test you have no evidence about. Tests written after the code pass immediately, and passing immediately proves only that the test agrees with whatever you built — including the parts you built wrong.
 
-**Core principle:** If you did not watch the test fail, you have no evidence it validates the correct behavior.
+While exploring the codebase, read `CONTEXT.md` if it exists so test names and interface vocabulary match the project's language, and respect the ADRs covering the area.
 
-**No exceptions. No workarounds. No shortcuts.**
+## Seams: where tests go
 
-## When to Use
+A **seam** is the public interface you test at — the place where you observe behaviour without reaching inside. Tests live at seams, never against internals.
 
-**Required:**
-- New features
-- Bug fixes
-- Refactoring
-- Behavior modifications
+**Test only at pre-agreed seams.** Before writing any test, write down the seams under test and confirm them with the user: *"The public interface here is X — which seams should we test?"* No test is written at an unconfirmed seam.
 
-**Exceptions (confirm with your human partner):**
-- Disposable prototypes
-- Generated code
-- Configuration files
+You cannot test everything. Agreeing the seams up front is how the effort lands on critical paths and complex logic instead of spreading evenly over every edge case.
 
-Tempted to think "skip test-first just this once"? Stop. That is rationalization.
+When the *shape* of the interface is itself in question — how deep the module is, where the seam belongs, what it should expose — call the Skill tool with "ascension:module-design" for the vocabulary. It is a reference to consult, not a session to run.
 
-## The Prime Directive
-
-```
-NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
-```
-
-Wrote code before the test? Delete it. Start over.
-
-**Zero tolerance:**
-- Do not keep it as "reference material"
-- Do not "adjust" it while writing tests
-- Do not glance at it
-- Delete means delete
-
-Build fresh from tests. Full stop.
-
-## Red-Green-Refactor
+## The loop
 
 ```dot
 digraph tdd_loop {
     rankdir=LR;
-    red [label="RED\nWrite failing test", shape=box, style=filled, fillcolor="#ffcccc"];
-    check_red [label="Fails\ncorrectly?", shape=diamond];
-    green [label="GREEN\nMinimal code", shape=box, style=filled, fillcolor="#ccffcc"];
-    check_green [label="All tests\npass?", shape=diamond];
-    refactor [label="REFACTOR\nClean up", shape=box, style=filled, fillcolor="#ccccff"];
-    next [label="Next", shape=ellipse];
+    red [label="RED\nfailing test", shape=box, style=filled, fillcolor="#ffcccc"];
+    check_red [label="fails for the\nright reason?", shape=diamond];
+    green [label="GREEN\nminimal code", shape=box, style=filled, fillcolor="#ccffcc"];
+    check_green [label="all tests\npass?", shape=diamond];
+    next [label="next slice", shape=ellipse];
 
     red -> check_red;
     check_red -> green [label="yes"];
-    check_red -> red [label="wrong\nfailure"];
+    check_red -> red [label="wrong failure"];
     green -> check_green;
-    check_green -> refactor [label="yes"];
+    check_green -> next [label="yes"];
     check_green -> green [label="no"];
-    refactor -> check_green [label="stay\ngreen"];
-    check_green -> next;
     next -> red;
 }
 ```
 
-### RED - Write the Failing Test
+### RED — write the failing test
 
-Write one minimal test that describes the expected behavior.
+One minimal test describing the expected behaviour, named for the capability it proves.
 
 <Good>
 ```typescript
@@ -88,7 +62,7 @@ test('retries failed operations up to 3 times', async () => {
   expect(callCount).toBe(3);
 });
 ```
-Descriptive name, tests actual behavior, single concern
+Describes the behaviour, exercises real code, one concern.
 </Good>
 
 <Bad>
@@ -102,34 +76,18 @@ test('retry works', async () => {
   expect(spy).toHaveBeenCalledTimes(3);
 });
 ```
-Vague name, validates mock interactions not real behavior
+Vague name; asserts on mock interactions rather than behaviour.
 </Bad>
 
-**Criteria:**
-- One behavior per test
-- Descriptive name
-- Uses real code (mocks only when unavoidable)
+### Verify RED — watch it fail
 
-### Verify RED - Watch It Fail
+Run it. Confirm the test **fails** rather than errors, that the message matches what you expect, and that it fails because the behaviour is missing rather than because of a typo.
 
-**MANDATORY. Never skip.**
+If it passes, you are describing behaviour that already exists — rewrite the test.
 
-```bash
-npm test path/to/test.test.ts
-```
+### GREEN — minimal code
 
-Confirm:
-- Test fails (not errors out)
-- Failure message matches expectations
-- Fails because the feature is missing (not due to typos)
-
-**Test passes?** You are testing existing behavior. Rewrite the test.
-
-**Test errors?** Fix the error, re-run until it fails correctly.
-
-### GREEN - Minimal Code
-
-Write the simplest possible code that makes the test pass.
+The simplest code that makes the test pass. No speculative options, no anticipating the next test.
 
 <Good>
 ```typescript
@@ -144,7 +102,6 @@ async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   throw new Error('unreachable');
 }
 ```
-Just enough to pass
 </Good>
 
 <Bad>
@@ -156,216 +113,89 @@ async function withRetry<T>(
     backoffStrategy?: 'linear' | 'exponential';
     onAttempt?: (n: number) => void;
   }
-): Promise<T> {
-  // YAGNI
-}
+): Promise<T> { /* ... */ }
 ```
-Over-engineered
+Three options no test asked for.
 </Bad>
 
-Do not add features, refactor unrelated code, or "improve" beyond what the test requires.
+### Verify GREEN — watch it pass
 
-### Verify GREEN - Watch It Pass
+Run it. The test passes, the other tests still pass, and the output is clean. If the test fails, fix the code rather than the test.
 
-**MANDATORY.**
+Then take the next slice.
 
-```bash
-npm test path/to/test.test.ts
-```
+## Anti-patterns
 
-Confirm:
-- Test passes
-- Other tests still pass
-- Output is clean (no errors, no warnings)
+- **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database directly instead of reading back through the interface). The tell: the test breaks on a refactor when behaviour has not changed.
 
-**Test fails?** Fix the code, not the test.
+  ```typescript
+  // bad: bypasses the interface to verify
+  await createUser({ name: 'Alice' });
+  const row = await db.query('SELECT * FROM users WHERE name = ?', ['Alice']);
 
-**Other tests fail?** Fix them now.
+  // good: verifies through the interface
+  const user = await createUser({ name: 'Alice' });
+  expect((await getUser(user.id)).name).toBe('Alice');
+  ```
 
-### REFACTOR - Clean Up
+- **Tautological** — the assertion recomputes the expected value the way the code does, so it passes by construction and can never disagree with the implementation.
 
-Only after green:
-- Eliminate duplication
-- Improve naming
-- Extract helpers
+  ```typescript
+  // bad: expected value derived the same way the code derives it
+  const expected = items.reduce((sum, i) => sum + i.price, 0);
+  expect(calculateTotal(items)).toBe(expected);
 
-Keep tests green. Do not add new behavior.
+  // good: an independent, known literal
+  expect(calculateTotal([{ price: 10 }, { price: 5 }])).toBe(15);
+  ```
 
-### Repeat
+  Expected values come from an independent source of truth: a known-good literal, a worked example, the spec.
 
-Next failing test for the next behavior.
+- **Horizontal slicing** — all the tests first, then all the implementation. Bulk tests verify *imagined* behaviour: you test the shape of things rather than what a caller can do, and you commit to a test structure before understanding the implementation. Work in **vertical slices** instead — one test, one implementation, repeat — each slice a **tracer bullet** responding to what the last one taught you.
 
-## Quality Standards
+## Mocking
 
-| Quality | Good | Bad |
-|---------|------|-----|
-| **Focused** | One thing. "and" in the name? Split it. | `test('validates email and domain and whitespace')` |
-| **Descriptive** | Name explains the behavior | `test('test1')` |
-| **Intentional** | Demonstrates the desired API | Obscures what the code should do |
+Mock at **system boundaries** only: external APIs, time and randomness, sometimes the database (prefer a real test database or an in-memory stand-in), sometimes the filesystem.
 
-## Why Sequence Matters
+Do not mock your own modules, internal collaborators, or anything you control. Needing to mock everything means the code is too coupled — inject the dependency instead (`ascension:module-design`).
 
-**"I'll write tests afterward to confirm it works"**
+Prefer SDK-shaped interfaces over one generic fetcher, so each mock returns one specific shape and no conditional logic is needed in test setup:
 
-Tests written after code pass immediately. Passing immediately proves nothing:
-- May validate the wrong thing
-- May verify implementation details instead of behavior
-- May miss edge cases you overlooked
-- You never watched it catch the failure
-
-Test-first forces you to observe the failure, proving the test actually verifies something.
-
-**"I already manually tested all the edge cases"**
-
-Manual testing is ad hoc. You believe you covered everything but:
-- No record of what you tested
-- Cannot rerun when code changes
-- Easy to skip cases under pressure
-- "It worked when I tried it" is not comprehensive
-
-Automated tests are systematic. They execute identically every time.
-
-**"Deleting X hours of work is wasteful"**
-
-Sunk cost fallacy. The time is already spent. Your choice now:
-- Delete and rebuild with test-first (X more hours, high confidence)
-- Keep it and bolt on tests (30 min, low confidence, probable defects)
-
-The real waste is keeping code you cannot trust. Working code without legitimate tests is technical debt.
-
-**"Test-first is dogmatic, being pragmatic means adapting"**
-
-Test-first IS pragmatic:
-- Catches defects before commit (faster than debugging later)
-- Prevents regressions (tests catch breakage immediately)
-- Documents behavior (tests demonstrate how code works)
-- Enables refactoring (change freely, tests catch problems)
-
-"Pragmatic" shortcuts = debugging in production = slower.
-
-**"Tests after achieve the same goals - it's about the spirit not the ritual"**
-
-No. Tests-after answer "What does this do?" Tests-first answer "What should this do?"
-
-Tests-after are biased by your implementation. You verify what you built, not what is required. You check the edge cases you remember, not ones you discover.
-
-Tests-first force edge case discovery before implementing. Tests-after verify you remembered everything (you did not).
-
-30 minutes of tests after is not test-first. You get coverage, but lose proof that tests work.
-
-## Cognitive Traps
-
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Too simple to test" | Simple code breaks. A test takes 30 seconds. |
-| "I'll test afterward" | Tests passing immediately prove nothing. |
-| "Tests after achieve the same thing" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
-| "I already tested manually" | Ad hoc is not systematic. No record, cannot rerun. |
-| "Deleting X hours is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
-| "Keep as reference, write tests first" | You will adapt it. That is testing after. Delete means delete. |
-| "Need to explore first" | Fine. Discard the exploration, then start with test-first. |
-| "Hard to test = I should skip it" | Listen to the test. Hard to test = hard to use. Simplify the design. |
-| "Test-first will slow me down" | Test-first is faster than debugging. Pragmatic = test-first. |
-| "Manual testing is faster" | Manual testing does not prove edge cases. You retest every change. |
-| "Existing code has no tests" | You are improving it. Add tests for what exists. |
-
-## Guardrails - STOP and Start Over
-
-- Code before test
-- Test after implementation
-- Test passes immediately
-- Cannot explain why the test failed
-- Tests added "later"
-- Rationalizing "just this once"
-- "I already tested it manually"
-- "Tests after serve the same purpose"
-- "It's about the spirit not the ritual"
-- "Keep as reference" or "adapt existing code"
-- "Already invested X hours, deleting is wasteful"
-- "Test-first is dogmatic, I'm being pragmatic"
-- "This is different because..."
-
-**All of these mean: Delete the code. Start over with test-first.**
-
-## Example: Bug Fix
-
-**Bug:** Empty email accepted by form
-
-**RED**
 ```typescript
-test('rejects empty email', async () => {
-  const result = await processForm({ email: '' });
-  expect(result.error).toBe('Email required');
-});
+// good: independently mockable
+const api = {
+  getUser: (id) => fetch(`/users/${id}`),
+  createOrder: (data) => fetch('/orders', { method: 'POST', body: data }),
+};
+
+// bad: the mock needs an if-cascade
+const api = { fetch: (endpoint, options) => fetch(endpoint, options) };
 ```
 
-**Verify RED**
-```bash
-$ npm test
-FAIL: expected 'Email required', got undefined
-```
+## Rules of the loop
 
-**GREEN**
-```typescript
-function processForm(data: FormData) {
-  if (!data.email?.trim()) {
-    return { error: 'Email required' };
-  }
-  // ...
-}
-```
+- **Red before green.** The failing test first, then only enough code to pass it.
+- **One slice at a time.** One seam, one test, one minimal implementation per cycle.
+- **Refactoring is not part of the loop.** It belongs to review (`ascension:quality-gate`), not the red-green cycle.
+- **Code written before its test does not count as tested.** Delete it and build from the test — kept "as reference", it steers the test toward what you already wrote, which is testing after with extra steps.
 
-**Verify GREEN**
-```bash
-$ npm test
-PASS
-```
+## Exceptions
 
-**REFACTOR**
-Extract a validation pipeline for multiple fields if needed.
+Prototypes are exempt by design — a prototype is throwaway code answering one question, and `ascension:prototype` says so explicitly. Generated code and configuration files are exempt. Anything else, confirm with the user rather than deciding alone.
 
-## Completion Checklist
+## When stuck
 
-Before declaring work finished:
+| Problem | What it means |
+|---|---|
+| Do not know how to write the test | Write the API you wish existed, then the assertion. |
+| The test is complicated | The design is complicated. Simplify the interface. |
+| Must mock everything | The code is too coupled. Inject dependencies. |
+| The setup is enormous | Extract helpers; if it stays heavy, the seam is in the wrong place. |
+| Hard to test | Hard to test means hard to use. Listen to it. |
 
-- [ ] Every new function/method has a test
-- [ ] Watched each test fail before implementing
-- [ ] Each test failed for the expected reason (feature missing, not typo)
-- [ ] Wrote minimal code to pass each test
-- [ ] All tests pass
-- [ ] Output is clean (no errors, no warnings)
-- [ ] Tests use real code (mocks only when unavoidable)
-- [ ] Edge cases and error paths are covered
+## Further reading
 
-Cannot check every box? You skipped test-first. Start over.
+`testing-anti-patterns.md` in this directory covers mock-validation, test-only methods on production classes, and mocking without understanding the dependency chain.
 
-## When Stuck
-
-| Problem | Solution |
-|---------|----------|
-| Do not know how to write the test | Write the API you wish existed. Write the assertion first. Ask your human partner. |
-| Test too complicated | Design too complicated. Simplify the interface. |
-| Must mock everything | Code too coupled. Use dependency injection. |
-| Test setup is enormous | Extract helpers. Still heavy? Simplify the design. |
-
-## Debugging Integration
-
-Bug found? Write a failing test that reproduces it. Follow the test-first cycle. The test both proves the fix and prevents regression.
-
-Never fix bugs without a test.
-
-## Testing Anti-Patterns
-
-When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
-- Validating mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependency chains
-
-## Final Rule
-
-```
-Production code -> test exists and failed first
-Otherwise -> not test-first
-```
-
-No exceptions without your human partner's permission.
+---
+*The seam discipline, tautological-test, and vertical-slice material is adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT).*

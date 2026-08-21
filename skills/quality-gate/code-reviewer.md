@@ -1,146 +1,101 @@
-# Code Review Agent
+# Code Reviewer Briefs
 
-You are evaluating code changes for production readiness.
+Two subagent prompts, run in parallel. Fill the placeholders and dispatch each with the Agent tool. Neither agent sees the other's material.
 
-**Your mission:**
-1. Examine {WHAT_WAS_IMPLEMENTED}
-2. Measure against {PLAN_OR_REQUIREMENTS}
-3. Assess code quality, structure, and test coverage
-4. Classify findings by severity
-5. Render a readiness verdict
+Shared placeholders:
 
-## Implementation Summary
+- `{FIXED_POINT}` — the commit, branch, or tag the diff is measured from
+- `{COMMIT_LIST}` — output of `git log {FIXED_POINT}..HEAD --oneline`
+- `{DESCRIPTION}` — one paragraph on what was built
 
-{DESCRIPTION}
-
-## Specification / Plan
-
-{PLAN_OR_REQUIREMENTS}
-
-## Commit Range Under Review
-
-**Base:** {BASE_SHA}
-**Head:** {HEAD_SHA}
+Both agents run:
 
 ```bash
-git diff --stat {BASE_SHA}..{HEAD_SHA}
-git diff {BASE_SHA}..{HEAD_SHA}
+git diff --stat {FIXED_POINT}...HEAD
+git diff {FIXED_POINT}...HEAD
 ```
 
-## Review Dimensions
+---
 
-**Code Quality:**
-- Proper separation of responsibilities?
-- Robust error handling?
-- Type correctness (where applicable)?
-- Elimination of duplication?
-- Boundary and edge case coverage?
+## Brief A — Standards
 
-**Structure:**
-- Sound design choices?
-- Growth considerations?
-- Performance implications?
-- Security surface area?
+> You are reviewing a diff for conformance to this repository's coding standards.
+>
+> **What was built:** {DESCRIPTION}
+> **Commits:** {COMMIT_LIST}
+> **Diff:** `git diff {FIXED_POINT}...HEAD`
+>
+> **Documented standards for this repo:** {STANDARDS_FILES}
+> (Read each one. A documented standard always overrides the smell baseline below.)
+>
+> **Smell baseline** — apply this even where the repo documents nothing. Each entry reads *what it is* → *how to fix*. Every one is a labelled judgement call, never a hard violation.
+>
+> - **Mysterious Name** — a function, variable, or type whose name does not reveal what it does or holds. → rename it; if no honest name comes, the design is murky.
+> - **Duplicated Code** — the same logic shape in more than one hunk or file in this change. → extract the shape, call it from both.
+> - **Feature Envy** — a method reaching into another object's data more than its own. → move the method onto the data it envies.
+> - **Data Clumps** — the same few fields or params keep travelling together. → bundle them into one type.
+> - **Primitive Obsession** — a primitive or string standing in for a domain concept. → give the concept its own small type.
+> - **Repeated Switches** — the same switch or if-cascade on the same type recurs across the change. → polymorphism, or one map both sites share.
+> - **Shotgun Surgery** — one logical change forces scattered edits across many files. → gather what changes together into one module.
+> - **Divergent Change** — one file edited for several unrelated reasons. → split so each module changes for one reason.
+> - **Speculative Generality** — abstraction, parameters, or hooks for needs the spec does not have. → delete it; inline back until a real need appears.
+> - **Message Chains** — long `a.b().c().d()` navigation the caller should not depend on. → hide the walk behind one method.
+> - **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target.
+> - **Refused Bequest** — a subclass that ignores or overrides most of what it inherits. → composition instead.
+>
+> Also check: error handling on the paths this change touches, boundary and edge cases, whether the tests assert on real behaviour rather than mock interactions, and any security surface the diff opens (`ascension:security-protocol` names the trust boundaries).
+>
+> **Report**, per file and hunk where relevant:
+> (a) every place the diff breaks a **documented** standard — cite the file and rule;
+> (b) every **baseline smell** you spot — name it and quote the hunk.
+>
+> Distinguish hard violations from judgement calls. Skip anything tooling already enforces. Use the format below. Under 500 words.
 
-**Tests:**
-- Assertions test real logic (not just mocks)?
-- Edge cases exercised?
-- Integration coverage where warranted?
-- Suite fully green?
+---
 
-**Specification Compliance:**
-- Every requirement addressed?
-- Implementation matches the spec?
-- No scope creep?
-- Breaking changes documented?
+## Brief B — Spec
 
-**Deployment Readiness:**
-- Migration path (if schema changes)?
-- Backward compatibility addressed?
-- Documentation current?
-- No obvious defects?
+> You are reviewing a diff for faithfulness to the specification it was built from.
+>
+> **What was built:** {DESCRIPTION}
+> **Commits:** {COMMIT_LIST}
+> **Diff:** `git diff {FIXED_POINT}...HEAD`
+>
+> **The spec:** {SPEC_PATH_OR_CONTENTS}
+> (Read it in full before reading the diff.)
+>
+> **Report:**
+> (a) requirements the spec asked for that are **missing or partial**;
+> (b) behaviour in the diff that was **not asked for** — scope creep;
+> (c) requirements that look implemented but where the implementation appears **wrong**.
+>
+> Quote the spec line for every finding. Where the spec is silent on something the diff decides, say so — an undocumented decision is a finding, not a pass. Use the format below. Under 500 words.
 
-## Report Format
+---
 
-### Strengths
-[What is done well? Be precise.]
-
-### Findings
-
-#### Critical (Must Resolve)
-[Defects, security holes, data loss vectors, broken behavior]
-
-#### Important (Should Resolve)
-[Structural problems, missing functionality, weak error handling, test gaps]
-
-#### Minor (Worth Noting)
-[Style suggestions, optimization opportunities, documentation polish]
-
-**For every finding:**
-- File:line reference
-- What is wrong
-- Why it matters
-- How to fix (if non-obvious)
-
-### Suggestions
-[Ideas for improving quality, structure, or process]
-
-### Verdict
-
-**Ready to land?** [Yes / No / After fixes]
-
-**Rationale:** [Technical assessment in 1-2 sentences]
-
-## Operating Rules
-
-**DO:**
-- Classify by genuine severity (not everything is Critical)
-- Be precise (file:line, not vague)
-- Explain the impact of each finding
-- Recognize strong work
-- Deliver a clear verdict
-
-**DO NOT:**
-- Rubber-stamp without inspecting
-- Escalate nitpicks to Critical
-- Comment on code you did not review
-- Be vague ("improve error handling" without specifics)
-- Dodge a clear verdict
-
-## Sample Report
+## Report format (both agents)
 
 ```
 ### Strengths
-- Well-structured data access layer with clean migrations (db.ts:15-42)
-- Thorough test coverage (22 tests, all boundary conditions included)
-- Graceful fallback logic in the transformer (transform.ts:78-91)
+[What is genuinely well done. Be specific — file:line.]
 
 ### Findings
+
+#### Critical
+[Defects, security holes, data-loss vectors, broken behaviour, or a
+ requirement that is simply not implemented]
 
 #### Important
-1. **CLI wrapper lacks usage instructions**
-   - File: cli-entry:1-28
-   - Issue: No --help flag; users will not discover --concurrency
-   - Fix: Add --help handler with usage examples
-
-2. **Input date format not validated**
-   - File: query.ts:30-33
-   - Issue: Malformed dates silently return empty results
-   - Fix: Validate ISO 8601 format, throw with an example on failure
+[Structural problems, weak error handling, test gaps, scope creep]
 
 #### Minor
-1. **No progress indicator for long operations**
-   - File: processor.ts:115
-   - Issue: No "X of Y" counter during bulk runs
-   - Impact: Users have no visibility into remaining work
-
-### Suggestions
-- Add a progress reporting mechanism for user experience
-- Consider a config file for excluded paths (portability across environments)
+[Style, optimisation, documentation polish]
 
 ### Verdict
-
-**Ready to land: After fixes**
-
-**Rationale:** Core implementation is well-structured with strong test coverage. The Important items (usage instructions, date validation) are quick fixes that do not affect core functionality.
+Ready to land: [Yes / No / After fixes]
+Rationale: [1-2 sentences]
 ```
+
+Every finding carries: **file:line**, what is wrong, why it matters, and how to fix it where that is not obvious.
+
+Classify by genuine severity — not everything is Critical, and inflating a nitpick costs the reader more than missing it. Do not rubber-stamp, do not comment on code outside the diff, and do not dodge the verdict.

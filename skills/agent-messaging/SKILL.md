@@ -209,6 +209,10 @@ CONCERNS: [anything that might affect other tasks]
 
 ## Handoff Formats
 
+Before writing any handoff, decide whether one is the right move at all: a handoff is for work that is **travelling** — a new harness, a new directory, a colleague, a side task forked mid-phase. When nothing is travelling, continuing, clearing, or compacting is cheaper and loses less. Call the Skill tool with "ascension:context-economy" for the ordered decision and the portable handoff format.
+
+The formats below are the in-flight ones, between agents already working the same task.
+
 ### Implementer to Reviewer
 
 ```

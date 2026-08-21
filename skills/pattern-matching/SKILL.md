@@ -182,3 +182,9 @@ Before finalizing, confirm:
 **Adjacent skills:**
 - **ascension:codebase-research** -- Discover external patterns; this skill enforces internal ones
 - **ascension:system-design** -- Guides greenfield structure; this skill governs established codebases
+
+## Matching the amount, not just the style
+
+Conventions govern *how* code is written. `ascension:minimalism` governs *how much* — the ladder that checks whether the thing needs to exist, whether this codebase already has it, and whether the standard library or the platform covers it before any new code is written.
+
+Rung 2 of that ladder is this skill's territory: the most common form of slop is re-implementing what already lives a few files over. Look before you write.

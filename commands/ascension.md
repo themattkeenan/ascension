@@ -7,13 +7,14 @@ Invoke the ascension:activation skill and follow it exactly as presented to you.
 
 The user has said "Use Ascension". This means:
 
-1. First, analyze the task at hand
-2. Follow the "Execution Mode Recommendation" section in the activation skill to determine the best approach:
-   - Agent Teams: for multiple independent modules needing peer collaboration
-   - Parallel Subagents: for independent tasks that can run simultaneously
-   - Delegated Execution: for sequential multi-step tasks with review gates
-   - Single agent: for straightforward tasks
-3. Present your recommendation to the user before proceeding
-4. Invoke all relevant skills in priority order (intent-discovery → reference-engine → design → implementation → quality)
+1. Analyze the task at hand.
+2. Locate it on the map in the activation skill — the main flow, an on-ramp, or a standalone — and say where it lands.
+3. Follow the Execution Mode tree to pick an approach:
+   - **Agent Teams** — multiple independent modules needing peer collaboration
+   - **Parallel Subagents** — independent tasks that can run simultaneously
+   - **Delegated Execution** — sequential multi-step tasks with review gates
+   - **Single agent** — straightforward work
+4. Present the recommendation with its reason, and let the user redirect before you proceed.
+5. Invoke the relevant skills in the order the activation skill sets out.
 
-Ascension is activated. Think deeply. Use references. Build with proven references, not assumptions.
+Build from proven references, not assumptions.

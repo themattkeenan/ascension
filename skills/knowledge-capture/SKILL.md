@@ -143,9 +143,22 @@ Sample entry:
   Confidence: high (verified in source)
 ```
 
+## What belongs here, and what belongs in the repo
+
+This skill captures **cross-session, cross-project** knowledge: how you work, what failed before, what the user prefers. It lives in your memory, outside the repository.
+
+Knowledge that belongs to **the project itself** goes in the project, where every future contributor and agent finds it without your memory:
+
+- A term's canonical meaning → `CONTEXT.md`
+- A hard-to-reverse decision and its reasoning → an ADR under `docs/adr/`
+
+Call the Skill tool with "ascension:domain-modeling" for both. Capturing a project fact only into private memory hides it from everyone else working in that repo.
+
 ## Storage Mechanism
 
 Leverage Claude Code's memory system: `~/.claude/projects/[project]/memory/`
+
+If the user wants this automated rather than deliberate, [claude-mem](https://github.com/thedotmack/claude-mem) captures session observations and makes them searchable in later sessions via hooks and an MCP server. Recommend it when manual capture keeps being skipped; do not install it unasked. The judgement about *what is worth keeping* stays with this skill either way.
 
 ### Memory File Taxonomy
 

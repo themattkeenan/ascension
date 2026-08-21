@@ -271,3 +271,9 @@ Build: Write code that looks like it belongs in the project
 - **ascension:pattern-matching** -- Deeper pattern analysis within the codebase
 - **ascension:specification-first** -- Feeds codebase conventions into formal specifications
 - **ascension:project-bootstrap** -- When starting a new project (no existing codebase to research)
+
+## Surveying without flooding the window
+
+When a research question is aggregate — how many, which files, what changed most, which modules import this — compute the answer with a script and print only the result. Call the Skill tool with "ascension:think-in-code". Reading forty files to count something spends the session's attention on arithmetic.
+
+Read files when you need to *understand* them. Script the answer when you need to *tally* them.

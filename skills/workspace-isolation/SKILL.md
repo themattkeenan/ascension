@@ -34,15 +34,18 @@ No exceptions. No workarounds. No shortcuts.
 - Configuration file updates (e.g., .gitignore, CLAUDE.md)
 - Reading or investigating code without making changes
 
-## Cognitive Traps
+Branch first, always. A worktree costs seconds; untangling work that landed on main costs hours, and a prototype on main becomes an accidental commit. If worktree setup fails, fix the setup — proceeding on main is not the workaround.
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "It's a small feature, I'll just work on main" | Small features grow. Worktrees cost seconds, broken main costs hours. |
-| "Setting up a worktree takes too long" | Worktree creation is faster than untangling work mixed into main. |
-| "I'll create a branch later when it's ready" | Working on main means every mistake is on main. Branch first. |
-| "The worktree setup failed, I'll skip it" | Fix the setup issue. Do not proceed on main as a workaround. |
-| "I'm just prototyping, it doesn't matter" | Prototypes on main become accidental commits. Isolate always. |
+## How much isolation
+
+A worktree isolates the **filesystem and the branch**. It does not isolate the process: an agent running in a worktree can still reach the network, the host's credentials, and everything outside the tree.
+
+| Need | Use |
+|---|---|
+| Parallel branches, same machine, trusted work | Git worktree — this skill |
+| Untrusted code, destructive setup, or many agents running unattended | A container sandbox |
+
+For the second case, [sandcastle](https://github.com/mattpocock/sandcastle) runs coding agents inside Docker, Podman, or Vercel microVMs and merges the resulting commits back to the host repository, with a choice of branch strategy (write direct, temporary branch that merges back, or an explicit named branch). Reach for it when running several unattended agents at once, or when the work itself is risky to run on the host. Recommend it; do not install it without asking.
 
 ## Directory Selection Process
 

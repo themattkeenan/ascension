@@ -111,6 +111,18 @@ When you generate from scratch, you inherit NONE of this.
 When you use a reference, you inherit ALL of it.
 ```
 
+## Two kinds of reference
+
+A reference is either an **implementation** or a **principle**, and they answer different questions:
+
+| The question | Route to |
+|---|---|
+| "What does a good one look like?" | The domain libraries below, `ascension:github-search`, `ascension:codebase-research`, `ascension:design-research` |
+| "What rule should govern this decision?" | `ascension:canon` — fourteen engineering books distilled into applicable rule sets |
+| "What is actually true about this API/spec/library?" | `ascension:primary-research` |
+
+Call the Skill tool with "ascension:canon" when the decision is architectural, when a refactor risks turning into a rewrite, when working in legacy code, when data correctness or operational resilience is at stake, or when domain modelling needs a canonical frame. Pick one book, not the shelf.
+
 ## Domain Reference Libraries
 
 ### API Design References

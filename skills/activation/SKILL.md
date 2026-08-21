@@ -3,112 +3,72 @@ name: activation
 description: Use when starting any conversation - establishes how to locate and invoke skills, mandating Skill tool usage before ANY response including clarifying questions
 ---
 
+# Activation
+
 <CRITICAL-OVERRIDE>
-When there is even a remote possibility that a skill is relevant to the current task, you MUST invoke it immediately.
-
-YOU DO NOT HAVE THE OPTION TO SKIP A RELEVANT SKILL. IT IS MANDATORY.
-
-This requirement is absolute. It cannot be reasoned away or deferred.
+Invoke every applicable skill **before** generating a response or taking an action — including before asking a clarifying question. A marginal chance of relevance is sufficient reason to invoke. If the skill turns out not to apply, move on.
 </CRITICAL-OVERRIDE>
 
-## Accessing Skills
+A question is a task. Reading files is a task. Anything you are about to do is a task, and the skill defines *how* to do it — so it comes first, not after you have already started.
 
-**Plugin installation (standard setup):** Invoke skills directly through the `Skill` tool. All protocols are auto-registered.
-Example: `Skill("ascension:intent-discovery")`
+## Accessing skills
 
-**When the Skill tool cannot locate a protocol:** Fall back to reading the file directly with the Read tool:
-1. Protocols live at: `[plugin-root]/skills/`
-2. Each protocol has a definition: `[plugin-root]/skills/[protocol-name]/SKILL.md`
-3. Read the SKILL.md and execute its instructions
+Invoke through the `Skill` tool: `Skill("ascension:intent-discovery")`.
 
-**Locating the plugin root:**
-- Running from the repository: the working directory is the plugin root
-- Installed as a plugin: the `CLAUDE_PLUGIN_ROOT` environment variable contains the path
+If the tool cannot locate a protocol, read it directly: `[plugin-root]/skills/<name>/SKILL.md`, where the plugin root is `CLAUDE_PLUGIN_ROOT` when installed, or the working directory when running from the repository.
 
-**Other platforms:** Consult platform-specific documentation for skill loading mechanisms.
+Announce what you are doing — *"Applying fault-diagnosis to find the cause"* — and track any checklist the skill contains as real tasks.
 
-# Working With Skills
+## The map
 
-## The Mandate
+Most work travels one route. Two on-ramps merge onto it; the rest stand alone.
 
-**Invoke applicable skills BEFORE generating any response or taking any action.** Even a marginal chance of relevance is sufficient reason to invoke. If an invoked skill turns out to be inapplicable, you can simply move on.
+**The main flow — idea to shipped**
 
-```dot
-digraph protocol_flow {
-    "Message arrives" [shape=doublecircle];
-    "About to enter planning?" [shape=doublecircle];
-    "Intent discovery done?" [shape=diamond];
-    "Run intent-discovery" [shape=box];
-    "Could any skill apply?" [shape=diamond];
-    "Invoke Skill tool" [shape=box];
-    "Skill tool errored?" [shape=diamond];
-    "Read SKILL.md fallback" [shape=box];
-    "Announce: 'Applying [skill] for [goal]'" [shape=box];
-    "Contains checklist?" [shape=diamond];
-    "Track each checklist item" [shape=box];
-    "Execute skill instructions" [shape=box];
-    "Generate response" [shape=doublecircle];
-
-    "About to enter planning?" -> "Intent discovery done?";
-    "Intent discovery done?" -> "Run intent-discovery" [label="no"];
-    "Intent discovery done?" -> "Could any skill apply?" [label="yes"];
-    "Run intent-discovery" -> "Could any skill apply?";
-
-    "Message arrives" -> "Could any skill apply?";
-    "Could any skill apply?" -> "Invoke Skill tool" [label="yes, any chance"];
-    "Could any skill apply?" -> "Generate response" [label="clearly not"];
-    "Invoke Skill tool" -> "Skill tool errored?";
-    "Skill tool errored?" -> "Read SKILL.md fallback" [label="yes"];
-    "Skill tool errored?" -> "Announce: 'Applying [skill] for [goal]'" [label="no"];
-    "Read SKILL.md fallback" -> "Announce: 'Applying [skill] for [goal]'";
-    "Announce: 'Applying [skill] for [goal]'" -> "Contains checklist?";
-    "Contains checklist?" -> "Track each checklist item" [label="yes"];
-    "Contains checklist?" -> "Execute skill instructions" [label="no"];
-    "Track each checklist item" -> "Execute skill instructions";
-}
+```
+rationale → intent-discovery (grilling + reference-engine + prototype)
+          → task-planning → work-tickets (when it exceeds one session)
+          → implementation (minimalism + test-first + pattern-matching)
+          → quality-gate → completion-gate → merge-protocol
 ```
 
-## Guardrails
+`rationale` asks whether the work is worth doing at all. `intent-discovery` turns the idea into an agreed design. `task-planning` turns the design into a plan; `work-tickets` slices that plan into tracer bullets when it is too big for one session. Implementation runs `minimalism` (how much to build) alongside `test-first` (proving it) and `pattern-matching` (matching the codebase). `quality-gate` reviews on two axes, `completion-gate` demands evidence, `merge-protocol` lands it.
 
-These internal thoughts are warning signs that you are rationalizing:
+**Two questions the flow asks that are easy to skip.** *Does this need to exist?* — `minimalism`, before any code. *Is this diff bigger than the change warranted?* — `overbuild-review`, after it.
 
-| Thought | Truth |
-|---------|-------|
-| "This is a straightforward question" | Questions are tasks. Look for applicable skills. |
-| "I should gather more context first" | Skill invocation precedes clarification. |
-| "Let me scan the codebase first" | Skills define HOW to scan. Invoke first. |
-| "I can check files and history quickly" | Files lack conversational context. Invoke skills. |
-| "Let me collect some data first" | Skills prescribe data collection methods. |
-| "This doesn't warrant a formal skill" | If a matching skill exists, it must be used. |
-| "I recall what this skill says" | Skills get updated. Read the current version. |
-| "This isn't really a task" | Any action is a task. Look for skills. |
-| "The skill is too heavy for this" | Seemingly simple tasks often have hidden complexity. Use it. |
-| "I'll do this one thing first" | Invoke BEFORE doing anything. |
-| "I'm making good progress" | Undirected effort creates waste. Skills prevent this. |
-| "I understand that concept already" | Understanding a concept is not the same as following a skill. Invoke it. |
+**On-ramps**
 
-## Skill Ordering
+| Situation | Entry point |
+|---|---|
+| Something is broken | `fault-diagnosis` — build a tight loop before theorising |
+| Attempts are looping, complexity rising | `error-recovery` |
+| A merge or rebase has stopped | `merge-conflicts` |
+| A decision waits on external facts | `primary-research` |
+| A design question needs to be seen or driven | `prototype` |
+| The codebase has drifted into over-engineering | `overbuild-review` |
+| A question spans many files or a large payload | `think-in-code` — script the answer, do not read it |
 
-When several skills might be relevant, follow this sequence:
+**Underneath everything**
 
-1. **Challenge skills first** (rationale) - question whether the work is worth doing before committing
-2. **Process skills second** (intent-discovery, fault-diagnosis) - establish the approach
-3. **Reference skills third** (reference-engine routes to: ux-patterns, design-research, github-search, codebase-research, system-design, deployment-advisor) - locate proven solutions before designing
-4. **Design skills fourth** (ui-engineering, design-integration, specification-first) - apply references to guide decisions
-5. **Implementation skills fifth** (test-first, project-bootstrap, pattern-matching, environment-awareness) - drive execution
-6. **Quality skills sixth** (quality-enforcement, security-protocol, completion-gate, comprehension-check, error-recovery) - enforce standards
-7. **Orchestration skills** (team-orchestration, delegated-execution) - leverage parallelism
+`vocabulary` (the shared words), `domain-modeling` (this project's language and its ADRs), `module-design` (module, interface, depth, seam, adapter), `canon` (fourteen engineering books as applicable rule sets), `context-economy` (what to do at a phase boundary), `protocol-authoring` (writing skills themselves). Reach for these when the *words*, the *shape*, or the *governing principle* are the problem, not the process.
 
-"Let's build X" -> rationale -> intent-discovery -> reference-engine (routes to appropriate references) -> design skills -> implementation skills.
-"Build a website" -> rationale -> intent-discovery -> reference-engine -> design-research + ux-patterns -> ui-engineering -> implementation.
-"Fix this bug" -> fault-diagnosis first, then domain-appropriate skills. (rationale skipped for bugs)
-"Big project" -> rationale -> intent-discovery -> reference-engine -> task-planning -> team-orchestration (when warranted).
-"Agent is stuck" -> error-recovery activates proactively based on failure count detection.
-"What database/hosting should I use?" -> environment-awareness -> deployment-advisor -> system-design.
+## Ordering
 
-## Execution Mode Guidance
+When several skills apply:
 
-When a user says "use ascension" for a task, evaluate the task and suggest the optimal execution strategy:
+1. **Challenge** — `rationale`: is this worth doing?
+2. **Process** — `intent-discovery`, `fault-diagnosis`: establish the approach.
+3. **Reference** — `reference-engine` routes to `ux-patterns`, `design-research`, `github-search`, `codebase-research`, `primary-research`, `canon`, `system-design`, `deployment-advisor`.
+4. **Design** — `ui-engineering`, `design-integration`, `specification-first`, `module-design`, `canon`.
+5. **Implementation** — `minimalism`, `test-first`, `project-bootstrap`, `pattern-matching`, `environment-awareness`.
+6. **Quality** — `quality-enforcement`, `security-protocol`, `quality-gate`, `overbuild-review`, `completion-gate`, `comprehension-check`.
+7. **Orchestration** — `team-orchestration`, `delegated-execution`, `parallel-execution`.
+
+Bugs skip `rationale` and start at `fault-diagnosis`.
+
+## Execution mode
+
+When the user says "use ascension", evaluate the task and propose the execution strategy before acting.
 
 ```dot
 digraph execution_guidance {
@@ -117,83 +77,43 @@ digraph execution_guidance {
     "Handle directly" [shape=box];
     "Multiple independent parts?" [shape=diamond];
     "Requires peer coordination?" [shape=diamond];
-    "Suggest Agent Teams" [shape=box style=filled fillcolor=lightgreen];
-    "Suggest Parallel Delegation" [shape=box];
+    "Agent Teams" [shape=box style=filled fillcolor=lightgreen];
+    "Parallel Delegation" [shape=box];
     "Multi-step sequence?" [shape=diamond];
-    "Suggest Delegated Execution" [shape=box];
-    "Suggest single-agent workflow" [shape=box];
+    "Delegated Execution" [shape=box];
+    "Single-agent workflow" [shape=box];
 
     "Evaluate task" -> "Single atomic step?";
     "Single atomic step?" -> "Handle directly" [label="yes"];
     "Single atomic step?" -> "Multiple independent parts?" [label="no"];
     "Multiple independent parts?" -> "Requires peer coordination?" [label="yes"];
     "Multiple independent parts?" -> "Multi-step sequence?" [label="no"];
-    "Requires peer coordination?" -> "Suggest Agent Teams" [label="yes"];
-    "Requires peer coordination?" -> "Suggest Parallel Delegation" [label="no"];
-    "Multi-step sequence?" -> "Suggest Delegated Execution" [label="yes"];
-    "Multi-step sequence?" -> "Suggest single-agent workflow" [label="no"];
+    "Requires peer coordination?" -> "Agent Teams" [label="yes"];
+    "Requires peer coordination?" -> "Parallel Delegation" [label="no"];
+    "Multi-step sequence?" -> "Delegated Execution" [label="yes"];
+    "Multi-step sequence?" -> "Single-agent workflow" [label="no"];
 }
 ```
 
-**Present the suggestion before acting:**
+Present it as a recommendation with a reason, and let the user redirect.
 
-```
-Based on my analysis, I suggest:
+## Watch the session length
 
-[Suggested strategy] because [reasoning]
-
-- Agent Teams: [X] agents collaborating on [modules] concurrently
-- OR Delegated Execution: [N] sequential tasks with review gates
-- OR Parallel Delegation: [N] independent tasks running simultaneously
-- OR Single agent: manageable enough to handle in one flow
-
-Shall I proceed this way, or do you prefer a different approach?
-```
-
-## Skill Categories
-
-**Rigid** (test-first, fault-diagnosis): Follow precisely. Do not deviate from the discipline.
-
-**Flexible** (design patterns): Adapt the principles to fit the situation.
-
-The skill definition itself indicates which category applies.
+The agent gets less sharp as context grows, gradually and without announcing it. When the session is long, when instructions from earlier start slipping, or when a phase has just ended, call the Skill tool with "ascension:context-economy" and make the decision deliberately rather than pushing on degraded.
 
 ## YoloMode
 
-When the user signals they want autonomous execution, skip all confirmation prompts and compress workflows — but never auto-pick labeled options.
+Triggered by "yolo", "just go", "just do it", "go for it", "skip the questions", "you decide", "auto-pick".
 
-**Trigger phrases (case-insensitive):**
-- "yolo", "yolomode", "yolo mode"
-- "just go", "just do it", "go for it"
-- "skip the questions", "don't ask"
-- "auto-pick", "you decide"
+Active behaviour: compress `intent-discovery` to survey, research, and a recommended approach without per-section confirmation; run `rationale` but present it concisely; skip confirmation prompts.
 
-**Behavior when active:**
-- Skills that present A/B/C/D options ALWAYS pause for user selection — no exceptions
-- Intent-discovery compresses: survey + research + present recommended approach, skip per-section confirmation
-- Rationale analysis still runs (safety check) but is compressed — present analysis and options concisely
-- Completion-gate and test verification are NEVER skipped (quality is non-negotiable)
+**Still pauses for the user:** any skill presenting labelled A/B/C options.
+**Still runs in full:** `completion-gate` and test execution, `security-protocol`, `quality-enforcement`, and the confirmation before any destructive operation in `merge-protocol`.
 
-**How skills reference YoloMode:**
-```
-If YoloMode is active:
-  -> State: "YoloMode active — proceeding with recommendation [X] because [reason]"
-  -> Execute immediately
-  -> Log which option was auto-selected
+YoloMode trusts your recommendation on design choices, not on safety checks.
 
-If YoloMode is NOT active:
-  -> Present options with labels and recommendation
-  -> Wait for user selection
-```
+## Two things to keep straight
 
-**YoloMode does NOT bypass:**
-- Test execution (completion-gate)
-- Security checks (security-protocol)
-- Destructive operations (merge-protocol abandon confirmation)
-- Quality enforcement (quality-enforcement)
+**A user directive says WHAT, not HOW.** "Add X" or "Fix Y" specifies the outcome; it does not authorise bypassing the workflow that gets there well.
 
-YoloMode is about speed, not recklessness. It trusts the agent's recommendation for design choices, not for safety checks.
-
-## User Directives
-
-User directives specify WHAT needs to happen, not HOW. "Add X" or "Fix Y" does not mean bypass established workflows.
+**Recalling a skill is not running it.** Skills change. Read the current version.

@@ -214,9 +214,17 @@ Capability-based organization keeps related code together. Changing one capabili
 
 **All of these mean: Simplify. Use the boring, proven option.**
 
+## Module shape
+
+Structural decisions above pick the *pieces*. The shape of each piece — how much behaviour sits behind how small an interface, and where the seam goes — is its own decision with its own vocabulary. Call the Skill tool with "ascension:module-design" before designing an interface, and use its words (module, interface, depth, seam, adapter, leverage, locality) rather than "component", "service", or "boundary".
+
+Inside a repository, call the Skill tool with "ascension:domain-modeling" so the names you choose match `CONTEXT.md` and the hard-to-reverse choices here land as ADRs.
+
 ## Integration
 
 **Complements:**
+- **ascension:module-design** — Interface shape, seam placement, depth
+- **ascension:domain-modeling** — Naming, glossary, and ADRs for these decisions
 - **ascension:performance-tuning** — When structural choices affect performance
 - **ascension:security-protocol** — Auth patterns and data flow security
 - **ascension:project-bootstrap** — File organization and initial setup
