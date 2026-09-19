@@ -1,5 +1,9 @@
 # Ascension Release Notes
 
+## v2.1.1 — Subagent brief
+
+- **`SubagentStart` hook** — `SessionStart` context is parent-thread only, so dispatched subagents ran Ascension-unaware. `general-purpose` and `Plan` subagents now get a short brief: the skills that apply to delegated work, and a boundary that leaves the user-facing skills to the parent. Deliberately not the full `activation` protocol, which is written for the parent session. Scoped with the native agent-type matcher in `hooks/hooks.json`. Idea from [ponytail](https://github.com/DietrichGebert/ponytail)'s subagent hook (MIT).
+
 ## v2.1.0 — Restraint and canon
 
 v2.0 made the framework better at *doing the work*. v2.1 makes it better at **not doing work that shouldn't be done** — and gives it a library of engineering principle to argue from.

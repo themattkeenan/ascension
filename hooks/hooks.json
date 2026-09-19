@@ -11,6 +11,18 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "^(general-purpose|Plan)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd' subagent-start",
+            "async": false
+          }
+        ]
+      }
     ]
   }
 }

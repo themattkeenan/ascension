@@ -8,6 +8,8 @@ Ascension began as a merge of god mode's breadth with [Superpowers](https://gith
 
 A `SessionStart` hook injects the `activation` skill into every session (and after compaction). That bootstrap makes the agent check for and invoke a relevant skill before *any* response, so the methodology triggers automatically. You do not invoke skills manually; the agent just has them.
 
+Session-start context never reaches subagents, so a `SubagentStart` hook gives `general-purpose` and `Plan` subagents a short brief of their own: which skills apply to delegated work, and that the user-facing ones (`rationale`, `grilling`, `intent-discovery`, `merge-protocol`) belong to the parent session. To change which agents receive it, edit the `matcher` in `hooks/hooks.json`.
+
 ## The map
 
 ```
