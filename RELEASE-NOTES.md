@@ -1,5 +1,10 @@
 # Ascension Release Notes
 
+## v2.1.3 — The bootstrap actually loads
+
+- **Hook commands fixed.** `hooks.json` single-quoted the path — `'${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd'` — and bash does not expand variables inside single quotes, so every hook looked for a file literally named `${CLAUDE_PLUGIN_ROOT}/…`. The failure is non-blocking, so it was silent: across 82 recorded sessions (July 10 onward) the `SessionStart` bootstrap never once injected `activation`, and the v2.1.1 `SubagentStart` hook inherited the same bug. Both now run as `bash "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" <script>`, matching every other plugin.
+- Consequence for the v2.1.2 analysis: the skill-invocation counts it was based on measured the descriptions alone, with no bootstrap. Re-measure after this release before drawing conclusions about individual skills.
+
 ## v2.1.2 — Triggers that fire
 
 A month of transcripts showed 28 of 49 skills never invoked. The skills that did run were the ones another skill hands off to operatively ("call the Skill tool with…"); the rest were only named in passive *Related* lists.
