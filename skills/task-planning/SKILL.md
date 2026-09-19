@@ -165,6 +165,8 @@ The tell: a task whose description needs the previous task's conversation to mak
 
 ## Execution Handoff
 
+Plan → execution is a phase boundary. Call the Skill tool with "ascension:context-economy" and let its answer decide which option below you recommend.
+
 After saving the plan, offer the user a choice:
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**

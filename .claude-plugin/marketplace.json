@@ -8,7 +8,7 @@
     {
       "name": "ascension",
       "description": "49 self-triggering skills for coding agents: a laziness ladder that stops over-building, grilling in rounds, reference-first design over an engineering canon, tracer-bullet tickets, subagent-driven execution, a tight-feedback-loop debugging discipline, and two-axis code review.",
-      "version": "2.1.1",
+      "version": "2.1.2",
       "source": "./",
       "author": {
         "name": "mattkeenan91"

@@ -1,6 +1,6 @@
 ---
 name: context-economy
-description: Decide what to do at a phase boundary — continue, clear, hand off, delegate to a subagent, or compact — and write the handoff document when one is needed. Use when a chunk of work just finished, when the session is getting long or the agent is slipping, or when work must move to another session, directory, harness, or person.
+description: Use when a task has just landed or a plan was just approved, when the user asks for a new chat, a handoff, or a summary of where things stand, when you catch yourself re-reading the same files or repeating a correction, or when work must move to another session, directory, harness, or person. Decides continue, clear, hand off, subagent, or compact, and writes the handoff.
 ---
 
 # Context Economy

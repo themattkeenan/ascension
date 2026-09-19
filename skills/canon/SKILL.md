@@ -1,6 +1,6 @@
 ---
 name: canon
-description: Route to the software-engineering book whose rules bear on the current decision - architecture boundaries, refactoring, legacy code, domain modeling, data correctness, operational resilience, or construction quality. Use when a design or review decision needs a canonical rule set rather than an opinion.
+description: Use when a design or review decision needs a governing principle rather than an opinion - architecture boundaries, refactoring, legacy code, domain modeling, data correctness, operational resilience, or construction quality. Routes to the engineering book whose rules bear on it.
 ---
 
 # Canon

@@ -1,6 +1,6 @@
 ---
 name: overbuild-review
-description: Find over-engineering and report what to cut. Use to review a diff or a whole repo for reinvented standard library, needless dependencies, speculative abstractions, and dead flexibility, or to harvest deferred-shortcut markers into a debt ledger.
+description: Use when a diff came out bigger than the task warranted, when the user says simplify, too complex, or cut this down, when auditing a repo for over-engineering, or to harvest deferred-shortcut markers into a debt ledger. Reports reinvented standard library, needless dependencies, speculative abstractions, and dead flexibility.
 ---
 
 # Overbuild Review

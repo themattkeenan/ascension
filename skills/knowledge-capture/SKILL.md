@@ -1,6 +1,6 @@
 ---
 name: knowledge-capture
-description: Use when completing any meaningful task - distill patterns, lessons, and insights from the interaction and persist them for future sessions
+description: Use when a fix or feature has landed, when the user corrects you or states a preference, or when you hit a gotcha the codebase does not record - decides what is worth persisting for future sessions and where it belongs
 ---
 
 # Knowledge Capture

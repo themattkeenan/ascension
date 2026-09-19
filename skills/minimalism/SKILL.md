@@ -1,6 +1,6 @@
 ---
 name: minimalism
-description: Build the least code that actually works. Use before writing or changing any code - features, fixes, refactors - to check whether the thing needs to exist, whether the codebase, standard library, platform, or an installed dependency already does it, and whether one line would do.
+description: Use before writing or changing code - a feature, fix, or refactor - and whenever you are about to add a file, function, dependency, abstraction, or config option. Checks whether it needs to exist, whether the codebase, standard library, platform, or an installed dependency already does it, and whether one line would do.
 ---
 
 # Minimalism

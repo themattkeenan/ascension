@@ -1,6 +1,6 @@
 ---
 name: think-in-code
-description: Compute the answer with a script instead of reading raw data into context. Use when a question spans many files, a large log, a big JSON or CSV payload, a wide grep, or repeated tool calls whose results you only need aggregated.
+description: Use when a question spans many files, a large log, a big JSON or CSV payload, or a wide grep, or when you are about to repeat the same tool call and only need the aggregate. Computes the answer with a script instead of reading raw data into context.
 ---
 
 # Think In Code

@@ -1,6 +1,6 @@
 ---
 name: comprehension-check
-description: Use when implementing any substantial feature, multi-file modification, or architectural change - produces a plain-language walkthrough of every alteration so the developer can verify genuine understanding before committing, preventing the accumulation of cognitive debt where code ships faster than comprehension
+description: Use after a substantial feature, multi-file change, or architectural change and before committing it, or when the user asks what changed or how it works - produces a plain-language walkthrough of every alteration so the developer can confirm they understand what is shipping
 ---
 
 # Comprehension Check

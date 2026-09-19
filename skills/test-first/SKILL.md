@@ -1,6 +1,6 @@
 ---
 name: test-first
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: Use before writing implementation code for a feature or bugfix, and when deciding which seam a test belongs at
 ---
 
 # Test-First Development

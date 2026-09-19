@@ -1,6 +1,6 @@
 ---
 name: quality-gate
-description: Use when finishing tasks, shipping significant features, or before landing changes to ensure work meets standards through automated review
+description: Use when a feature or fix is implemented, before committing, opening a PR, or telling the user it is ready - reviews the diff against the project's standards and against the spec as two separate axes
 ---
 
 # Quality Gate

@@ -1,5 +1,12 @@
 # Ascension Release Notes
 
+## v2.1.2 — Triggers that fire
+
+A month of transcripts showed 28 of 49 skills never invoked. The skills that did run were the ones another skill hands off to operatively ("call the Skill tool with…"); the rest were only named in passive *Related* lists.
+
+- **Operative handoffs** at the step where they apply: `fault-diagnosis` → `error-recovery` before a second fix attempt; `task-planning` → `context-economy` at the plan → execution boundary; `merge-protocol` gains Phase 6, calling `knowledge-capture` and `context-economy` once work lands.
+- **Trigger-first descriptions** for `context-economy`, `minimalism`, `overbuild-review`, `think-in-code`, `test-first`, `quality-gate`, `knowledge-capture`, `canon`, and `comprehension-check` — leading with the condition and naming moments the agent can actually observe (a task just landed, re-reading the same files, the user saying "simplify") in place of identity statements or states it cannot see ("the session is getting long").
+
 ## v2.1.1 — Subagent brief
 
 - **`SubagentStart` hook** — `SessionStart` context is parent-thread only, so dispatched subagents ran Ascension-unaware. `general-purpose` and `Plan` subagents now get a short brief: the skills that apply to delegated work, and a boundary that leaves the user-facing skills to the parent. Deliberately not the full `activation` protocol, which is written for the parent session. Scoped with the native agent-type matcher in `hooks/hooks.json`. Idea from [ponytail](https://github.com/DietrichGebert/ponytail)'s subagent hook (MIT).

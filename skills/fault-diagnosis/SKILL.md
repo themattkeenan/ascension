@@ -123,7 +123,7 @@ Where a correct seam exists:
 
 ### When the fix does not work
 
-Return to Phase 1 with what you learned; do not stack another fix on top. After **three** failed fixes, stop and question the architecture instead of attempting a fourth. The tells: each fix reveals new coupling somewhere else, each fix needs "a massive refactor", each fix creates a new symptom. That is a flawed structure, not a failed hypothesis — raise it with the user before continuing.
+Return to Phase 1 with what you learned; do not stack another fix on top. Before the second fix attempt, call the Skill tool with "ascension:error-recovery" and keep its attempt count from then on. After **three** failed fixes, stop and question the architecture instead of attempting a fourth. The tells: each fix reveals new coupling somewhere else, each fix needs "a massive refactor", each fix creates a new symptom. That is a flawed structure, not a failed hypothesis — raise it with the user before continuing.
 
 ## Phase 6: Cleanup
 
