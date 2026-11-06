@@ -5,19 +5,7 @@ description: Use after a substantial feature, multi-file change, or architectura
 
 # Comprehension Check
 
-## Overview
-
-AI produces code at a pace that outstrips human absorption. Shipping changes you cannot fully explain creates cognitive debt -- the inability to troubleshoot, extend, or reason about what was built.
-
-**Core principle:** Comprehension precedes commitment. If you cannot articulate every modification in ordinary language, you have not earned the right to commit it.
-
-## The Prime Directive
-
-```
-NO COMMIT UNTIL EVERY CHANGE IS UNDERSTOOD
-```
-
-Before any AI-generated or AI-assisted code reaches version control, the developer must grasp what each change accomplishes and why it was implemented that way.
+The developer can explain every change in ordinary language before it is committed. The failure this prevents: shipping AI-generated code faster than anyone absorbs it, leaving cognitive debt that nobody can troubleshoot, extend, or reason about later.
 
 ## When to Use
 
@@ -37,16 +25,14 @@ Before any AI-generated or AI-assisted code reaches version control, the develop
 
 ### Phase 1: Produce a Change Walkthrough
 
-After implementation completes, before any commit occurs:
+After implementation completes, before any commit occurs, for every modified file articulate:
 
-```
-For EVERY modified file, articulate:
+1. **What:** what is different now? (Describe the meaning, not the diff)
+2. **Why:** what motivated this particular change?
+3. **Context:** how does this change interact with the broader modification set?
+4. **Hazard:** what failure modes does this change introduce?
 
-1. WHAT: What is different now? (Describe the meaning, not the diff)
-2. WHY: What motivated this particular change?
-3. CONTEXT: How does this change interact with the broader modification set?
-4. HAZARD: What failure modes does this change introduce?
-```
+Done when every file in the diff has all four.
 
 ### Phase 2: Deliver the Walkthrough
 
@@ -81,10 +67,7 @@ Structure the output as follows:
 
 **Ask directly:** "Do you fully understand these changes and want to proceed with the commit?"
 
-When the developer raises questions:
-- Resolve them thoroughly
-- Do not gloss over confusion
-- Lingering confusion equals accruing cognitive debt
+When the developer raises questions, resolve each one fully. Done when the developer has said yes and no question of theirs is left standing; confusion left unresolved is cognitive debt accruing.
 
 ### Phase 4: Surface Unsolicited Changes
 
@@ -95,7 +78,7 @@ HEADS UP: I additionally [modified X] because [rationale].
 This was NOT part of your original instruction. Keep it or revert?
 ```
 
-AI agents frequently make "helpful" supplementary changes. Every one must be disclosed.
+Every change outside the original request is disclosed this way.
 
 ## Indicators of Genuine Comprehension
 
@@ -106,38 +89,15 @@ The developer should be able to:
 - [ ] Enumerate any new dependencies or patterns that were introduced
 - [ ] Identify where to investigate if a bug surfaces in this code later
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "The test suite passes, so I trust it" | Tests validate behavior, not understanding. You will debug this blind later. |
-| "I will review it when things calm down" | You will not. The context window closes the moment you move on. |
-| "It is mostly boilerplate" | A single incorrect line in boilerplate can open a security hole. |
-| "I grasp the overall concept" | High-level intuition collapses at debugging time. Specific comprehension is required. |
-| "Deep review reduces my velocity" | Deploying code you cannot explain reduces velocity far more when it fails. |
-| "The AI is competent" | AI generates plausible output. Plausible and correct are not the same thing. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Committing AI-produced code without reading the walkthrough
-- Suppressing unsolicited-change disclosures
-- Rushing past developer confusion or uncertainty
-- Equating green tests with genuine comprehension
+- Every multi-file modification gets a walkthrough, and the developer reads it before the commit.
+- Every change beyond the original request is disclosed with a keep-or-revert question.
+- The commit waits on explicit confirmation.
+- Resolve every developer question fully before proceeding.
+- Treat green tests as evidence of behaviour, not of comprehension; the walkthrough still runs.
+- "Mostly boilerplate" still gets the walkthrough; only pure scaffolding and lockfiles are skipped.
 
-**Required actions:**
-- Generate walkthroughs for all multi-file modifications
-- Disclose every change that exceeded the original request
-- Collect explicit confirmation before committing
-- Fully resolve every developer question
+## Related
 
-## Integration
-
-**Invoked after:**
-- **ascension:delegated-execution** -- Review output from delegated agent implementations
-- **ascension:test-first** -- After code is written and tests pass
-- **ascension:parallel-execution** -- After merging results from parallel agent work
-
-**Invoked before:**
-- **ascension:completion-gate** -- First understand, then verify
-- **ascension:merge-protocol** -- Understand before merging into the target branch
+Runs on the output of `ascension:delegated-execution`, after code is written and tests pass, and before `ascension:completion-gate` verifies and `ascension:merge-protocol` lands the work.

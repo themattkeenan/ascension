@@ -5,25 +5,11 @@ description: Use when writing code that processes user input, manages authentica
 
 # Security Protocol
 
-## Overview
-
-Security is not a phase you bolt on. Every line of code is a security decision.
-
-**Core principle:** Never trust data from outside your trust boundary. Validate at every boundary crossing.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO EXTERNAL DATA REACHES A SYSTEM CALL, QUERY, OR OUTPUT WITHOUT VALIDATION AND SANITIZATION
-```
-
-When data crosses a trust boundary, it must be validated before consumption. This is absolute.
+Every line that touches data from outside the trust boundary validates it before use, encodes it for its output context, and checks authorization before acting. The failure this prevents: external data reaching a query, a system call, or a rendered page unvalidated.
 
 ## When to Use
 
-**Mandatory when writing code that:**
+When writing code that:
 - Accepts user input (forms, URLs, headers, uploaded files)
 - Constructs database queries
 - Renders user-supplied content
@@ -33,23 +19,18 @@ When data crosses a trust boundary, it must be validated before consumption. Thi
 - Manipulates file paths
 - Executes system commands
 - Sets HTTP response headers
-- Processes file uploads
-
-**This is not discretionary.** Security awareness is woven into development, not applied afterward.
 
 ## The Entry Protocol
 
-```
-BEFORE shipping ANY code that handles external data:
+Before shipping any code that handles external data:
 
-1. IDENTIFY: Where does data enter the system? (Trust boundary)
-2. VALIDATE: Is input validated at the boundary?
-3. SANITIZE: Is output encoded for its target context?
-4. AUTHORIZE: Is access control verified before the action?
-5. PROTECT: Are secrets, tokens, and keys managed safely?
+1. **Identify** where data enters the system (the trust boundary).
+2. **Validate** input at the boundary.
+3. **Sanitize** output: encode it for its target context.
+4. **Authorize** the action: verify access control before it runs.
+5. **Protect** secrets, tokens, and keys.
 
-Omit any step = vulnerability shipped
-```
+Done when each boundary in the change has a named validation, an output encoding for its target, an authorization check before the action, and no secret in source or logs.
 
 ## OWASP Top 10 Condensed Guide
 
@@ -105,8 +86,6 @@ SELECT * FROM users WHERE email = '" + userInput + "'
 SELECT * FROM users WHERE email = $1
 ```
 
-This is non-negotiable. There is no scenario where string concatenation in queries is acceptable.
-
 ### A04: Insecure Design
 
 - Enforce rate limiting on authentication endpoints
@@ -127,14 +106,12 @@ This is non-negotiable. There is no scenario where string concatenation in queri
 
 ### A06: Vulnerable Components
 
-```
-BEFORE adding any dependency:
+Before adding any dependency:
 
 1. Is it actively maintained? (Last commit within 6 months)
 2. Are known vulnerabilities published? (npm audit, snyk, dependabot)
 3. Is it widely adopted? (Download counts and stars are signals, not guarantees)
 4. Is it actually necessary? (Do not add a dependency for a single utility function)
-```
 
 Execute `npm audit` / `pip audit` / `cargo audit` regularly. Remediate critical and high findings immediately.
 
@@ -187,21 +164,10 @@ Begin restrictive and relax only when a specific requirement demands it.
 
 ## Secrets Management
 
-```
-NEVER:
-- Embed secrets in source code
-- Commit .env files to version control
-- Write secrets to log output
-- Transmit secrets in URL query parameters
-- Store secrets in client-side code
-
-ALWAYS:
-- Use environment variables or dedicated secret managers
-- Add .env to .gitignore BEFORE the first commit
-- Rotate secrets on a defined schedule
-- Use distinct secrets per environment
-- Audit secret access
-```
+- Secrets live in environment variables or a dedicated secret manager, never in source code, client-side code, or committed configuration (`.env` goes into `.gitignore` before the first commit).
+- Secrets stay out of log output and URL query parameters.
+- Each environment gets its own secrets.
+- Rotate secrets on a defined schedule and audit who reads them.
 
 ## Input Validation Checklist
 
@@ -215,19 +181,13 @@ For every input field:
 - [ ] Sanitized for output context (HTML, SQL, shell)
 - [ ] File uploads: type verified by content inspection (not extension), size limited
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|---|---|
-| "Internal tool, no attacker" | Internal tools get compromised. Internal users make mistakes. Insider threats are real. |
-| "We will add security later" | Security is not a feature. Retrofitting it costs 10x more than building it in. |
-| "The framework handles it" | Frameworks have escape hatches. Know exactly what your framework does and does not protect. |
-| "Input validation is excessive" | Every injection attack in history started with unvalidated input. |
-| "It is just a prototype" | Prototypes become production systems. Secure from the beginning. |
-| "Too complicated, slows development" | Data breaches slow development permanently. |
-| "Nobody would do that" | Attackers do exactly that. Assume all input is hostile. |
+- Treat every input as hostile until validated, whatever its source.
+- When relying on a framework's protection, name exactly which protection it is and confirm the code path uses it; frameworks have escape hatches.
+- Secure internal tools and prototypes to the same standard as production; both become production.
 
-## Guardrails -- HALT and Fix
+Stop and fix before shipping when you notice:
 
 - String concatenation in SQL queries
 - `eval()` or `exec()` on user-provided data
@@ -240,20 +200,6 @@ For every input field:
 - Disabled CSRF protection
 - Default credentials in deployed environments
 
-**Every item on this list is a security vulnerability. Remediate before shipping.**
+## Related
 
-## Integration
-
-**Complementary skills:**
-- **ascension:system-design** -- Authentication strategy and data flow design
-- **ascension:quality-enforcement** -- Security checks as automated quality gates
-- **ascension:completion-gate** -- Security verification before shipping
-- **ascension:test-first** -- Write security-focused test cases
-
-## The Bottom Line
-
-```
-Trust boundary crossed -> validate input, sanitize output, verify authorization
-```
-
-No exceptions. No "we will add it later." Security ships with the code or the code does not ship.
+`ascension:system-design` settles the authentication strategy and data flow this skill checks. `ascension:quality-enforcement` runs the dependency audit as a CI gate. `ascension:test-first` is where the security test cases get written.

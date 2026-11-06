@@ -17,14 +17,6 @@ Assume the engineer is technically competent but knows almost nothing about the 
 
 **Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
 
-## The Prime Directive
-
-```
-NO IMPLEMENTATION WITHOUT A PLAN FIRST
-```
-
-No exceptions. No workarounds. No shortcuts.
-
 ## When to Use
 
 **Required:**
@@ -40,7 +32,7 @@ No exceptions. No workarounds. No shortcuts.
 - Documentation-only changes
 - Renaming a variable in one file
 
-Tempted to think "this is too simple for a plan"? If it touches more than one file, write the plan.
+The bound is the file count: if it touches more than one file, write the plan.
 
 ## The Entry Protocol
 
@@ -51,34 +43,20 @@ Before writing a plan, confirm ALL of these:
 3. **Requirements are concrete** - You know what "done" looks like (acceptance criteria, not feelings)
 4. **Tech stack is identified** - You know the languages, frameworks, and libraries involved
 5. **Test strategy is defined** - You know how each piece will be verified
-6. **Worktree is active** - You are working in an isolated branch, not main
+6. **Worktree is active** - You are working in an isolated branch, not main; if not, call the Skill tool with "ascension:workspace-isolation"
 
-**Any item unclear?** Stop. Return to intent-discovery or consult your human partner. Do NOT write a plan with gaps -- gaps become defects.
-
-## Cognitive Traps
-
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Too simple for a plan" | Simple tasks contain hidden complexity. Plans take 5 minutes. Debugging takes hours. |
-| "I'll figure it out as I go" | That is called hacking. You will miss edge cases and skip verification steps. |
-| "The spec IS the plan" | Specs describe WHAT. Plans describe HOW, step by step, with file paths and commands. |
-| "I already know what to do" | Excellent. Write it down. If it is obvious, the plan writes itself in 2 minutes. |
-| "Plans slow me down" | Rework slows you down. Plans prevent rework. Net time saved every time. |
-| "I'll add the plan after" | A plan written after implementation is documentation, not a plan. It cannot prevent mistakes already made. |
+Done when all six are confirmed. An unclear item goes back to your human partner, or to the Skill tool with "ascension:intent-discovery", before any plan is written; a gap in the plan becomes a defect in the code.
 
 ## Guardrails
 
-**Never:**
-- Write ambiguous steps like "implement the feature" or "add validation" -- specify exact code
-- Omit test commands or expected output from plan steps
-- Leave out file paths -- every step must reference exact paths
-- Begin implementing before the plan is saved and reviewed
-
-**Always:**
-- Include complete code snippets, not descriptions of code
-- Specify exact shell commands with expected output for every verification step
-- List every file that will be created, modified, or deleted
-- End each task with a commit step including the precise commit message
+- Every step names exact file paths.
+- Every step carries complete code, not a description of it ("add validation" is not a step).
+- Every verification step gives the exact shell command and its expected output.
+- Every task lists each file created, modified, or deleted, and ends with a commit step carrying the precise commit message.
+- Reference relevant skills by name (e.g., `ascension:test-first`).
+- DRY, YAGNI, TDD, frequent commits.
+- A spec says what; the plan says how, step by step, with file paths and commands. Write the plan even when the spec is detailed.
+- Implementation begins only after the plan is saved and reviewed.
 
 ## Task Granularity
 
@@ -91,7 +69,7 @@ Before writing a plan, confirm ALL of these:
 
 ## Plan Document Header
 
-**Every plan MUST open with this header:**
+**Every plan opens with this header:**
 
 ```markdown
 # [Feature Name] Implementation Plan
@@ -150,12 +128,7 @@ git commit -m "feat: add specific feature"
 ```
 ````
 
-## Reminders
-- Exact file paths in every step
-- Complete code in the plan (not "add validation")
-- Exact commands with expected output
-- Reference relevant skills by name (e.g., `ascension:test-first`)
-- DRY, YAGNI, TDD, frequent commits
+The plan is complete when every task follows this template with no placeholder left unfilled, and it is saved under `docs/plans/`.
 
 ## Too big for one session?
 
@@ -178,56 +151,14 @@ After saving the plan, offer the user a choice:
 **Which approach?"**
 
 **If Delegated Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use ascension:delegated-execution
+- Call the Skill tool with "ascension:delegated-execution"
 - Stay in this session
 - Fresh subagent per task + code review
 
 **If Separate Session chosen:**
 - Guide them to open a new session in the worktree
-- **REQUIRED SUB-SKILL:** New session uses ascension:task-runner
+- The new session calls the Skill tool with "ascension:task-runner"
 
-## Connections
+## Related
 
-**Required workflow skills:**
-- **ascension:intent-discovery** - Produces the spec/design that feeds into this skill
-- **ascension:work-tickets** - Slices a plan too big for one session into tracer bullets
-- **ascension:context-economy** - What to do at the boundary between plan and execution
-- **ascension:workspace-isolation** - REQUIRED: Set up isolated workspace before planning
-- **ascension:task-runner** - Executes the plan this skill produces
-- **ascension:delegated-execution** - Alternative execution via subagents in same session
-- **ascension:test-first** - Every task in the plan follows TDD cycle
-- **ascension:merge-protocol** - Completes development after plan execution
-
-## Plan Construction Workflow
-
-```dot
-digraph plan_construction {
-    rankdir=TB;
-    node [shape=box, style=filled, fontname="Helvetica"];
-
-    start [label="Task received", shape=ellipse, fillcolor="#e0e0e0"];
-    check_scope [label="Multi-step?\nMultiple files?", shape=diamond, fillcolor="#ffffcc"];
-    no_plan [label="No plan needed\nJust do it", fillcolor="#ccffcc"];
-    gate [label="Entry Protocol\nAll 6 items verified?", shape=diamond, fillcolor="#ffffcc"];
-    go_back [label="Return to\nintent-discovery\nor ask human", fillcolor="#ffcccc"];
-    write_header [label="Write plan header\nGoal / Architecture / Stack", fillcolor="#cce5ff"];
-    write_tasks [label="Write granular tasks\nFiles / Test / Implement / Verify / Commit", fillcolor="#cce5ff"];
-    review [label="Review plan\nAll paths exact?\nAll code complete?", shape=diamond, fillcolor="#ffffcc"];
-    fix_plan [label="Fill gaps\nin plan", fillcolor="#ffcccc"];
-    save [label="Save to\ndocs/plans/", fillcolor="#ccffcc"];
-    handoff [label="Offer execution\nchoice to human", fillcolor="#ccffcc"];
-
-    start -> check_scope;
-    check_scope -> no_plan [label="no"];
-    check_scope -> gate [label="yes"];
-    gate -> go_back [label="gaps"];
-    gate -> write_header [label="all verified"];
-    go_back -> gate [label="resolved"];
-    write_header -> write_tasks;
-    write_tasks -> review;
-    review -> fix_plan [label="gaps found"];
-    fix_plan -> review;
-    review -> save [label="complete"];
-    save -> handoff;
-}
-```
+Fed by `ascension:intent-discovery`, which produces the spec or design this skill plans from. Executed by `ascension:task-runner` or `ascension:delegated-execution`; `ascension:merge-protocol` lands the result.

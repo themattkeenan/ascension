@@ -7,26 +7,14 @@ description: Use when contributing code to an existing project - guarantees that
 
 ## Overview
 
-Every codebase has a fingerprint. Your job is to replicate that fingerprint so precisely that no reviewer can tell where the original ends and your contribution begins.
+Every codebase has a fingerprint. Code you add passes as native when no reviewer can tell where the original ends and your contribution begins. Every function, file, and folder you produce has a living precedent somewhere in the repository; if you cannot point to the model you followed, you have already introduced drift.
 
-**Core principle:** Observe before you act. Every function, file, and folder you produce must have a living precedent somewhere in the repository. If you cannot point to the model you followed, you have already introduced drift.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-EVERY ADDITION MUST MIRROR AN EXISTING PRECEDENT
-```
-
-When the repository favors `snake_case`, you write `snake_case`. When services live under `src/domain/`, your service lands there too. When errors propagate through a custom `Result<T>` type, you adopt it without question. There is no room for personal preference.
+When the repository favors `snake_case`, you write `snake_case`. When services live under `src/domain/`, your service lands there too. When errors propagate through a custom `Result<T>` type, you adopt it. The codebase's convention outranks personal preference.
 
 ## When to Use
 
-**Mandatory in these situations:**
 - Touching any file in a pre-existing repository
 - Introducing new modules, routes, or components into an established architecture
-- Contributing features to a project you did not originate
 - Performing refactors that reshape existing logic
 
 **Unnecessary when:**
@@ -35,22 +23,20 @@ When the repository favors `snake_case`, you write `snake_case`. When services l
 
 ## The Entry Protocol
 
-```
-BEFORE producing any code in an existing repository:
+Before producing any code in an existing repository:
 
-1. SURVEY: Locate 2-3 files or functions that solve a comparable problem
-2. CATALOG: Record every convention they share
+1. **Survey:** Locate 2-3 files or functions that solve a comparable problem.
+2. **Catalog:** Record every convention they share:
    - Identifier formatting (camelCase, snake_case, PascalCase)
    - Directory taxonomy (where do peers of this file reside?)
    - Import conventions (relative paths, aliases, barrel files)
    - Error propagation strategy (exceptions, Result types, error codes)
    - State access patterns (global store, context injection, parameter passing)
    - Test co-location and framework choices
-3. REPLICATE: Produce your code using the identical conventions
-4. AUDIT: Hold your output beside the originals — does it pass as native?
+3. **Replicate:** Produce your code using the identical conventions.
+4. **Audit:** Hold your output beside the originals.
 
-Omit any step = drift introduced
-```
+Done when every new file, function, and import in your output traces to a precedent you surveyed, and the output reads as though its neighbors' author wrote it.
 
 ## Dimensions of Conformity
 
@@ -78,9 +64,9 @@ BEFORE writing a new function, class, or component:
    - Observability (logger.info(), structured JSON, console methods)
    - Validation technique (Zod, Joi, manual guards, type narrowing)
 3. Rely on the SAME libraries and utilities the project already depends on
-   - Do not introduce ramda if the project uses native array methods
-   - Do not pull in got if the project wraps fetch
-   - Do not add a competing ORM when one is already wired in
+   - Native array methods stay native when the project uses them; ramda stays out
+   - The project's fetch wrapper is the HTTP client; got stays out
+   - The ORM already wired in is the ORM
 ```
 
 ### Architecture-Level Conventions
@@ -146,42 +132,17 @@ Before finalizing, confirm:
 - [ ] Logging channels through the project's logger
 - [ ] The code reads as though the original author wrote it
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "My approach is objectively superior" | Uniformity outweighs individual taste. Conform to the codebase. |
-| "This is a more contemporary technique" | Modern does not mean appropriate for THIS repository. Match the existing reality. |
-| "It is only a single file" | One divergent file sets a precedent for ten more. Entropy compounds. |
-| "I will harmonize everything later" | You will not. Partial migration is more damaging than consistent legacy. |
-| "The current pattern is flawed" | Raise it with the human first. Unilateral convention changes are forbidden. |
-| "This dependency is demonstrably better" | Better in isolation does not justify duplication. The project already solved this. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Importing a library that overlaps with one already in use
-- Applying a naming convention alien to the codebase
-- Placing a file where it violates the existing directory structure
-- Altering an established convention without explicit human approval
-- Writing code that is visually distinguishable from its neighbors
+- Examine 2-3 analogous files before writing anything.
+- Exhaust the project's existing utilities before inventing new ones.
+- Reproduce error handling, logging, and validation patterns verbatim.
+- Use the library already wired in for a job, even when a newcomer is better in isolation; a second library for the same job is duplication, not an upgrade.
+- When the established convention looks flawed, raise it with the user before departing from it: "The codebase uses X. Shall I continue with X or migrate to Y?" Changing a convention is the user's call, made before the first divergent file, since one sets the precedent for the next ten.
 
-**Required actions:**
-- Examine 2-3 analogous files before writing anything
-- Exhaust the project's existing utilities before inventing new ones
-- Reproduce error handling, logging, and validation patterns verbatim
-- Seek permission before deviating ("The codebase uses X. Shall I continue with X or migrate to Y?")
+## Related
 
-## Integration
-
-**Complementary skills:**
-- **ascension:ux-patterns** -- Conformity applied to UI component conventions
-- **ascension:design-integration** -- Conformity applied to design system usage
-- **ascension:quality-enforcement** -- Automated checks that catch drift
-
-**Adjacent skills:**
-- **ascension:codebase-research** -- Discover external patterns; this skill enforces internal ones
-- **ascension:system-design** -- Guides greenfield structure; this skill governs established codebases
+`ascension:codebase-research` discovers the project's patterns; this skill applies them. `ascension:ux-patterns` and `ascension:design-integration` are the same discipline applied to UI components and design systems.
 
 ## Matching the amount, not just the style
 

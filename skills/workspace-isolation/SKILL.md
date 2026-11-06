@@ -7,17 +7,9 @@ description: Use when starting feature work that needs isolation from the curren
 
 ## Overview
 
-Git worktrees create isolated workspaces sharing the same repository, enabling work on multiple branches simultaneously without switching.
-
-**Core principle:** Systematic directory selection + safety verification = reliable isolation.
+Git worktrees give a branch its own working directory inside the same repository, so several branches can be open at once and feature work never lands on main. Directory selection follows a fixed priority, and the directory is verified ignored before anything is created.
 
 **Announce at start:** "I'm applying the workspace-isolation skill to set up an isolated workspace."
-
-## The Prime Directive
-
-> **NO FEATURE WORK ON THE MAIN BRANCH**
-
-No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
@@ -82,11 +74,13 @@ No worktree directory found. Where should I create worktrees?
 Which do you prefer?
 ```
 
+Done when exactly one directory is chosen, by this order: existing > CLAUDE.md > ask.
+
 ## Safety Verification
 
 ### For Project-Local Directories (.worktrees or worktrees)
 
-**MUST verify the directory is ignored before creating the worktree:**
+**Verify the directory is ignored before creating the worktree:**
 
 ```bash
 # Check if directory is ignored (respects local, global, and system gitignore)
@@ -101,6 +95,8 @@ Fix it immediately:
 3. Proceed with worktree creation
 
 **Why critical:** Prevents accidentally committing worktree contents to the repository.
+
+Done when `git check-ignore` exits 0 for the chosen directory.
 
 ### For Global Directory (~/.config/ascension/worktrees)
 
@@ -163,7 +159,7 @@ pytest
 go test ./...
 ```
 
-**If tests fail:** Report failures, ask whether to proceed or investigate.
+**If tests fail:** Report failures, ask whether to proceed or investigate. A failing baseline cannot be told apart from a new defect later.
 
 **If tests pass:** Report ready.
 
@@ -174,6 +170,8 @@ Worktree ready at <full-path>
 Tests passing (<N> tests, 0 failures)
 Ready to implement <feature-name>
 ```
+
+Done when this report has been given and the shell is inside the new worktree.
 
 ## Quick Reference
 
@@ -186,28 +184,6 @@ Ready to implement <feature-name>
 | Directory not ignored | Add to .gitignore + commit |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
-
-## Common Mistakes
-
-### Skipping ignore verification
-
-- **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always use `git check-ignore` before creating a project-local worktree
-
-### Assuming directory location
-
-- **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: existing > CLAUDE.md > ask
-
-### Proceeding with failing tests
-
-- **Problem:** Cannot distinguish new defects from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
-
-### Hardcoding setup commands
-
-- **Problem:** Breaks on projects using different tooling
-- **Fix:** Auto-detect from project files (package.json, etc.)
 
 ## Example Workflow
 
@@ -227,26 +203,11 @@ Ready to implement auth feature
 
 ## Guardrails
 
-**Never:**
-- Create a worktree without verifying it is ignored (project-local)
-- Skip baseline test verification
-- Proceed with failing tests without asking
-- Assume directory location when ambiguous
-- Skip CLAUDE.md check
+- Choose the directory by priority: existing `.worktrees/` or `worktrees/`, then the CLAUDE.md preference, then ask. When it is ambiguous, ask rather than assume.
+- For a project-local directory, confirm `git check-ignore` passes before `git worktree add`; when it does not, add the .gitignore line and commit first.
+- Detect the setup command from the project's files rather than assuming one.
+- Run the baseline suite and report its result; on failures, get the user's explicit go-ahead before proceeding.
 
-**Always:**
-- Follow directory priority: existing > CLAUDE.md > ask
-- Verify directory is ignored for project-local
-- Auto-detect and run project setup
-- Verify clean test baseline
+## Related
 
-## Connections
-
-**Called by:**
-- **delegated-execution** - REQUIRED before executing any tasks
-- **task-runner** - REQUIRED before executing any tasks
-- **task-planning** - Plan assumes worktree is active
-- Any skill needing isolated workspace
-
-**Pairs with:**
-- **merge-protocol** - REQUIRED for cleanup after work is complete
+Called by `ascension:delegated-execution`, `ascension:task-runner` and `ascension:task-planning` before any task runs. `ascension:merge-protocol` tears the worktree down when the work lands.

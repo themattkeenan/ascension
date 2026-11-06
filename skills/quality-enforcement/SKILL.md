@@ -5,51 +5,29 @@ description: Use when preparing code for commit, PR, or merge - covers linting, 
 
 # Quality Enforcement
 
-## Overview
-
-Quality enforcement is automated, not aspirational. If it can be checked by a machine, it must be.
-
-**Core principle:** A quality check that is not enforced in CI does not exist.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO CODE LANDS WITHOUT ALL QUALITY CHECKS PASSING
-```
-
-If a check fails, fix the code. Never disable the check. Never bypass CI.
+If a machine can check it, a machine checks it, in CI, on every PR. A quality check that is not enforced in CI does not exist. The failure this prevents: code landing with a check disabled, skipped, or quietly loosened to let it through.
 
 ## When to Use
 
-**Always before:**
+Before:
 - Committing code
 - Opening a pull request
 - Merging to trunk
 - Releasing to production
 
-**Especially when:**
-- "Just suppress the linter this once" (never)
-- "CI is too slow, merge manually" (fix CI, do not skip it)
-- "Type errors but it works at runtime" (fix the types)
-- "Coverage dropped but the critical paths are tested" (restore coverage)
-
 ## The Entry Protocol
 
-```
-BEFORE any PR or merge:
+Before any PR or merge:
 
-1. LINT: Zero errors, zero warnings
-2. TYPES: Zero type errors (strict mode)
-3. TESTS: All passing, coverage meets threshold
-4. BUILD: Clean build, no warnings
-5. SIZE: Bundle/binary within budget (if applicable)
-6. DEPS: No known vulnerabilities (critical/high)
-7. COMPLEXITY: No functions exceeding complexity threshold
+1. **Lint:** zero errors, zero warnings
+2. **Types:** zero type errors (strict mode)
+3. **Tests:** all passing, coverage meets threshold
+4. **Build:** clean build, no warnings
+5. **Size:** bundle/binary within budget (if applicable)
+6. **Deps:** no known vulnerabilities (critical/high)
+7. **Complexity:** no functions exceeding complexity threshold
 
-Any check fails = code is not ready. Fix before advancing.
-```
+Done when every check that applies to this project has run and reported zero. A failing check means the code is not ready: fix the code, and the check stays.
 
 ## Quality Check Reference
 
@@ -66,9 +44,7 @@ Standard: Zero errors AND zero warnings
 | Config committed | Yes | Consistent across all contributors |
 | CI enforced | Yes | Local overrides are irrelevant |
 
-**Warnings are tomorrow's errors.** Either fix them or adjust the rule. Never tolerate warnings.
-
-**Disable a rule?** Only if the team explicitly agrees the rule is inappropriate for this project. Document the rationale in the config file. Never disable inline for convenience.
+**Warnings are tomorrow's errors.** Fix the warning, or change the rule in the committed config with the reason written beside it. A rule is turned off only when the team agrees it does not fit this project, and the change lives in the config file, not inline.
 
 ### Check 2: Type Safety
 
@@ -114,7 +90,7 @@ Standard: Coverage threshold that never decreases
 
 **Coverage thresholds are a ratchet.** They increase, never decrease. Configure CI to fail if coverage drops below the current level.
 
-Coverage is necessary but not sufficient. 100% coverage with poor assertions is worse than 70% coverage with rigorous assertions. Coverage checks combine with TDD discipline (`ascension:test-first`).
+Coverage is necessary but not sufficient: high coverage with weak assertions proves less than lower coverage with rigorous ones. Coverage checks combine with TDD discipline (`ascension:test-first`).
 
 ### Check 4: Build
 
@@ -173,7 +149,7 @@ Standard: No function exceeds complexity threshold
 | File length | <400 lines | Linter rules |
 | Parameters | <5 per function | Linter rules |
 
-**When complexity exceeds threshold:** Refactor. Extract functions. Simplify conditionals. Never raise the threshold.
+**When complexity exceeds threshold:** refactor. Extract functions. Simplify conditionals. The threshold stays where it is.
 
 ### Check 8: Dead Code
 
@@ -214,45 +190,20 @@ quality-checks:
 
 All checks run on every PR. All must pass before merge.
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|-----------------|-------|
-| "Just a lint warning, not an error" | Warnings you ignore become errors you miss. |
-| "Type error but it works at runtime" | Types prevent the runtime error you have not encountered yet. |
-| "Coverage dropped 1%, not a big deal" | 1% per PR = 50% in a year. Ratchets do not go down. |
-| "Skip CI, I tested locally" | Local environments differ from CI. That is why CI exists. |
-| "Bundle grew because we added features" | Features should replace or split, not only add. |
-| "Vulnerability is in a dev dependency" | Dev deps run in CI. CI has secrets. Still a risk. |
-| "Function is complex but readable" | Complexity limits exist because readability is subjective. |
-| "Dead code might be needed later" | Git remembers. Delete it. Restore from history if needed. |
+- When a check fails, fix the code and leave the check in place; CI runs on every merge, including the one you tested locally.
+- Lint rule changes live in the committed config with their rationale written beside them.
+- A `@ts-ignore` or `# type: ignore` carries a linked issue; where the type error can be fixed, fix it instead.
+- The coverage threshold in config only moves up.
+- Replace `any` with a specific type or generic as it appears.
+- Investigate bundle growth against the budget before it lands; features replace or split, they do not only add.
+- Count warnings as failures.
+- Treat an audit finding in a dev dependency as live: dev dependencies run in CI, and CI holds the secrets.
+- Delete dead code; git history keeps it if it is ever needed again.
 
-## Guardrails - HALT and Fix
+Stop and fix the check before writing more code when you notice: a lowered threshold in config, a skipped or overridden CI run on a merge, or an inline rule disable with no rationale.
 
-- Disabling lint rules inline without documented rationale
-- `@ts-ignore` or `# type: ignore` without an accompanying issue
-- Coverage threshold lowered in config
-- CI skipped or overridden for merge
-- `any` types spreading through codebase
-- Bundle size growing without investigation
-- Warnings treated as acceptable
-- Audit failures dismissed because "it's a dev dependency"
+## Related
 
-**All of these mean: The check is broken. Fix the check before writing more code.**
-
-## Integration
-
-**Complements:**
-- **ascension:test-first** — Tests are one check among many
-- **ascension:completion-gate** — Quality checks are verification evidence
-- **ascension:project-bootstrap** — Checks configured at project setup
-- **ascension:security-protocol** — Dependency audit is a security check
-- **ascension:performance-tuning** — Bundle size is a performance check
-
-## The Bottom Line
-
-```
-Every quality check automated in CI. Every check passing before merge. No exceptions.
-```
-
-If a check can be bypassed, it will be bypassed. Make it impossible to bypass.
+`ascension:test-first` supplies the tests these checks count. `ascension:completion-gate` is where the check output becomes the evidence for a claim of done. `ascension:project-bootstrap` configures the checks when the project is set up.

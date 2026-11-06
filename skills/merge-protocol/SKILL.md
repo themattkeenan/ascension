@@ -7,36 +7,17 @@ description: Use when implementation is finished, tests are green, and you need 
 
 ## Overview
 
-Coordinate the final step of development: moving finished work into the mainline or disposing of it cleanly.
-
-**Core principle:** Validate first, present choices, execute the selected path, then tidy up.
+Coordinate the final step of development: moving finished work into the mainline or disposing of it cleanly. Validate first, present the four paths, execute the one chosen, then tidy up. Nothing integrates until the suite is green on the current commit.
 
 **Announce at start:** "I'm using the merge-protocol skill to finalize this work."
-
-## Prime Directive
-
-> **NO INTEGRATION WITHOUT PASSING TESTS**
-
-No exceptions. No workarounds. No shortcuts.
 
 ## When to Use
 
 - All planned implementation work is done and committed
 - The test suite runs green on the current branch
 - Review feedback (if solicited) has been resolved
-- You are ready to land, shelve, or abandon the branch
 - Following delegated-execution or task-runner completion
 - When a workspace-isolation branch needs teardown
-
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "Tests were green an hour ago, no need to re-run" | Any commit since then invalidates stale results. Re-verify now. |
-| "Merging is mechanical — nothing breaks" | Conflicts and integration regressions are real. Test the merged state. |
-| "I'll remove the worktree tomorrow" | Orphaned worktrees pile up and create confusion. Remove them immediately. |
-| "Let me just merge — skip the menu" | Always present all four paths. The human picks the workflow. |
-| "Abandonment is obvious — no confirmation needed" | Destroying work permanently demands explicit typed confirmation. Always. |
 
 ## The Workflow
 
@@ -58,9 +39,7 @@ Suite failures detected (<N> failing). Resolution required before proceeding:
 Integration cannot continue until the suite is green.
 ```
 
-Halt here. Do not advance to Phase 2.
-
-**On success:** Proceed to Phase 2.
+Stay in this phase until the suite is green on the current commit. Results from before the last commit are stale.
 
 ### Phase 2: Identify the Trunk Branch
 
@@ -70,6 +49,8 @@ git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 ```
 
 Or confirm: "This branch diverged from main — correct?"
+
+Done when the trunk branch is named.
 
 ### Phase 3: Offer Integration Paths
 
@@ -86,7 +67,7 @@ Work is complete and verified. Select an integration path:
 Which path?
 ```
 
-**Keep it terse** — no extra commentary.
+**Keep it terse** — no extra commentary. Done when the user has picked a number.
 
 ### Phase 4: Execute the Selected Path
 
@@ -129,13 +110,15 @@ EOF
 )"
 ```
 
+Report the PR URL. The branch is live until the PR merges, so the worktree stays in place for review fixes.
+
 Then: Proceed to Phase 5 (Worktree Teardown)
 
 #### Path 3: Defer
 
 Report: "Branch <name> preserved. Worktree remains at <path>."
 
-**Do not tear down the worktree.**
+The worktree stays in place.
 
 #### Path 4: Abandon
 
@@ -161,7 +144,7 @@ Then: Proceed to Phase 5 (Worktree Teardown)
 
 ### Phase 5: Worktree Teardown
 
-**Applies to Paths 1, 2, and 4:**
+**Applies to Paths 1 and 4**, the two paths on which the branch is finished:
 
 Detect if the current branch lives in a worktree:
 ```bash
@@ -173,7 +156,9 @@ If so:
 git worktree remove <worktree-path>
 ```
 
-**Path 3:** Worktree stays intact.
+**Paths 2 and 3:** the worktree stays intact; the branch is still live.
+
+Done when `git worktree list` no longer shows the path (Paths 1, 4) or the user has been told where it remains (Paths 2, 3).
 
 ### Phase 6: Close the Phase
 
@@ -191,43 +176,16 @@ Landed work is a phase boundary. Two calls, in order:
 | 3. Defer | No | No | Yes | No |
 | 4. Abandon | No | No | No | Yes (force) |
 
-## Frequent Errors
-
-**Skipping validation**
-- **Consequence:** Broken code lands on trunk, failing PR created
-- **Correction:** Always verify the suite before presenting paths
-
-**Open-ended prompting**
-- **Consequence:** "What now?" leads to ambiguity and stalling
-- **Correction:** Present exactly four structured paths
-
-**Premature worktree removal**
-- **Consequence:** Destroys workspace needed for PR or deferred work
-- **Correction:** Only tear down worktrees for Paths 1 and 4
-
-**Silent abandonment**
-- **Consequence:** Work deleted without the human's awareness
-- **Correction:** Require typed "abandon" before any destructive action
-
 ## Guardrails
 
-**Prohibited:**
-- Proceeding when tests fail
-- Merging without validating the integrated result
-- Deleting branches without explicit confirmation
-- Force-pushing unless the human specifically asks
+- Run the suite on the current commit before presenting paths; a green run from before the last commit does not count.
+- Present exactly the four paths and let the user pick. An open "what now?" stalls.
+- Validate the merged state before deleting the merged branch.
+- Delete a branch only on the user's explicit confirmation; on Path 4, the typed word "abandon".
+- Force-push only when the user asks for it.
+- Remove the worktree in the same turn the branch is merged or abandoned; orphaned worktrees pile up and confuse later sessions.
+- Tear down worktrees only for Paths 1 and 4.
 
-**Mandatory:**
-- Run suite before presenting paths
-- Present exactly four options
-- Obtain typed confirmation for Path 4
-- Tear down worktree only for Paths 1 and 4
+## Related
 
-## Integration
-
-**Invoked by:**
-- **ascension:delegated-execution** (final step) — After all delegated tasks finish
-- **ascension:task-runner** (final step) — After all execution batches complete
-
-**Complements:**
-- **ascension:workspace-isolation** — Tears down the worktree created by that skill
+Invoked as the final step of `ascension:delegated-execution` and `ascension:task-runner`. Tears down the worktree `ascension:workspace-isolation` created.

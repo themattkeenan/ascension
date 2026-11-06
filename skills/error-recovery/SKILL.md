@@ -7,21 +7,11 @@ description: Use when repeated fix attempts fail, the agent appears stuck in a l
 
 ## Overview
 
-AI agents get stuck. They try the same approach repeatedly, add complexity to fix complexity, and rationalize "one more attempt" long past the point of diminishing returns. This skill detects stuck patterns **proactively** and forces recovery before wasted effort compounds.
-
-**Core principle:** Track every failed attempt. Escalate at defined thresholds. Never allow unbounded retries.
-
-## The Prime Directive
-
-```
-NO CONTINUED ATTEMPTS WITHOUT ACKNOWLEDGING FAILURE COUNT
-```
-
-Before EVERY fix attempt, state: "This is attempt N of the current issue." If N >= 3, you are not authorized to continue without user direction.
+Agents get stuck: the same approach tried repeatedly, complexity added to fix complexity, one more attempt long past the point of diminishing returns. This skill counts every failed attempt and escalates at fixed thresholds, so retries are bounded and recovery starts before wasted effort compounds.
 
 ## When to Use
 
-This skill activates **automatically** when any of these patterns appear:
+This skill activates when any of these patterns appear:
 
 - Same error message after 2+ attempted fixes
 - A fix for problem A introduces problem B
@@ -31,11 +21,11 @@ This skill activates **automatically** when any of these patterns appear:
 - Test suite results getting worse, not better
 - Reverting a fix and trying a variation of the same approach
 
-**This skill overrides optimism.** When triggered, it takes priority over whatever strategy is currently failing.
+When triggered, it takes priority over whatever strategy is currently failing.
 
 ## Failure Counter
 
-You MUST maintain an internal failure counter for each distinct issue:
+Maintain a failure counter for each distinct issue, and state the attempt number before each attempt ("This is attempt N of the current issue"):
 
 ```
 FAILURE LOG
@@ -49,6 +39,7 @@ Attempt 3: [what you tried] -> [result]  <- STOP HERE
 - Increment the counter for every attempted fix, including "small tweaks"
 - A variation of the same approach counts as a new attempt
 - Reverting and retrying counts as a new attempt
+- A failure that appeared while fixing the original issue counts against that issue, not a new one
 - The counter resets ONLY when the issue is resolved or the user explicitly resets scope
 
 ## Severity Levels
@@ -57,21 +48,25 @@ Attempt 3: [what you tried] -> [result]  <- STOP HERE
 
 - Log the concern explicitly: "Two attempts have failed for [issue]."
 - Identify what both attempts had in common
-- Your next attempt MUST use a **fundamentally different** approach
+- The next attempt uses a **fundamentally different** approach
 - If you cannot identify a different approach, escalate to Orange immediately
+
+Done when the next attempt differs from both previous ones in approach, not in parameters.
 
 ### Orange -- 3 Failed Attempts
 
-- **STOP all fix attempts.**
+- **Stop all fix attempts.**
 - Step back completely. Re-read the original error from scratch
 - Re-analyze the problem as if seeing it for the first time
 - List what you know, what you assumed, and what you have not verified
 - Formulate a new hypothesis that contradicts your previous assumptions
 - Present the situation to the user: "Three attempts have failed. Here is my revised analysis."
 
+Done when the revised analysis is in front of the user.
+
 ### Red -- 4+ Failed Attempts
 
-- **HALT. Do not continue without explicit user direction.**
+- **Stop. Continue only on explicit user direction.**
 - Present an honest assessment:
   - What you tried (all attempts, briefly)
   - What you learned from each failure
@@ -79,6 +74,8 @@ Attempt 3: [what you tried] -> [result]  <- STOP HERE
   - What you recommend as next steps (including "I may not be able to solve this")
 - Wait for user input before proceeding
 - If the user says continue, reset to Yellow with the new direction
+
+Done when the user has responded.
 
 ## Escalation Flowchart
 
@@ -91,8 +88,8 @@ digraph recovery {
   count [label="Increment failure counter"]
   check [label="How many failures?"]
   yellow [label="YELLOW: Log concern\nTry fundamentally different approach"]
-  orange [label="ORANGE: STOP\nRe-analyze from scratch\nPresent revised analysis"]
-  red [label="RED: HALT\nPresent honest assessment\nWait for user direction"]
+  orange [label="ORANGE: Stop\nRe-analyze from scratch\nPresent revised analysis"]
+  red [label="RED: Stop\nPresent honest assessment\nWait for user direction"]
   resolved [label="Issue resolved\nReset counter"]
   user [label="User provides direction\nReset to Yellow"]
 
@@ -126,49 +123,33 @@ When a fix fails, apply these in order:
 
 6. **Rollback to last known-good state.** If you have made things worse, undo all changes and return to where things last worked. Start fresh from there.
 
-## Anti-Patterns to Block
+## Stuck Signatures
 
-These patterns indicate the agent is stuck and MUST trigger this skill:
+These patterns mean the agent is stuck and trigger this skill:
 
-| Anti-Pattern | What to Do Instead |
+| Signature | What to Do Instead |
 |---|---|
-| "Let me try one more thing" (after 3+ failures) | STOP. You said that last time. Escalate. |
+| Announcing one more attempt after 3+ failures | Stop. Escalate. |
 | Adding complexity to fix complexity | Simplify. Remove code. Reduce moving parts. |
-| Ignoring the error message, trying random changes | Read the error. It is telling you something specific. |
-| Blaming the environment ("must be a cache issue") | Verify the claim. Run a clean build. Check actually. |
+| Changing things at random without reading the error | Read the error. It is telling you something specific. |
+| Attributing the failure to the environment (cache, stale build) without checking | Verify the claim. Run a clean build. Check actually. |
 | Widening scope instead of narrowing it | Focus on the smallest failing case, not the whole system. |
 | Editing the same file repeatedly | Step back. The problem may not be in that file. |
-| "It should work" without verifying | Run it. Check output. Trust evidence, not expectations. |
+| Asserting a fix works without running it | Run it. Check output. Trust evidence, not expectations. |
 | Fixing the test instead of the code | The test is probably right. Fix what it is testing. |
-
-## Cognitive Traps
-
-| Rationalization | Reality |
-|---|---|
-| "This is a different issue" | If it appeared while fixing the original, it is the same issue. Count it. |
-| "I almost had it last time" | Almost does not count. Two near-misses is a pattern, not progress. |
-| "The approach is right, just needs tweaking" | Three tweaks of the same approach is not three different attempts. |
-| "I need to understand the whole system first" | You need to understand the failing part. Scope down, not up. |
-| "Let me refactor first, then fix" | Refactoring while debugging creates two problems. Fix first. |
-| "This is an edge case" | If it blocks completion, it is a primary case. |
-| "One more log statement will reveal it" | If three log statements did not help, you are looking in the wrong place. |
 
 ## Guardrails
 
-STOP and activate this skill if you observe:
+- Fix first; refactor only once the fix holds. Refactoring while debugging creates two problems.
+- Scope down, not up: understand the failing part, not the whole system.
 
-- You have edited the same file 3+ times for one issue
-- Your fix introduced a new failure
+Stop and update the failure counter when you notice:
+
 - You are writing more code to handle an error than the original feature
-- The test suite has more failures now than when you started
 - You are suppressing errors or warnings instead of fixing them
-- You are about to say "let me try" for the 3rd+ time
 - Your solution is more complex than the original problem
 - You have been working on the same error for more than 10 minutes of active attempts
 
-## Connections
+## Related
 
-- **ascension:fault-diagnosis** -- Error recovery activates when fault diagnosis is not converging. If Phase 4 has failed 3+ times, this skill takes over.
-- **ascension:completion-gate** -- After recovery, use completion-gate to verify the fix actually holds. Prevents false "done" claims after a recovery sequence.
-- **ascension:test-first** -- Recovery should include writing a test that reproduces the exact failure. A fix without a regression test is not complete.
-- **ascension:task-planning** -- If recovery reveals the task was scoped wrong, return to task planning to re-scope before continuing.
+Fed by `ascension:fault-diagnosis` when its fix loop stops converging. After recovery, call the Skill tool with "ascension:completion-gate" before claiming the fix holds, and write the test that reproduces the exact failure (`ascension:test-first`); a fix without a regression test is not complete.

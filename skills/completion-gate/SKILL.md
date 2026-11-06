@@ -1,41 +1,29 @@
 ---
 name: completion-gate
-description: Use when about to declare work done, fixed, or passing, before committing or opening PRs - demands executing verification commands and reading their output before making any success assertions; evidence precedes claims always
+description: Use when about to declare work done, fixed, or passing, before committing, opening a PR, or moving to the next task, and when a delegated agent reports it has finished
 ---
 
 # Completion Gate
 
-## Overview
+A claim of success stands next to the verification output that supports it, produced in the same message as the claim. The failure this prevents: declaring work done on the strength of a prior run, a hunch, or an agent's self-report.
 
-Declaring work complete without verification is dishonesty, not efficiency.
+## When to Use
 
-**Core principle:** Evidence precedes assertions, always.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO COMPLETION ASSERTIONS WITHOUT FRESH VERIFICATION OUTPUT
-```
-
-If the verification command has not been executed in this message, you cannot assert it passes.
+- Before any statement that the work is done, fixed, passing, or correct, in any wording: paraphrases and implications count the same as the exact words
+- Before committing, opening a PR, or marking a task complete
+- Before moving on to the next task
+- When a delegated agent reports it has finished
 
 ## The Entry Protocol
 
-```
-BEFORE asserting any status or expressing confidence:
+Before asserting any status or expressing confidence:
 
-1. IDENTIFY: Which command substantiates this assertion?
-2. EXECUTE: Run the FULL command (fresh, complete)
-3. INSPECT: Read every line of output, check exit code, tally failures
-4. CONFIRM: Does the output support the assertion?
-   - If NO: Report actual status with evidence
-   - If YES: State the assertion WITH supporting evidence
-5. ONLY THEN: Make the assertion
+1. **Identify** which command substantiates the assertion.
+2. **Execute** the full command, fresh, in this message.
+3. **Inspect** every line of output: exit code, failure tally.
+4. **Confirm** the output supports the assertion. If it does not, report the actual status with the evidence. If it does, state the assertion with the evidence beside it.
 
-Skipping any step = fabrication, not verification
-```
+Done when the assertion in your message sits next to output from a run in that same message, and the output says what the assertion says.
 
 ## Verification Requirements
 
@@ -48,30 +36,6 @@ Skipping any step = fabrication, not verification
 | Regression test valid | Red-green cycle confirmed | Single green pass |
 | Agent finished | VCS diff showing actual changes | Agent self-reported "done" |
 | Specification met | Line-by-line requirement checklist | Tests passing alone |
-
-## Guardrails - HALT
-
-- Using hedging language: "should", "probably", "seems to"
-- Expressing premature satisfaction ("Done!", "Perfect!", "All good!")
-- About to commit/push/open PR without verification
-- Trusting an agent's self-reported success
-- Relying on partial or stale verification
-- Thinking "just this one time"
-- Fatigued and wanting to wrap up
-- **ANY phrasing that implies success without having run verification**
-
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "Should work now" | EXECUTE the verification |
-| "I'm confident" | Confidence is not evidence |
-| "Just this once" | No exceptions |
-| "Linter passed" | Linter is not the compiler |
-| "Agent reported success" | Verify independently |
-| "I'm tired" | Fatigue is not justification |
-| "Partial check is enough" | Partial proof is no proof |
-| "Different wording so rule doesn't apply" | Intent over technicality |
 
 ## Verification Patterns
 
@@ -124,20 +88,12 @@ An operation can succeed because *some* valid configuration exists, even if it i
 
 ### Configuration Verification Sequence
 
-```
-BEFORE asserting a configuration change works:
+1. **Identify** what should be different after this change.
+2. **Locate** where that difference is observable.
+3. **Execute** the command that exposes the observable difference.
+4. **Confirm** the output contains the expected difference.
 
-1. IDENTIFY: What should be DIFFERENT after this change?
-2. LOCATE: Where is that difference observable?
-3. EXECUTE: Command that exposes the observable difference
-4. CONFIRM: Output contains the expected difference
-5. ONLY THEN: Assert the configuration change works
-
-Warning signs:
-  - "Request succeeded" without inspecting content
-  - Checking status code but ignoring response body
-  - Confirming no errors but lacking positive confirmation
-```
+Done when the output shows the difference itself, not just the absence of errors: a status code without the response body, or "request succeeded" without inspecting the content, is not done.
 
 ## Verifying UI Work
 
@@ -150,35 +106,16 @@ When asserting UI work is complete:
 | Accessibility passes | Screen reader test + keyboard navigation + contrast check | "I added aria labels" |
 | Design tokens applied | Spacing/colors/typography match token values | "I used the right classes" |
 
-## Why This Matters
+## Guardrails
 
-From accumulated failure patterns:
-- your human partner said "I don't believe you" — trust shattered
-- Undefined functions shipped — immediate crash
-- Missing requirements shipped — incomplete features
-- Time wasted on false completion -> redirect -> rework
-- Violates: "Honesty is a core value. If you lie, you'll be replaced."
+- Run the command before any phrasing that implies success; the output decides, not confidence.
+- Where a hedge appears in your draft ("should", "probably", "seems to"), replace it with a run and report what the run showed.
+- Treat a linter pass as a lint result only; the build and the tests each need their own run.
+- Treat an agent's "done" as a claim to check: read the VCS diff and run the verification yourself.
+- A partial or stale check covers only what it ran; run the full command before claiming the whole.
 
-## When to Apply
+Stop and run the verification when you notice: hedging language in your draft, "Done!" or "Perfect!" before any command ran in this message, a commit, push, or PR about to happen without a run, or the urge to wrap up.
 
-**ALWAYS before:**
-- ANY variation of success or completion claims
-- ANY expression of satisfaction
-- ANY positive statement about work state
-- Committing, PR creation, task completion
-- Transitioning to the next task
-- Delegating to agents
+## Related
 
-**Rule applies to:**
-- Exact phrases
-- Paraphrases and synonyms
-- Implications of success
-- ANY communication suggesting completion or correctness
-
-## The Bottom Line
-
-**There are no shortcuts for verification.**
-
-Execute the command. Read the output. THEN state the result.
-
-This is non-negotiable.
+`ascension:quality-enforcement` supplies the checks whose output is the evidence here. `ascension:test-first` owns the red-green cycle this gate confirms. `ascension:merge-protocol` runs after this gate passes.
