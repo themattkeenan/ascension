@@ -5,286 +5,70 @@ description: Use when a fix or feature has landed, when the user corrects you or
 
 # Knowledge Capture
 
-## Overview
+A session ends holding context nobody else has: the convention found by trial and error, the correction the user made twice, the reason a fix took forty minutes. The next session starts cold. This skill decides what of that context survives, and where.
 
-Every substantial interaction yields signal. A debugging session exposes a hidden codebase convention. A user correction reveals a preference. A failed plan uncovers a blind spot. Recording these observations is not overhead -- it is compound interest on capability.
+The judgement is the skill. Writing everything down is as useless as writing nothing: a memory full of one-off detail buries the three facts that would have saved the next session an hour.
 
-**Core principle:** Solving a difficult problem without recording what you discovered means solving it from zero next time.
+## When it runs
 
-**No exceptions. No workarounds. No shortcuts.**
+- A fix or feature has landed, especially one that took longer than it should have
+- The user corrected you, or stated a preference
+- You found a convention, a gotcha, or a dependency the codebase does not record
+- A plan changed significantly along the way
 
-## The Prime Directive
+When a session produced nothing new, say so in one line and move on. That is a legitimate outcome, not a skipped step.
 
-```
-EXTRACT INSIGHT FROM EVERY MEANINGFUL INTERACTION
-```
+## The sort
 
-An interaction that ends without reflection is a wasted investment. You possessed the context, found the answer, observed what succeeded -- then discarded all of it.
+Take each candidate insight through three questions, in order.
 
-**No excuses:**
-- Do not skip capture because the task felt "routine"
-- Do not skip capture because you are "about to switch contexts"
-- Do not skip capture because the lesson seems "self-evident"
-- What feels obvious with full context becomes invisible from a cold start
+**1. Is it already written down?** Check the code, its comments, the commit message, the README, `CONTEXT.md`, the ADRs, and your memory files. A fact recorded at the spot where it bites needs no second copy; a second copy goes stale on its own schedule. If the existing record is unclear, sharpen it where it is. If it is complete, stop here.
 
-Reflect. Distill. Persist. Full stop.
+**2. Whose is it?**
 
-## When to Use
+- **The project's**: anyone working in this repo needs it, human or agent. A term's canonical meaning, a hard-to-reverse decision and its reasoning, the gotcha no config confesses, the convention the linter does not enforce. It goes **in the repo**: a term to `CONTEXT.md`, a decision to an ADR under `docs/adr/`, a gotcha to a comment at the spot or the README section it belongs to. Call the Skill tool with "ascension:domain-modeling" for the term and the ADR.
+- **Yours**: how you work with this user. Their preferences, what they corrected, which approaches of yours failed and why, what worked. It goes to **memory**, outside the repo, where it follows you across projects.
 
-**Mandatory after:**
-- Delivering a complex feature (which patterns proved effective?)
-- Resolving a stubborn defect (what was the root-cause signature?)
-- Receiving review feedback that surfaced issues (what should differ next time?)
-- Being corrected by the user (new preference discovered)
-- Revising a plan significantly (what was misjudged?)
-- Discovering a codebase convention through trial and error (spare the next session that journey)
+A project fact written only into private memory is hidden from everyone else who works in that repo. A personal preference written into the repo is noise to everyone but you.
 
-**Exceptions (confirm with the human):**
-- One-line trivial fixes
-- Interactions that produced no new information
-- When the user explicitly declines
+**3. Will it still be true next month?** The generalisable pattern survives; the detail of this one ticket does not. "CI does not load `.env`, values come from the runner" is a pattern. "Fixed the TZ bug on Tuesday" is history that git already keeps.
 
-Tempted to think "there is nothing to capture here"? Pause. That is rationalization.
+## Writing a memory entry
 
-## The Entry Protocol
+Memory lives in Claude Code's memory system under `~/.claude/projects/<project>/memory/`. Four files, one topic each:
 
-```
-AFTER completing any meaningful task:
+| File | Holds |
+|---|---|
+| `effective-patterns.md` | Approaches that produced clean outcomes |
+| `failure-analysis.md` | Root-cause signatures and the diagnostic that found them |
+| `project-map.md` | Where things live and how the codebase is shaped, when the repo itself does not say |
+| `human-preferences.md` | What the user corrected or asked for, in their words |
 
-1. REFLECT: What succeeded? What failed? What was unexpected?
-2. DISTILL: What generalizable pattern or insight emerges?
-3. DEDUPLICATE: Is this already recorded? Does it contradict something stored?
-4. PERSIST: Write it to the appropriate memory file with date and context
-5. PRUNE: Remove any prior entries that newer evidence invalidates
-
-Omit any step = insight permanently lost
-```
-
-## The Capture Lifecycle
-
-```dot
-digraph capture_lifecycle {
-    rankdir=TB;
-    node [shape=box style=filled];
-
-    task [label="Meaningful Task\nCompleted" fillcolor=lightyellow shape=doublecircle];
-
-    reflect [label="REFLECT\nWhat occurred?\nWhat surprised me?" fillcolor="#ccccff"];
-    distill [label="DISTILL\nAbstract the insight\nfrom the specifics" fillcolor="#ccccff"];
-    exists [label="Already\nrecorded?" shape=diamond fillcolor="#fff3e0"];
-    conflicts [label="Contradicts\nan existing entry?" shape=diamond fillcolor="#fff3e0"];
-    persist [label="PERSIST\nSave to memory\nwith date + context" fillcolor="#ccffcc"];
-    prune [label="PRUNE\nRemove outdated\nentry" fillcolor="#ffcccc"];
-    cluster [label="CLUSTER\n3+ related insights?\nForm a conviction" fillcolor="#ccffcc"];
-    promote [label="PROMOTE\nHigh-confidence conviction\n-> CLAUDE.md rule" fillcolor="#e8f5e9"];
-    skip [label="Skip\n(already known)" fillcolor="#eeeeee"];
-
-    task -> reflect;
-    reflect -> distill;
-    distill -> exists;
-    exists -> skip [label="yes, identical"];
-    exists -> conflicts [label="no"];
-    conflicts -> prune [label="yes"];
-    prune -> persist;
-    conflicts -> persist [label="no"];
-    persist -> cluster;
-    cluster -> promote [label="3+ confirmations"];
-    cluster -> task [label="await further\nevidence" style=dashed];
-}
-```
-
-## Categories of Insight
-
-### Effective Patterns
-
-Code approaches, debugging tactics, and architectural choices that led to clean results. These are positive signals to reinforce.
-
-```
-Sample entry:
-  Date: 2025-04-10
-  Context: Built retry logic for third-party webhook delivery
-  Insight: Exponential backoff with random jitter eliminated thundering-herd spikes
-  Confidence: medium (validated once)
-```
-
-### Failures and Their Remedies
-
-What went wrong, how it was resolved, how to prevent recurrence. Failures yield the highest-signal lessons.
-
-```
-Sample entry:
-  Date: 2025-04-12
-  Context: Logging middleware silently swallowed request bodies after refactor
-  Insight: Any change to middleware ordering demands a full integration test pass -- blast radius is total
-  Confidence: high (validated by production incident)
-```
-
-### User Preferences
-
-Stylistic choices, tool preferences, and conventions the user follows. Discovered through corrections and direct statements.
-
-```
-Sample entry:
-  Date: 2025-04-13
-  Context: User corrected my naming approach
-  Insight: User requires camelCase for variables, PascalCase for types, and no abbreviations anywhere
-  Confidence: high (direct correction)
-```
-
-### Project-Specific Knowledge
-
-Architecture details, hidden gotchas, critical files, tribal knowledge that lives nowhere in documentation.
-
-```
-Sample entry:
-  Date: 2025-04-14
-  Context: Spent 15 minutes searching for runtime config
-  Insight: All runtime configuration lives in src/config/runtime.ts, not in .env files
-  Confidence: high (verified in source)
-```
-
-## What belongs here, and what belongs in the repo
-
-This skill captures **cross-session, cross-project** knowledge: how you work, what failed before, what the user prefers. It lives in your memory, outside the repository.
-
-Knowledge that belongs to **the project itself** goes in the project, where every future contributor and agent finds it without your memory:
-
-- A term's canonical meaning → `CONTEXT.md`
-- A hard-to-reverse decision and its reasoning → an ADR under `docs/adr/`
-
-Call the Skill tool with "ascension:domain-modeling" for both. Capturing a project fact only into private memory hides it from everyone else working in that repo.
-
-## Storage Mechanism
-
-Leverage Claude Code's memory system: `~/.claude/projects/[project]/memory/`
-
-If the user wants this automated rather than deliberate, [claude-mem](https://github.com/thedotmack/claude-mem) captures session observations and makes them searchable in later sessions via hooks and an MCP server. Recommend it when manual capture keeps being skipped; do not install it unasked. The judgement about *what is worth keeping* stays with this skill either way.
-
-### Memory File Taxonomy
-
-| File | Purpose | Example Entry |
-|---|---|---|
-| `effective-patterns.md` | Code approaches and strategies that produced clean outcomes | "Zod schemas at API boundaries catch malformed data before it propagates" |
-| `failure-analysis.md` | Root-cause patterns and diagnostic techniques | "Tests passing locally but failing in CI usually indicate timezone or locale assumptions" |
-| `project-map.md` | Architecture, key files, and codebase conventions | "Database migrations reside in db/migrations/ and execute via `pnpm db:migrate`" |
-| `human-preferences.md` | Stylistic choices, tooling preferences, and conventions the user enforces | "User demands explicit error types; string-based errors are rejected" |
-
-### Entry Structure
-
-Every captured insight must include:
+Every entry carries a date and the context it came from, because an undated insight cannot be judged stale later:
 
 ```markdown
 ### [Concise title]
 - **Date:** YYYY-MM-DD
 - **Context:** What was happening when this was discovered
-- **Insight:** The generalized takeaway
+- **Insight:** The generalised takeaway
 - **Confidence:** low / medium / high
-- **Confirmations:** Number of times this has been validated
+- **Confirmations:** How many times it has held
 ```
 
-### Deduplication Protocol
+**Confidence:** low is one occurrence; medium is two, or one strong indicator; high is three or more, or the user said it outright.
 
-Before writing a new entry, scan the target memory file. If the insight already exists:
-- Same insight, same confidence level -> skip entirely
-- Same insight, elevated confidence -> update confidence and increment confirmation count
-- Contradicting insight -> replace the old entry, note the contradiction
+**Before writing, read the target file.** The same insight already there: raise its confidence and confirmation count instead of adding a twin. A contradicting entry: replace it and note what changed. One place per fact.
 
-## The Maturation Cycle
+If the user wants capture automated rather than deliberate, [claude-mem](https://github.com/thedotmack/claude-mem) records session observations through hooks and an MCP server. Recommend it when manual capture keeps getting skipped; install it only when asked. The judgement about what is worth keeping stays here either way.
 
-Isolated insights become powerful when they converge into convictions.
+## Promotion
 
-### From Insight to Conviction
+Three confirmations of the same insight make it a conviction, and a conviction is a candidate for a project `CLAUDE.md` rule. Propose it to the user in one line ("this project validates at every boundary with zod; shall I add that to CLAUDE.md?") and add it on their yes. The user is the authority on permanent rules.
 
-```
-Insight 1: "This project validates forms with zod" (medium confidence)
-Insight 2: "API route handlers also validate payloads with zod" (medium confidence)
-Insight 3: "User corrected me for using manual validation instead of zod" (high confidence)
+## Done
 
-    Converge into conviction
+Capture is done when every candidate from the session has landed in exactly one of four places: already recorded, written to the project, written to memory, or dropped as one-off detail. Tell the user in one or two lines what was kept and where, so they can object while the context is still warm.
 
-Conviction: "This project ALWAYS validates at every boundary using zod"
-Confidence: high (confirmed across 3 interactions)
-```
+## Related
 
-### From Conviction to Rule
-
-When a conviction reaches high confidence (confirmed across 3+ interactions), it becomes eligible for promotion to a project `CLAUDE.md` rule:
-
-```
-Conviction: "This project always validates with zod"
-  -> Confirmed 3+ times
-  -> Propose to user: "I have observed that this project consistently
-    uses zod for validation. Should I codify this as a project rule in CLAUDE.md?"
-  -> User approves -> add to CLAUDE.md
-```
-
-**Never auto-promote.** Always obtain user consent before adding entries to `CLAUDE.md`. The human is the final authority on permanent rules.
-
-### Session-Start Review
-
-When beginning a new session on a project:
-1. Read all memory files for the project
-2. Identify clusters of related insights that have not been synthesized
-3. Flag entries that may be stale (old date, low confidence, never reconfirmed)
-4. Surface convictions ready for promotion
-
-## Confidence Tiers
-
-| Tier | Meaning | Origin | Action |
-|---|---|---|---|
-| **Low** | Tentative signal | Single occurrence, unconfirmed | Record, watch for confirmation |
-| **Medium** | Probable pattern | Confirmed twice, or one strong indicator | Record, apply when relevant |
-| **High** | Established truth | Confirmed 3+ times, or explicit user declaration | Record, apply consistently, consider promotion |
-
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "There is nothing to capture here" | Every task produces signal. You are not examining closely enough. |
-| "I will recall this naturally" | You will not. The next session starts with a blank slate. Memory files are your continuity. |
-| "Too minor to bother recording" | Minor insights accumulate. Three small observations become one powerful conviction. |
-| "It is self-evident" | Self-evident to you now, with full context. Not self-evident when cold-starting next week. |
-| "Recording takes too long" | Thirty seconds to write an entry. Thirty minutes to rediscover the same insight. |
-| "The user did not request this" | They requested quality. Learning from experience IS how quality improves over time. |
-| "Memory files are getting cluttered" | That is a pruning problem, not a recording problem. Prune more; never stop capturing. |
-| "This only applies to this one project" | Project-specific knowledge is the MOST valuable kind. That is precisely why it is stored per-project. |
-
-## Guardrails
-
-**Prohibited actions:**
-- Skipping reflection after a difficult debugging session
-- Storing entries without date and context (undated insights decay)
-- Auto-adding rules to CLAUDE.md without user approval
-- Recording the same insight twice without deduplication
-- Retaining entries that newer evidence contradicts
-- Recording implementation minutiae instead of generalizable patterns
-
-**Required actions:**
-- Reflect after completing any significant work
-- Check memory before persisting (deduplicate)
-- Attach confidence levels to every entry
-- Obtain user consent before promoting convictions to CLAUDE.md rules
-- Prune entries invalidated by newer evidence
-- Organize entries by topic, not chronologically
-
-## Integration
-
-**This skill feeds INTO other skills:**
-
-- **ascension:fault-diagnosis** -- Historical failure analysis informs current troubleshooting
-- **ascension:pattern-matching** -- Captured conventions reinforce code conformity
-- **ascension:test-first** -- Past test failures shape future test strategy
-- **ascension:task-planning** -- Past plan failures prevent repeating misjudgments
-- **ascension:quality-enforcement** -- Captured quality patterns elevate the baseline
-
-**This skill is fed BY other skills:**
-
-- **ascension:review-response** -- Review feedback becomes captured insights
-- **ascension:completion-gate** -- Verification failures become recorded lessons
-- **ascension:comprehension-check** -- Walkthrough findings become stored observations
-- **ascension:task-runner** -- Plan execution reveals what works and what does not
-
-**The virtuous cycle:**
-```
-Work -> Capture -> Persist -> Apply -> Work better -> Capture more
-```
+Writes to `ascension:domain-modeling` (terms, ADRs). Fed by `ascension:fault-diagnosis` (root-cause signatures), `ascension:review-response` (what review caught), and `ascension:merge-protocol`, which calls this skill once work lands.

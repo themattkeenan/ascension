@@ -13,7 +13,7 @@ The **phase boundary** is the gap between two phases, and it is the only place t
 
 Early in a session the agent is sharp. As the session grows, each token's attention spreads across more competitors, and the agent drifts into a **dumb zone**: it forgets instructions from twenty turns ago, repeats corrections it already made, contradicts context it can still see. Same model, same prompt — just more context.
 
-The decline is gradual and unannounced, so the usual response is to re-explain, which adds context and makes it worse. On frontier models the dumb zone commonly begins somewhere around 125K–150K tokens.
+The decline is gradual and unannounced, so the usual response is to re-explain, which adds context and makes it worse. Where the zone begins varies by model and by what the context holds; the signs above are the measurement, not a token count.
 
 The smart zone is a **budget**, and it does not track the context-window limit — quality falls off long before the harness refuses to continue. Plan around the smart zone, not the window, and give each task the sharp part of a session.
 

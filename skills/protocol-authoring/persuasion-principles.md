@@ -2,7 +2,9 @@
 
 ## Overview
 
-LLMs respond to the same persuasion principles as humans. Understanding this psychology helps you design more effective skills - not to manipulate, but to ensure critical practices are followed even under pressure.
+**Load this reference when:** `ascension:protocol-authoring` has left you with one hard guardrail that cannot be phrased as a positive target, and a RED/GREEN run showed the agent reading the rule and choosing otherwise. For everything else, the positive statement of the target behaviour is the lever; this file is for the single line that still needs weight behind it.
+
+LLMs respond to the same persuasion principles as humans. Used on one guardrail, that is leverage. Used across a whole skill, it becomes shouting, and the banned behaviour it names stays in context on every turn. Pair any imperative with the behaviour you want instead, so attention lands on what to do.
 
 **Research foundation:** Meincke et al. (2025) tested 7 persuasion principles with N=28,000 AI conversations. Persuasion techniques more than doubled compliance rates (33% → 72%, p < .001).
 
@@ -23,9 +25,11 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 
 **Example:**
 ```markdown
-✅ Write code before test? Delete it. Start over. No exceptions.
+✅ Code written before its test is deleted, and the test is written first. This holds under deadline pressure too.
 ❌ Consider writing tests first when feasible.
 ```
+
+The imperative carries the weight; the sentence still says what to do.
 
 ### 2. Commitment
 **What it is:** Consistency with prior actions, statements, or public declarations.
@@ -137,7 +141,7 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 **Bright-line rules reduce rationalization:**
 - "YOU MUST" removes decision fatigue
 - Absolute language eliminates "is this an exception?" questions
-- Explicit anti-rationalization counters close specific loopholes
+- One observed loophole, named once and answered with the target behaviour, closes it; a table of them is a script of excuses (see the Negation section of the skill)
 
 **Implementation intentions create automatic behavior:**
 - Clear triggers + required actions = automatic execution

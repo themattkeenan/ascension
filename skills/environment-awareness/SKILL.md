@@ -1,85 +1,44 @@
 ---
 name: environment-awareness
-description: Use when starting a session, running shell commands, installing packages, or diagnosing platform-specific failures - detects OS, shell, runtime, package manager, and toolchain before any command execution
+description: Use when starting a session, running shell commands, installing packages, or diagnosing platform-specific failures - detects OS, shell, runtime, package manager, toolchain, and which outbound research channels the harness can actually reach
 ---
 
 # Environment Awareness
 
-## Overview
+Running Linux commands on Windows, using npm in a pnpm project, ignoring the active virtual environment: each wrong command wastes a turn, and some leave broken state behind. One probe at the start of a session makes every later command land.
 
-The most common AI agent failure mode: running Linux commands on Windows, using npm when the project uses pnpm, ignoring active virtual environments. Every wrong command wastes time and can cause real damage.
+Know the OS, the shell, and the package manager before the first command. Everything else here is how.
 
-**Core principle:** DETECT the environment before issuing ANY shell command. One probe now prevents ten failed commands later.
+## When to use
 
-**No exceptions. No workarounds. No shortcuts.**
+**At session start:** the first interaction in a conversation, a switch to a different repository, or entering a container, VM, or remote machine.
 
-## The Prime Directive
-
-```
-NO SHELL COMMANDS WITHOUT KNOWING THE TARGET ENVIRONMENT
-```
-
-If you have not confirmed OS, shell, and package manager, you are not authorized to run commands.
-
-## When to Use
-
-**Mandatory at session start:**
-- First interaction in any new conversation
-- Switching to a different project or repository
-- After entering a container, VM, or remote machine
-
-**Also required when:**
+**Also when:**
 - A command fails with "not found" or "not recognized"
 - Installing dependencies or running build scripts
-- Writing platform-specific code (file paths, process management, networking)
-- Diagnosing "works on my machine" problems
+- Writing platform-specific code: file paths, process management, networking
+- Diagnosing a "works on my machine" problem
+- A skill is about to require external research (`ascension:reference-engine`, `ascension:github-search`, `ascension:design-research`, `ascension:primary-research`): see **Outbound reach** below
 
-**Do not skip when:**
-- You think you already know the environment (verify, do not assume)
-- The user mentions their OS casually (confirm shell and toolchain too)
-- Working in CI/CD (runners have different environments than local machines)
+A casual mention of the OS from the user confirms the OS only; the shell and toolchain still need probing. CI runners are a separate environment from the laptop and get their own probe.
 
-## The Entry Protocol
+## Before the first command
 
-```
-BEFORE running any shell command:
+1. **Platform**: OS and architecture confirmed.
+2. **Shell**: you know which shell interprets your commands, and which shell the user's terminal runs (they often differ).
+3. **Package manager**: lockfiles checked.
+4. **Runtimes**: the language runtimes the project needs are known to be present.
+5. **Virtual environment**: active venvs and version managers identified.
 
-1. PLATFORM: Have you confirmed OS and architecture?
-2. SHELL: Do you know which shell is interpreting your commands?
-3. PACKAGE MANAGER: Have you checked for lockfiles?
-4. RUNTIMES: Do you know which language runtimes are available?
-5. VIRTUAL ENV: Are there active virtual environments or version managers?
+Done when all five are known. Any unknown: probe it first, then run the command.
 
-If any answer is NO: probe first, command second.
-```
-
-## Detection Flowchart
-
-```dot
-digraph env_detect {
-    rankdir=TB;
-    node [shape=box, style=filled, fillcolor="#e8e8e8"];
-
-    start [label="Session Start", shape=oval, fillcolor="#ccffcc"];
-    os [label="1. Detect OS\nprocess.platform\nor uname", shape=diamond, fillcolor="#ffffcc"];
-    shell [label="2. Detect Shell\n$SHELL / $PSVersionTable\n/ COMSPEC", shape=diamond, fillcolor="#ffffcc"];
-    pkg [label="3. Detect Package Manager\nCheck lockfiles\nin project root", shape=diamond, fillcolor="#ffffcc"];
-    runtime [label="4. Detect Runtimes\nnode/python/go\n--version", shape=diamond, fillcolor="#ffffcc"];
-    venv [label="5. Check Virtual Envs\nVIRTUAL_ENV / CONDA\nnvm / rbenv", shape=diamond, fillcolor="#ffffcc"];
-    container [label="6. Container Check\n/.dockerenv\nor cgroup", shape=diamond, fillcolor="#ffffcc"];
-    ready [label="Environment Known\nProceed with\ncorrect commands", shape=oval, fillcolor="#ccffcc"];
-
-    start -> os -> shell -> pkg -> runtime -> venv -> container -> ready;
-}
-```
-
-## Detection Checklist
+## Detection checklist
 
 Run this sequence once per session. Results inform every subsequent command.
 
-### 1. Operating System
+### 1. Operating system
 
-| Method | Works On | Command |
+| Method | Works on | Command |
 |--------|----------|---------|
 | Environment variable | Claude Code / Node | Check `process.platform` in tool context |
 | uname | Linux, macOS, Git Bash | `uname -s` |
@@ -92,7 +51,7 @@ Run this sequence once per session. Results inform every subsequent command.
 
 ### 2. Shell
 
-**NEVER assume bash.** Windows alone has CMD, PowerShell, Git Bash, and WSL.
+Windows alone has CMD, PowerShell, Git Bash, and WSL, so confirm the shell rather than assuming bash.
 
 | Check | Command | Reveals |
 |-------|---------|---------|
@@ -101,25 +60,23 @@ Run this sequence once per session. Results inform every subsequent command.
 | Process name | `echo $0` | Current shell (Unix) |
 | COMSPEC | `echo %COMSPEC%` | CMD path (Windows) |
 
-**Critical:** On Windows, the Claude Code / AI agent shell context is often Git Bash, but the user's terminal may be PowerShell. Commands you generate for the user to copy must match THEIR shell.
+On Windows the agent's shell is often Git Bash while the user's terminal is PowerShell. Commands you give the user to copy match **their** shell.
 
-### 3. Package Manager
+### 3. Package manager
 
-**Detection priority -- check lockfiles first:**
+Check lockfiles first:
 
-| Lockfile | Package Manager |
+| Lockfile | Package manager |
 |----------|----------------|
 | `bun.lockb` or `bun.lock` | bun |
 | `pnpm-lock.yaml` | pnpm |
 | `yarn.lock` | yarn |
 | `package-lock.json` | npm |
 
-**If no lockfile found:**
-1. Check `packageManager` field in `package.json`
-2. Check for global install: `which pnpm || which yarn || which bun`
-3. Default to npm only as last resort
+With no lockfile: the `packageManager` field in `package.json`, then a global install (`which pnpm || which yarn || which bun`), and npm only as the last resort.
 
-**For non-JS projects:**
+For non-JS projects:
+
 | File | Manager |
 |------|---------|
 | `Pipfile.lock` | pipenv |
@@ -130,20 +87,20 @@ Run this sequence once per session. Results inform every subsequent command.
 | `Cargo.lock` | cargo |
 | `Gemfile.lock` | bundler |
 
-### 4. Runtime Versions
+### 4. Runtime versions
 
-Probe on first use, not eagerly. Only check what the project actually needs.
+Probe on first use, not eagerly. Check only what the project needs.
 
 ```
 node --version      # Node.js
-python3 --version   # Python (use python3, not python, on macOS/Linux)
+python3 --version   # Python (python3, not python, on macOS/Linux)
 go version          # Go
 rustc --version     # Rust
 java --version      # Java
 ruby --version      # Ruby
 ```
 
-### 5. Virtual Environments
+### 5. Virtual environments
 
 | Signal | Indicates |
 |--------|-----------|
@@ -154,32 +111,22 @@ ruby --version      # Ruby
 | `.ruby-version` file | rbenv/rvm version pinned |
 | `.tool-versions` file | asdf version manager |
 
-**When a version manager is detected:** Use its commands (`nvm use`, `pyenv shell`) instead of assuming the global runtime is correct.
+When a version manager is present, use its commands (`nvm use`, `pyenv shell`) rather than the global runtime.
 
-### 6. Container Detection
+### 6. Container detection
 
-| Check | Inside Container? |
+| Check | Inside container? |
 |-------|-------------------|
 | `/.dockerenv` exists | Docker |
 | `grep -q container /proc/1/cgroup 2>/dev/null` | Docker/Podman |
 | `$container` env var is set | Podman |
 | `printenv KUBERNETES_SERVICE_HOST` | Kubernetes pod |
 
-## System Inventory
+## System inventory
 
-After confirming the platform and shell, discover what tools, databases, cloud CLIs, and services the user has installed. This inventory feeds directly into planning -- if the user has SQLite but not PostgreSQL, or Docker but not Podman, downstream skills like `deployment-advisor` and `task-planning` can make smarter recommendations instead of guessing.
+After platform and shell, discover what tools, databases, cloud CLIs, and services are installed. The inventory feeds planning: with SQLite but no PostgreSQL, or Docker but no Podman, `ascension:deployment-advisor` and `ascension:task-planning` recommend from what exists instead of guessing.
 
-### When to Run
-
-- **Always:** Git, GitHub CLI (needed by many Ascension skills)
-- **If the project touches data:** Database CLIs
-- **If the project will be deployed:** Cloud and container tools
-- **If the project processes media or structured data:** ffmpeg, jq, curl
-- **Never run the full list blindly.** Match checks to project type. A static site does not need a MongoDB probe.
-
-### Inventory Checks
-
-Run each relevant check silently, redirecting stderr so missing tools do not produce noise:
+**Scope the checks to the project.** Git and the GitHub CLI always; database CLIs if the project touches data; cloud and container tools if it deploys; ffmpeg, jq, curl if it processes media or structured data. A static site needs no MongoDB probe.
 
 **Databases:**
 
@@ -191,7 +138,7 @@ Run each relevant check silently, redirecting stderr so missing tools do not pro
 | MongoDB | `mongod --version 2>/dev/null` | Also check `mongosh` for the modern shell |
 | Redis | `redis-server --version 2>/dev/null` | Also check `redis-cli` |
 
-**Cloud & Hosting CLIs:**
+**Cloud and hosting CLIs:**
 
 | Tool | Check |
 |------|-------|
@@ -204,7 +151,7 @@ Run each relevant check silently, redirecting stderr so missing tools do not pro
 | Netlify | `netlify --version 2>/dev/null` |
 | Railway | `railway --version 2>/dev/null` |
 
-**Container Tools:**
+**Container tools:**
 
 | Tool | Check |
 |------|-------|
@@ -212,7 +159,7 @@ Run each relevant check silently, redirecting stderr so missing tools do not pro
 | Docker Compose | `docker compose version 2>/dev/null` |
 | Podman | `podman --version 2>/dev/null` |
 
-**Developer Tools:**
+**Developer tools:**
 
 | Tool | Check |
 |------|-------|
@@ -222,32 +169,49 @@ Run each relevant check silently, redirecting stderr so missing tools do not pro
 | jq | `jq --version 2>/dev/null` |
 | ffmpeg | `ffmpeg -version 2>/dev/null` |
 
-### Reporting Format
-
-Report findings concisely. Do not dump raw version output -- extract the version number and summarize:
+**Report concisely**, versions extracted, no raw output:
 
 ```
 Available: PostgreSQL 16.2, Docker 27.1, gh 2.45, SQLite 3.43
 Not found: Redis, AWS CLI, Podman
 ```
 
-### Principles
+**Keep the probe green.** Redirect stderr and end the chain with `; true`, so a missing tool reads as information rather than a red error in the transcript:
 
-1. **Silence errors and force exit code 0.** Always redirect stderr to `/dev/null` AND append `; true` at the end of chained version checks. Missing tools produce non-zero exit codes that surface as red errors in Claude Code. A missing tool is information, not a failure — the output must never show red.
-   ```bash
-   # WRONG: last missing tool causes exit 127 (red error in Claude Code)
-   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null
+```bash
+psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null; true
+```
 
-   # RIGHT: force clean exit regardless of which tools are missing
-   psql --version 2>/dev/null; redis-server --version 2>/dev/null; mongod --version 2>/dev/null; true
-   ```
-2. **Scope to project.** Only check categories relevant to the codebase. Read the project's config files, Dockerfile, CI config, or deployment manifests to decide what matters.
-3. **Check once, reference often.** Store results in your working context. Do not re-probe mid-session unless the user installs something new.
-4. **Feed downstream skills.** The inventory directly informs `deployment-advisor` (what can we deploy to?), `task-planning` (what constraints exist?), and `project-bootstrap` (what do we need to install?).
+Probe once and keep the results in working context; re-probe only when the user installs or connects something.
 
-## Platform-Specific Command Mappings
+## Outbound reach
 
-Use the correct command for the detected environment:
+Whether this harness can reach outside the machine is an environment fact, like the shell. The research skills assume it: `ascension:reference-engine`, `ascension:github-search`, `ascension:design-research` and `ascension:primary-research` each require looking at real implementations, repositories, and documents before building. None of them can tell whether a channel exists. An agent that cannot reach a source and is still required to cite one tends to describe a library it never opened and report the step satisfied, and a fabricated reference is worse than none because the checklist now reads as complete.
+
+So probe the channels once per session, before the first skill that needs them, and declare the tier.
+
+| Channel | Probe | Unlocks |
+|---------|-------|---------|
+| Web search | A search tool in the tool list | `github-search` discovery, `design-research` marketplace survey |
+| Web fetch | A fetch or read-URL tool | `primary-research` against docs, RFCs, changelogs |
+| GitHub, authenticated | `gh auth status 2>/dev/null; true` | Private repos, issues and PRs, the authenticated rate limit |
+| GitHub, anonymous | `curl -sI https://api.github.com/rate_limit` | Public repo reads, at the anonymous rate limit |
+| Package registries | `npm view`, `pip index`, `cargo search` | Version and dependency facts without a web channel |
+| Browser automation | Playwright, Puppeteer, or a browser tool present | Rendered pages, frontend loops for `fault-diagnosis` |
+| MCP research servers | The connected server list | Whatever they expose; read their instructions |
+
+Probe each channel on its own. The absence of a search tool says nothing about `curl` or `gh api`, which still reach primary sources by known URL.
+
+| Tier | Available | How the research skills run |
+|------|-----------|-----------------------------|
+| **Full** | search + fetch + authenticated `gh` | As written |
+| **Fetch-only** | fetch, no search | You can verify a URL but not discover one. Ask the user for candidates, or enumerate through registry CLIs, and say that discovery was narrow |
+| **Shell-only** | `curl`, `gh`, registry CLIs | Primary sources reachable by known URL. A marketplace survey is out; `design-research` asks the user for reference links instead |
+| **Sealed** | no outbound access | The research skills cannot run. Say so, name what you would have checked, and have the user supply references or waive them explicitly |
+
+**Declare the tier in one line before invoking a research skill**: `Research tier: fetch-only, no search channel; discovery will be narrow.` The user can then hand you links instead of watching you guess. A claim you did not fetch is a lead to verify, not a finding. A declined permission or a blocked channel is a finding to report and adapt to, not something to route around. Rate limits are a budget: an anonymous GitHub quota will not cover `github-search`'s multi-channel minimum, so authenticate or spend it deliberately. Re-probe when the user connects an MCP server or a CLI login succeeds; the inventory is stale from that moment.
+
+## Platform-specific command mappings
 
 | Operation | Linux/macOS | Windows CMD | Windows PowerShell | Git Bash on Windows |
 |-----------|-------------|-------------|-------------------|-------------------|
@@ -260,55 +224,25 @@ Use the correct command for the detected environment:
 | Find files | `find . -name` | `dir /s /b` | `Get-ChildItem -Recurse` | `find . -name` |
 | Check port | `lsof -i :PORT` | `netstat -an` | `Get-NetTCPConnection` | `netstat -an` |
 
-## When to Probe vs Assume
+## When to probe
 
 | Category | Action | Reason |
 |----------|--------|--------|
-| OS | ALWAYS probe | Affects every command's syntax |
-| Shell | ALWAYS probe | Determines quoting, piping, redirection |
-| Package manager | ALWAYS probe | Wrong manager corrupts lockfile |
+| OS | Always probe | Affects every command's syntax |
+| Shell | Always probe | Determines quoting, piping, redirection |
+| Package manager | Always probe | The wrong manager corrupts the lockfile and breaks CI |
 | Runtime versions | Probe on first use | Only matters when running that runtime |
-| Virtual environments | Probe when relevant | Wrong env installs to wrong location |
-| Container | Probe when behavior is unexpected | Containers lack many host tools |
+| Virtual environments | Probe when relevant | The wrong env installs to the wrong location |
+| Container | Probe when behaviour is unexpected | Containers lack many host tools |
+| Outbound reach | Probe before the first research skill | Decides whether the research skills can run as written |
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "It's probably Linux" | 30% of developers use Windows. macOS is another 25%. Probe first. |
-| "bash is universal" | Windows CMD and PowerShell have fundamentally different syntax. Git Bash exists but is not guaranteed. |
-| "npm is the default" | Using npm in a pnpm project corrupts the lockfile and breaks CI. |
-| "I'll fix it if the command fails" | A failed `rm -rf` with wrong path syntax can still delete data. Failed installs leave broken state. |
-| "The user said Windows, so PowerShell" | Could be CMD, Git Bash, WSL, or Cygwin. Confirm the shell, not just the OS. |
-| "CI and local are the same" | CI runners use different OS, different shell, different tool versions. Probe there too. |
+- Confirm the shell as well as the OS. "Windows" can mean CMD, PowerShell, Git Bash, WSL, or Cygwin, and they quote, pipe, and redirect differently.
+- Confirm the lockfile before any install command. A failed `rm -rf` with the wrong path syntax can still delete data, and a wrong-manager install leaves a corrupted lockfile; probing first is cheaper than recovering.
+- Probe each outbound channel separately, and declare the research tier before a research skill runs rather than supplying a reference from recollection.
+- Stop and probe when you notice yourself about to use `/dev/null`, `~`, `python`, GNU-only `grep` flags, or `npm install` without having confirmed the shell, OS, or lockfile they depend on.
 
-## Guardrails -- HALT and Detect
+## Related
 
-Stop and run detection if you catch yourself:
-
-- Running `ls` without knowing if the shell supports it
-- Using `/dev/null` without confirming Unix-like shell
-- Running `npm install` without checking for other lockfiles
-- Using `python` instead of `python3` without version checking
-- Assuming `~` expands correctly (it does not in CMD)
-- Writing path strings with `/` without confirming OS
-- Using `grep` flags without confirming GNU vs BSD
-- Piping commands without knowing if the shell supports `|`
-
-**Every item on this list means: halt command execution. Probe first.**
-
-## Integration
-
-**Complementary skills:**
-- **ascension:project-bootstrap** -- Environment detection runs during project setup
-- **ascension:fault-diagnosis** -- Environment mismatch is a common root cause of mysterious failures
-- **ascension:workspace-isolation** -- Worktree and container setup needs correct platform commands
-- **ascension:deployment-advisor** -- System inventory results feed directly into deployment recommendations and platform selection
-
-## The Bottom Line
-
-```
-One detection probe now > ten failed commands later
-```
-
-Know the OS. Know the shell. Know the package manager. Before the first command. Every single session.
+`ascension:project-bootstrap` runs this detection during setup. `ascension:fault-diagnosis` treats environment mismatch as a common root cause. `ascension:deployment-advisor` consumes the system inventory. The research skills consume the outbound-reach tier.
