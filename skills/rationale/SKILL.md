@@ -103,6 +103,8 @@ Always include A and D. They are the ends of the spectrum, and leaving either ou
 
 Recommend **one** option and say why. "It depends on your priorities" is not a recommendation.
 
+Then stop and wait for the pick. The options are the deliverable of this skill; the first line of code belongs to whichever option the user chooses, including when that is your recommendation and including when the request said "today". Urgency shortens the analysis. It does not move the build ahead of the decision.
+
 ## Output format
 
 ```
@@ -124,7 +126,7 @@ A) ... B) ... C) ... D) ...
 
 ## Done
 
-The analysis is done when the user has picked an option and the pick is written down with its reason and the options that lost: in the design doc or spec if one exists, otherwise in the plan or ticket for the work. When the choice is hard to reverse, record it as an ADR by calling the Skill tool with "ascension:domain-modeling". A decision that lives only in the conversation gets relitigated next week by a session that never saw the reasoning.
+The analysis is done when the user has picked an option, nothing has been built yet, and the pick is written down with its reason and the options that lost: in the design doc or spec if one exists, otherwise in the plan or ticket for the work. When the choice is hard to reverse, record it as an ADR by calling the Skill tool with "ascension:domain-modeling". A decision that lives only in the conversation gets relitigated next week by a session that never saw the reasoning.
 
 Once the user picks A, B, or C, call the Skill tool with "ascension:intent-discovery" to design it. On D, write down why and stop.
 
@@ -140,7 +142,7 @@ Once the user picks A, B, or C, call the Skill tool with "ascension:intent-disco
 
 **The user pushes back.** State the reasoning once, clearly. If they still want A, build A.
 
-**It is genuinely urgent.** Compress to problem, size, one alternative. Name the risk the urgency is hiding. Then go.
+**It is genuinely urgent.** Compress to problem, size, one alternative. Name the risk the urgency is hiding. Put the pick to the user in one line, and go with their answer.
 
 **It is genuinely trivial.** Run the five points silently. If they resolve in under thirty seconds, say so in one line and get on with it.
 
