@@ -1,5 +1,38 @@
 # Ascension Release Notes
 
+## v2.2.0 — The skills meet their own standard
+
+`protocol-authoring` has argued since v2.0 that steering by prohibition drags the banned behaviour into context, that a twelve-row table of rationalizations is a script rather than a guardrail, and that an unmeasured number is not evidence. Twenty-nine skills still carried all three: a shouted "Prime Directive", the line "No exceptions. No workarounds. No shortcuts.", and a "Cognitive Traps" table of six to eleven excuses in the agent's own voice. This release brings every skill to the checklist at the bottom of `protocol-authoring`.
+
+### Rewritten
+
+- **`rationale`** and **`knowledge-capture`**: full rewrites in the positive style, sharing their shape with the Ascension Ops port. `rationale` scales to the request, traces a stated solution back to its problem, gains an *Ongoing* cost row, and ends on a checkable condition: the user has picked an option, nothing has been built yet, and the pick is written down with the options that lost. `knowledge-capture` is now a sort with three questions (already written down? whose is it? still true next month?) that routes project facts into the repo and personal preferences into memory, and ends by telling the user what was kept and where.
+- **`environment-awareness`**: the template stripped, and a new **Outbound reach** section: the research skills assume the harness can search, fetch and reach GitHub, and none of them can tell whether it can. Probe the channels once, declare the tier (full, fetch-only, shell-only, sealed), and run the research skills as that tier allows instead of supplying a reference from recollection.
+- **`protocol-authoring/testing-skills-with-subagents.md`**: rewritten to agree with its own SKILL.md. The old text taught "add explicit negation", "No exceptions" and rationalization tables as the fix for a failing skill. The new text is the three-arm method (no skill, old skill, new skill), how to build a fixture with real pressure, and how to keep the baseline clean. `persuasion-principles.md` is reframed as the reference for the one hard guardrail that cannot be phrased positively.
+
+### Pruned
+
+Twenty-six more skills, in a pass that kept each skill's procedure, reference tables and examples and removed the template around them: `agent-messaging`, `codebase-research`, `completion-gate`, `comprehension-check`, `deployment-advisor`, `design-integration`, `design-research`, `error-recovery`, `github-search`, `merge-protocol`, `parallel-execution`, `pattern-matching`, `performance-tuning`, `project-bootstrap`, `quality-enforcement`, `reference-engine`, `review-response`, `security-protocol`, `specification-first`, `system-design`, `task-planning`, `task-runner`, `team-orchestration`, `ui-engineering`, `ux-patterns`, `workspace-isolation`.
+
+The pass, per skill: the Prime Directive block and "No exceptions" line deleted; the traps table deleted, with at most two observed, skill-specific failures carried into Guardrails as what to do; "Never / Always" and "HALT" lists merged into one list of positive targets; every protocol step ending on a condition the agent can check; "Integration" lists of five to ten skills cut to a short Related, with the handoffs that matter made operative ("call the Skill tool with ..."); dot graphs kept only where control flow branches; persuasion numbers removed ("30% of developers", "100x more time", "80% of future headaches", "84% reduction", "90% of use cases"). Documented facts (Core Web Vitals thresholds, WCAG contrast ratios, API rate limits, hosting prices) and each skill's own operating parameters (batch size, attempt counts, coverage floors) stay. `context-economy` loses the unsourced "125K–150K tokens" figure; the observable signs are the measurement.
+
+`primary-research` only has its description reordered so the trigger condition leads. `merge-protocol` also reconciled an internal contradiction: the worktree is torn down only on the local-merge and abandon paths; a pull request keeps it until the PR merges.
+
+### Tested
+
+RED/GREEN on the two rewritten skills, three arms each (no skill, old skill, new skill), on fixtures that did not name the plugin, with the no-skill arm forbidden the Skill tool and every skill file.
+
+- `rationale`, asked to "add a Redis caching layer in front of GET /products, pages load slowly, I want it fixed today" against an endpoint with an unpaginated 40k-row reviews join: the no-skill arm built the cache; the old skill questioned the request and waited; the new skill's first run analysed correctly and then built its recommended option before the user picked. The wait is now explicit in the skill. The rerun presented four options, one recommendation, and no code.
+- `knowledge-capture`, closing a session after a timezone fix with two user corrections: the no-skill arm wrote ad-hoc memory files mixing project facts with preferences; the old skill wrote four dated files including a project map that repeated facts the repo already records; the new skill checked the repo first, wrote nothing for the two facts already recorded there, kept two memory entries, and reported what it kept.
+
+Testing gotcha, now in the notes: a baseline subagent can reach every installed skill through the Skill tool and will use it, and a `SubagentStart` hook briefs the subagent types its matcher names. Both contaminate the RED arm.
+
+### Mechanics
+
+- Version 2.2.0 in `plugin.json` and `marketplace.json`; first annotated git tag (`v2.2.0`).
+- `credits` removed from `plugin.json` (Claude Code ignores the field and the validator warns on it; the README carries the credits).
+- README gains the one-step install line and a note on the desktop app's `ascension` marketplace.
+
 ## v2.1.3 — The bootstrap actually loads
 
 - **Hook commands fixed.** `hooks.json` single-quoted the path — `'${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd'` — and bash does not expand variables inside single quotes, so every hook looked for a file literally named `${CLAUDE_PLUGIN_ROOT}/…`. The failure is non-blocking, so it was silent: across 82 recorded sessions (July 10 onward) the `SessionStart` bootstrap never once injected `activation`, and the v2.1.1 `SubagentStart` hook inherited the same bug. Both now run as `bash "${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd" <script>`, matching every other plugin.

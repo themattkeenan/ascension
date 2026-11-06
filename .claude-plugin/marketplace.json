@@ -1,6 +1,6 @@
 {
   "name": "ascension",
-  "description": "Self-triggering skill framework for coding agents \u2014 discovery, design, planning, execution, quality",
+  "description": "Self-triggering skill framework for coding agents — discovery, design, planning, execution, quality",
   "owner": {
     "name": "mattkeenan91"
   },
@@ -8,7 +8,7 @@
     {
       "name": "ascension",
       "description": "49 self-triggering skills for coding agents: a laziness ladder that stops over-building, grilling in rounds, reference-first design over an engineering canon, tracer-bullet tickets, subagent-driven execution, a tight-feedback-loop debugging discipline, and two-axis code review.",
-      "version": "2.1.3",
+      "version": "2.2.0",
       "source": "./",
       "author": {
         "name": "mattkeenan91"

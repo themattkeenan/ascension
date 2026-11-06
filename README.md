@@ -25,12 +25,20 @@ rationale → intent-discovery (grilling + reference-engine + prototype)
 
 ## Installation (Claude Code)
 
-From an interactive `claude` terminal:
+From an interactive `claude` terminal, one step on Claude Code 2.1.275 or later:
+
+```
+/plugin install ascension --marketplace themattkeenan/ascension
+```
+
+Or in two, on older versions:
 
 ```
 /plugin marketplace add themattkeenan/ascension
 /plugin install ascension
 ```
+
+In the Claude desktop app, the same marketplace appears as `ascension` under Plugins; install or update it there.
 
 Then restart the session so the `SessionStart` hook loads.
 
