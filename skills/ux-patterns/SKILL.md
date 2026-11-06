@@ -1,48 +1,23 @@
 ---
 name: ux-patterns
-description: Use when building ANY user interface - web app, game, CLI, dashboard, landing page, or component - ensures all UI output references documented UX patterns instead of generating from assumptions, preventing the amateur look of AI-generated UI
+description: Use when building any user interface - web app, game menu or HUD, CLI output, dashboard, landing page, mobile screen, or component - before writing the UI code
 ---
 
 # UX Patterns
 
 ## Overview
 
-Never generate UI from assumptions. Always consult documented patterns first.
-
-**Core principle:** Every UI element must trace to a documented UX pattern or design system component. If you cannot cite your reference, you are guessing -- and guessing produces amateur results.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO UI CODE WITHOUT A UX REFERENCE FIRST
-```
-
-If you have not identified the applicable pattern, you are not authorized to write the component. Wrote UI code without a reference? Remove it. Begin again with a reference.
-
-**No excuses:**
-- Do not "quickly prototype" without tokens
-- Do not "come back and polish the styling later"
-- Do not use arbitrary pixel values "just to get it working"
-- Do not bypass the entry protocol for "trivial" components
-- "Quick and dirty" UI always ships. It always ships.
+Every UI element traces to a documented UX pattern or design system component, and every value to a design token. A reference you can cite is what separates professional UI from the amateur look of generated UI.
 
 ## When to Use
 
-**Always:**
 - Web applications (SaaS, dashboards, admin panels)
 - Landing pages and marketing sites
 - Game interfaces (menus, HUDs, inventories, shops)
 - CLI interfaces (output formatting, interactive prompts)
 - Mobile applications
 - Component libraries
-- Any visual output a human will perceive
-
-**Including:**
-- "It is just a prototype" (prototypes become products)
-- "Nobody will see this" (someone always does)
-- "I will polish it later" (you will not)
+- Any visual output a human will perceive, prototypes included
 
 ## The Entry Protocol
 
@@ -57,18 +32,18 @@ digraph entry_protocol {
     adopt [label="ADOPT\nApply reference spacing,\ntypography, layout", shape=box];
     adapt [label="ADAPT\nModify only what the\nspecific context demands", shape=box];
     write [label="Author UI code", shape=doublecircle];
-    halt [label="HALT\nYou are guessing", shape=octagon, style=filled, fillcolor=red, fontcolor=white];
+    research [label="RESEARCH\nFind the pattern first", shape=box];
 
     start -> identify;
     identify -> reference [label="identified"];
-    identify -> halt [label="unknown\npattern"];
+    identify -> research [label="unknown\npattern"];
     reference -> tokens;
     tokens -> adopt [label="yes"];
     tokens -> define_tokens [label="no"];
     define_tokens -> adopt;
     adopt -> adapt;
     adapt -> write;
-    halt -> identify [label="research\nfirst"];
+    research -> identify;
 }
 ```
 
@@ -79,9 +54,9 @@ digraph entry_protocol {
 3. **TOKENS** -- Confirm design tokens are established for this project (see `design-tokens.md`)
 4. **ADOPT** -- Apply the reference spacing, typography, layout, and interaction patterns
 5. **ADAPT** -- Modify only what the specific context necessitates
-6. **AUTHOR** -- Only then write the UI code
+6. **AUTHOR** -- Write the UI code
 
-Skip any phase = guessing. Remove and restart.
+Done when the pattern is named with its entry in `pattern-libraries.md`, a token exists for every value the component uses, and every item in the Component Validation Checklist below is ticked.
 
 ## Design Token Requirements
 
@@ -101,45 +76,14 @@ Consult `design-tokens.md` for ready-to-use token templates by project classific
 
 ## Pattern Lookup Methodology
 
-```dot
-digraph pattern_selection {
-    rankdir=TB;
-    what [label="What am I building?", shape=diamond];
-    saas [label="SaaS / Dashboard /\nAdmin Panel?", shape=diamond];
-    game [label="Game Interface?", shape=diamond];
-    marketing [label="Landing Page /\nMarketing Site?", shape=diamond];
-    devtool [label="Developer Tool /\nCLI?", shape=diamond];
-    ecommerce [label="Online Store?", shape=diamond];
-
-    use_saas [label="SaaS patterns\n(data-dense, navigation-heavy)", shape=box];
-    use_game [label="Game UI patterns\n(dark theme, bold, animated)", shape=box];
-    use_marketing [label="Marketing patterns\n(conversion-focused, hero sections)", shape=box];
-    use_devtool [label="Dev tool patterns\n(monospace, high contrast, minimal)", shape=box];
-    use_ecommerce [label="E-commerce patterns\n(product-focused, trust signals)", shape=box];
-    use_general [label="General UI patterns\n(clean, accessible, standard)", shape=box];
-
-    lookup [label="Consult specific component\nin pattern-libraries.md", shape=box];
-
-    what -> saas;
-    saas -> use_saas [label="yes"];
-    saas -> game [label="no"];
-    game -> use_game [label="yes"];
-    game -> marketing [label="no"];
-    marketing -> use_marketing [label="yes"];
-    marketing -> devtool [label="no"];
-    devtool -> use_devtool [label="yes"];
-    devtool -> ecommerce [label="no"];
-    ecommerce -> use_ecommerce [label="yes"];
-    ecommerce -> use_general [label="no"];
-
-    use_saas -> lookup;
-    use_game -> lookup;
-    use_marketing -> lookup;
-    use_devtool -> lookup;
-    use_ecommerce -> lookup;
-    use_general -> lookup;
-}
-```
+| What you are building | Pattern family |
+|---|---|
+| SaaS, dashboard, admin panel | SaaS patterns (data-dense, navigation-heavy) |
+| Game interface | Game UI patterns (dark theme, bold, animated) |
+| Landing page, marketing site | Marketing patterns (conversion-focused, hero sections) |
+| Developer tool, CLI | Dev tool patterns (monospace, high contrast, minimal) |
+| Online store | E-commerce patterns (product-focused, trust signals) |
+| Anything else | General UI patterns (clean, accessible, standard) |
 
 Consult `pattern-libraries.md` for the complete reference organized by project classification and pattern category.
 
@@ -182,48 +126,27 @@ Before authoring any component, verify ALL items:
 - [ ] Loading state designed (skeleton preferred over spinner)
 - [ ] Error state designed
 
-Cannot satisfy all items? You are not ready to author the component.
+The component is ready to author when every item is ticked.
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|---|---|
-| "It is just a prototype" | Prototypes become products. Professional prototypes use tokens too. |
-| "I will fix the styling later" | You will not. "Later" never arrives. Every subsequent task takes priority. |
-| "The user did not specify design requirements" | Absence of requirements is not permission to guess. Apply tokens by default. |
-| "I need to get the logic working first" | Logic and presentation are not separate phases. Tokens take 5 minutes to establish. |
-| "This component is too simple for all that" | Simple components are where inconsistency takes root. A button without tokens infects every page it touches. |
-| "I will adopt a design system later" | Without tokens now, you will fight the design system later. Tokens make adoption trivial. |
-| "Just one hardcoded color will not hurt" | One becomes ten. Then you have a palette of accidents. |
-| "The AI can make it look acceptable" | "Acceptable" is the defining characteristic of amateur UI. Professional or amateur -- choose. |
+- Establish tokens before the first component, even when the logic has to come first; they are quick to set up and the logic does not depend on them.
+- When a value you need is not in the scale, add it to the tokens rather than hardcoding it once.
 
-## Guardrails -- HALT and Reference
+Stop and return to IDENTIFY when you notice:
+- a hex literal or pixel value that is not a token (`color: #3b82f6`, `padding: 10px`)
+- a font size outside the type scale
+- a component, form, or dashboard written without its pattern looked up in `pattern-libraries.md`
+- hover or focus states left for later
+- "Lorem ipsum" or "Example text" in the output
+- every element centered
+- a gradient or shadow that signals no elevation or purpose
 
-If you catch yourself doing any of the following:
-- Writing `color: #3b82f6` without it being a defined token value
-- Using `padding: 10px` instead of a spacing token
-- Choosing a font size not present in the type scale
-- Building a component without consulting pattern-libraries.md
-- Deferring hover/focus states "for now"
-- Using "Lorem ipsum" or "Example text"
-- Centering everything because "it looks fine"
-- Adding a gradient or shadow "to make it pop"
-- Writing CSS without design tokens established
-- Building a form without consulting form patterns
-- Creating a dashboard without consulting dashboard patterns
+Remove the offending code and restart from step 1.
 
-**Every item means: HALT. Remove. Return to the entry protocol.**
+## Related
 
-## Integration
-
-**Invoked by:**
-- **ascension:intent-discovery** -- When design involves UI, invoke this skill
-- **ascension:task-planning** -- Plans involving UI work should reference this skill
-- **ascension:delegated-execution** -- UI implementation subagents MUST use this
-
-**Complementary skills:**
-- **ascension:ui-engineering** -- This provides the reference system; that provides implementation patterns
-- **ascension:design-integration** -- For adopting existing design systems
+Invoked by `ascension:intent-discovery` when the design involves UI, and required of UI subagents under `ascension:delegated-execution`. `ascension:ui-engineering` covers implementation, `ascension:design-integration` adopting an existing design system, and `ascension:design-research` the page-level layout.
 
 **Supporting files:**
 - `pattern-libraries.md` -- Complete pattern reference by project classification and category

@@ -1,6 +1,6 @@
 ---
 name: github-search
-description: Use when about to build any feature, library, or system - searches GitHub and package registries for existing implementations to study, harvest patterns from, or use directly instead of building from scratch
+description: Use when about to build a feature, library, system or utility that may already exist as open source, when choosing between frameworks, libraries or tooling, or when an architectural precedent from a real-world system would help
 ---
 
 # GitHub Search
@@ -9,41 +9,17 @@ description: Use when about to build any feature, library, or system - searches 
 
 Before writing a single line of code, determine whether someone on the planet has already solved the same problem and published the result. The strongest engineering move is recognizing when the work has already been done.
 
-**Core principle:** Search GitHub repositories, package registries, and open-source ecosystems for existing implementations before building anything new. Harvest the best patterns from multiple projects. Attribute what you borrow. Respect licenses.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO BUILDING FROM SCRATCH WITHOUT SEARCHING GITHUB FIRST
-```
-
-If you have not queried public repositories for prior solutions, you are burning time on reinvention. Searched three different ways and found nothing applicable? Document what you searched and why nothing fit. Then build.
-
-**No excuses:**
-- Do not "just start coding and research later"
-- Do not assume uniqueness because the problem feels novel
-- Do not skip research for "straightforward" features (straightforward features have the densest prior art)
-- Do not reject repositories because they are imperfect (extract what is valuable)
-- "I know how to implement this" is not the same as "I should implement this from zero"
+Search GitHub repositories, package registries, and open-source ecosystems for existing implementations before building anything new. Harvest the best patterns from multiple projects. Attribute what you borrow. Respect licenses.
 
 ## When to Use
 
-**Mandatory when:**
 - Initiating a new feature or project
 - Building something that plausibly exists as open source
 - Weighing competing implementation strategies
 - Seeking architectural precedents from real-world systems
 - Evaluating frameworks, libraries, or tooling choices
 
-**Particularly valuable when:**
-- The task involves ubiquitous patterns (auth, CRUD, file handling, search, payments)
-- Building a game (every genre has extensive open-source coverage)
-- Creating a utility that addresses a known problem space
-- Implementing algorithms or specialized data structures
-- Setting up infrastructure (CI/CD, deployment pipelines, monitoring)
-- Designing APIs, schemas, or protocols with established conventions
+Prior art is densest for ubiquitous patterns (auth, CRUD, file handling, search, payments), games (every genre has extensive open-source coverage), utilities for known problem spaces, algorithms and specialized data structures, infrastructure (CI/CD, deployment pipelines, monitoring), and APIs, schemas, or protocols with established conventions.
 
 ## The Entry Protocol
 
@@ -84,7 +60,9 @@ digraph github_search_gate {
 2. **EVALUATE** -- Assess candidates for quality, relevance, and license compatibility
 3. **DECIDE** -- Use as dependency, harvest patterns, study as reference, or build from scratch
 4. **DOCUMENT** -- Record what you found and why you chose your path
-5. **ONLY THEN** -- Begin building
+5. **BUILD** -- With patterns from research, not from assumptions
+
+Done when at least 3 queries across 2 channels are recorded, every candidate has been evaluated against the signals below, the license is verified for anything you will use, and the user has picked from the options you presented.
 
 ## Search Methodology
 
@@ -147,7 +125,7 @@ When assessing discovered repositories, apply these signals systematically.
 | **Code discipline** | Tests, types, documentation, clean structure | No tests, no types, tangled code |
 | **Dependency footprint** | Minimal, well-known dependencies | 50+ transitive deps, obscure packages |
 | **Documentation** | Clear setup instructions, usage examples | Empty or outdated README |
-| **Relevance** | Addresses 70%+ of your need | Tangentially related |
+| **Relevance** | Addresses most of your need | Tangentially related |
 
 **Minimum viable candidate:** Has tests, has a license, updated within the past year, README explains usage.
 
@@ -185,13 +163,12 @@ FROM the repository, extract:
 ### Phase 2: Adapt to Your Context
 
 ```
-DO NOT copy-paste entire files.
-DO extract the pattern and rewrite for your:
+Extract the pattern, not the file, and rewrite it for your:
 - Technology stack
 - Naming conventions
 - Design system (for UI code)
 - Architectural layering
-- Internal codebase conventions (use ascension:codebase-research to find them)
+- Internal codebase conventions (call the Skill tool with "ascension:codebase-research" to find them)
 ```
 
 ### Phase 3: Attribute the Source
@@ -269,60 +246,16 @@ Check out the repos and pick A, B, C, or D.
 
 **YoloMode exception:** Reference and repository selection is ALWAYS interactive — even in YoloMode, present the options and let the user pick. These choices are too impactful to auto-select.
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "I can build it faster than studying someone else's code" | You will also maintain it indefinitely. Battle-tested code has fewer defects. |
-| "Nothing exists for my exact scenario" | Did you try 3+ query variations? Partial matches are valuable. |
-| "Open source quality is unreliable" | Repositories with 1k+ stars and test suites are often superior to what you will produce under time pressure. |
-| "It is faster to just start writing" | You will spend hours solving problems someone already addressed. |
-| "I want to avoid external dependencies" | Harvest patterns without adding dependencies. The knowledge is free. |
-| "Licensing is too complicated" | MIT/Apache/BSD means free to use. A two-second check saves you from reinvention. |
-| "It is only 100 lines, not worth researching" | Those 100 lines with edge-case coverage someone already wrote outperform your 100 lines without it. |
-| "I will research if I get stuck" | Research FIRST. Getting stuck means you already burned time. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Starting implementation without searching first (minimum 3 queries)
-- Rejecting all search results without evaluation
-- Copying code without verifying license compatibility
-- Using a repository with no license (legal risk)
-- Assuming your solution will surpass a battle-tested one
-- Omitting attribution when harvesting patterns
+- Search with at least 3 query formulations across at least 2 channels before concluding nothing exists.
+- Evaluate every candidate against the signals above before setting it aside.
+- Verify license compatibility before using any code; a repository with no license stays out, whatever its quality.
+- Attribute every harvested pattern to its source.
+- Record what you searched, what you found, and why you chose your path.
+- When nothing matches exactly, or you want to avoid adding a dependency, harvest the pattern rather than the code; a partial match still carries edge cases you have not met yet.
+- Report findings to the user with links, popularity metrics, and what you are extracting; the pick is theirs.
 
-**Required actions:**
-- Search with at least 3 different query formulations
-- Evaluate candidates against the assessment criteria
-- Verify license compatibility before using any code
-- Document what you found and your rationale
-- Harvest patterns even from repositories you do not use directly
-- Report findings to the user with links, popularity metrics, and what you are extracting
+## Related
 
-## Quick Reference
-
-```
-SEARCH -> EVALUATE -> DECIDE -> DOCUMENT -> BUILD
-
-Search: 3+ queries across GitHub, registries, and curated lists
-Evaluate: Stars, activity, tests, license, relevance
-Decide: Use as dependency | Harvest patterns | Study as reference | Build from scratch
-Document: What you searched, what you found, why you chose your path
-Build: With patterns from research, not from assumptions
-```
-
-## Integration
-
-**Invoked during:**
-- **ascension:intent-discovery** -- Search during "Explore project context" and research phases
-- **ascension:reference-engine** -- Routed here for external code and library research
-- **ascension:task-planning** -- Reference repositories in plan tasks
-- **ascension:system-design** -- Discover reference architectures on public repositories
-
-**Complementary skills:**
-- **ascension:codebase-research** -- For searching WITHIN the current codebase for internal patterns, conventions, and existing implementations to match
-- **ascension:specification-first** -- Feeds search findings into formal specifications
-- **ascension:ux-patterns** -- Repositories for code patterns; UX system for design patterns
-- **ascension:design-integration** -- Find design system repos for bootstrapping
-- **ascension:project-bootstrap** -- Locate starter templates and boilerplate projects
+Routed here by `ascension:reference-engine` and `ascension:intent-discovery`. `ascension:codebase-research` is the same discipline pointed at the current repo; harvested patterns pass through it so they land in the project's conventions. `ascension:project-bootstrap` uses this skill to find starter templates.

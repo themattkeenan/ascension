@@ -1,35 +1,17 @@
 ---
 name: reference-engine
-description: Use when building ANYTHING - the universal reference-first system that routes every task to proven reference implementations instead of generating from assumptions. Covers API design, database schemas, testing strategies, CI/CD pipelines, code patterns, DevOps, and any other domain where professional reference implementations exist
+description: Use when building anything in a domain where professional reference implementations exist - API design, database schemas, testing strategy, CI/CD, code patterns, architecture, security, DevOps, documentation - and no more specific Ascension reference skill applies
 ---
 
-<EXTREMELY-IMPORTANT>
-This is the meta-protocol that governs ALL reference-first behavior. If you are building something and no domain-specific reference protocol exists, this protocol IS your reference system.
-
-YOU MUST LOCATE A REFERENCE BEFORE YOU BUILD. NO EXCEPTIONS.
-</EXTREMELY-IMPORTANT>
-
-# Reference Engine: The Universal Reference-First System
+# Reference Engine
 
 ## Overview
 
-Every domain has thousands of hours of professional engineering already completed. APIs have been designed, schemas have been refined, pipelines have been battle-tested, patterns have been hardened. Leveraging them as your reference is not laziness — it is engineering intelligence.
-
-**Core principle:** Before building ANYTHING, locate the best existing reference. Extract its patterns. Build on proven foundations, not assumptions.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO BUILDING WITHOUT A REFERENCE
-```
-
-If you have not searched for proven references in the domain you are working in, you are disregarding thousands of hours of professional engineering. A payment API should resemble Stripe's API patterns, not a generic AI-generated endpoint.
+Every domain has professional engineering already completed: APIs designed, schemas refined, pipelines battle-tested, patterns hardened. Before building anything, locate the best existing reference, extract its patterns, and build on proven foundations rather than assumptions. When no domain-specific reference skill exists, this skill is the reference system.
 
 ## When to Use
 
-**Always.** This protocol is the router. It determines WHICH reference system to engage based on what is being built.
+This skill is the router. It determines WHICH reference system to engage based on what is being built.
 
 ```dot
 digraph reference_router {
@@ -80,11 +62,11 @@ BEFORE building anything:
 
 1. CLASSIFY: What domain is this task in?
 2. ROUTE: Does a dedicated reference protocol exist? (ux-patterns, design-research, github-search, codebase-research, etc.)
-   -> YES: Invoke that protocol
+   -> YES: Call the Skill tool with "ascension:<that skill>"
    -> NO: Continue to step 3
 3. SEARCH: Locate reference implementations for this domain
-   - External: Use github-search for open-source repos, libraries, and patterns
-   - Internal: Use codebase-research for existing conventions and similar code
+   - External: call the Skill tool with "ascension:github-search" for open-source repos, libraries, and patterns
+   - Internal: call the Skill tool with "ascension:codebase-research" for existing conventions and similar code
    - GitHub: Search for gold-standard implementations
    - Documentation: Find official best practices (RFC specs, framework docs, cloud provider guides)
    - Industry leaders: What do Stripe, GitHub, Vercel, AWS do for this?
@@ -92,23 +74,7 @@ BEFORE building anything:
 5. PRESENT: Show the user your references and recommended approach
 6. BUILD: Implement using the reference
 
-Skip any step = building from assumptions instead of knowledge
-```
-
-## The Reference Philosophy
-
-```
-"Accumulated Expertise" Principle:
-
-Every professional implementation represents:
-- Months of design iteration
-- Thousands of users providing feedback
-- Production incidents that drove improvements
-- Security audits that uncovered vulnerabilities
-- Performance tuning under real load
-
-When you generate from scratch, you inherit NONE of this.
-When you use a reference, you inherit ALL of it.
+Done when at least two references are named, the patterns taken from each are listed with the reason for each, and the user has seen them before any code is written.
 ```
 
 ## Two kinds of reference
@@ -229,9 +195,9 @@ BEFORE writing tests:
 
 1. Identify project type -> select testing approach above
 2. Test pyramid for this project:
-   - Unit tests: 70% (fast, isolated, mock dependencies)
-   - Integration tests: 20% (real dependencies, test interactions)
-   - E2E tests: 10% (user flows, critical paths only)
+   - Unit tests: the bulk (fast, isolated, mock dependencies)
+   - Integration tests: fewer (real dependencies, test interactions)
+   - E2E tests: fewest (user flows, critical paths only)
 3. What to test:
    - Happy path (minimum viable test)
    - Edge cases from spec (empty, null, max, concurrent)
@@ -448,66 +414,15 @@ Not all references are equal. Evaluate by:
 | Simplicity | Medium | Is the pattern minimal and clear? |
 | Portability | Low | Can the pattern be adapted to other stacks? |
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "I know how to build this" | You know how to build A version. References give you the BEST version. |
-| "This is too simple for a reference" | Simple things done wrong compound. A bad schema pattern affects every query forever. |
-| "I'll consult references later" | Research FIRST. Structural decisions made early are hardest to reverse. |
-| "The user didn't request research" | They requested quality. References ARE how you deliver quality. |
-| "There's no reference for this" | There is always a reference. Adjacent domains, similar patterns, analogous systems. |
-| "References slow me down" | Building the wrong thing slows you down MORE. |
-| "I can improve on the reference" | Prove it. Show the reference first, then propose improvements. |
-| "AI can generate strong patterns" | AI generates plausible patterns. Plausible does not mean production-tested. |
-
 ## Guardrails
 
-**Prohibited:**
-- Generating API designs without studying Stripe/GitHub/Twilio patterns
-- Creating database schemas without locating domain-specific references
-- Setting up CI/CD without examining starter workflows
-- Implementing security without studying auth library patterns
-- Writing tests without a testing strategy reference
-- Choosing architecture without studying reference architectures
+- Locate at least 2 reference implementations before building; for complex systems, cherry-pick from 3 or more sources.
+- Design APIs against Stripe, GitHub or Twilio patterns; schemas against a domain reference; CI/CD against starter workflows; security against established auth libraries; tests against a testing strategy reference; architecture against a reference architecture.
+- Present your references and approach to the user, and say why you chose each pattern from each reference.
+- When no domain library above fits, look to adjacent domains, similar patterns and analogous systems before concluding there is no reference.
+- When you believe you can improve on a reference, show the reference first, then propose the improvement.
+- Update references when you discover superior ones.
 
-**Mandatory:**
-- Locate at least 2 reference implementations before building
-- Cherry-pick from 3+ sources for complex systems
-- Present your references and approach to the user
-- Explain WHY you chose specific patterns from specific references
-- Update references when you discover superior ones
+## Related
 
-## Integration
-
-**This protocol is the ROUTER. It invokes other protocols:**
-
-- **ascension:ux-patterns** — UI/UX references
-- **ascension:design-research** — Website design references
-- **ascension:github-search** — External code and library research (GitHub, package registries, open-source ecosystems)
-- **ascension:codebase-research** — Internal codebase pattern matching (conventions, similar files, existing implementations)
-- **ascension:system-design** — Architecture decision references
-- **ascension:quality-enforcement** — Quality standard references
-- **ascension:security-protocol** — Security pattern references
-- **ascension:performance-tuning** — Performance references
-- **ascension:project-bootstrap** — Project structure references
-
-**Invoked by:**
-- **ascension:intent-discovery** — During the "what exists?" phase
-- **ascension:specification-first** — To inform specs with proven patterns
-- **ascension:task-planning** — To ground plans in reality
-
-**The hierarchy:**
-```
-reference-engine (this protocol - the universal router)
-+-- ux-patterns (UI/UX domain)
-+-- design-research (website design domain)
-+-- github-search (external code research domain)
-+-- codebase-research (internal code pattern domain)
-+-- system-design (structural design domain)
-+-- quality-enforcement (quality domain)
-+-- security-protocol (security domain)
-+-- performance-tuning (performance domain)
-+-- project-bootstrap (structure domain)
-+-- [this protocol's built-in libraries] (API, DB, testing, CI/CD, DevOps, docs)
-```
+This skill is the router: the graph above sends UI work to `ascension:ux-patterns`, websites to `ascension:design-research`, external code to `ascension:github-search` and this repo's own conventions to `ascension:codebase-research`. Invoked by `ascension:intent-discovery` during the "what exists?" phase, and by `ascension:specification-first` and `ascension:task-planning` to ground specs and plans.

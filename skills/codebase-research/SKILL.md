@@ -1,6 +1,6 @@
 ---
 name: codebase-research
-description: Use when building ANY feature within an existing project - search the current codebase for existing patterns, conventions, similar implementations, and established approaches before writing new code
+description: Use when adding a feature, file, component, module, test or pattern to an existing codebase, before writing the new code
 ---
 
 # Codebase Research
@@ -9,40 +9,15 @@ description: Use when building ANY feature within an existing project - search t
 
 Before writing new code in an existing project, understand what already exists inside it. The codebase itself is the most authoritative reference for how things should be built. Every project accumulates conventions, patterns, and implicit standards that new code must respect.
 
-**Core principle:** Search the current codebase before coding. Find similar files, functions, and patterns. Match existing conventions exactly. Never introduce a second way of doing something when a first way already exists.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO NEW CODE WITHOUT UNDERSTANDING THE EXISTING CODE FIRST
-```
-
-If you have not searched the current codebase for prior implementations of the same pattern, you are risking inconsistency. Found nothing similar? Document what you searched. Then build, establishing the convention deliberately.
-
-**No excuses:**
-- Do not "just start coding and check conventions later"
-- Do not assume your preferred pattern is the project's pattern
-- Do not introduce new libraries when the project already uses an equivalent
-- Do not create a new file structure that contradicts the existing one
-- "I know the best way to do this" is irrelevant if the project already does it a different way consistently
+Search the current codebase before coding: find similar files, functions, and patterns, and match the existing conventions exactly, so each thing is done one way throughout the project.
 
 ## When to Use
 
-**Mandatory when:**
 - Adding a new feature to an existing codebase
 - Creating a new file, component, module, or service
 - Implementing a pattern that likely exists elsewhere in the project
 - Writing tests for existing functionality
 - Adding error handling, logging, or validation logic
-
-**Particularly valuable when:**
-- The project has established architectural patterns (MVC, hexagonal, etc.)
-- There are existing files similar to what you need to create
-- The codebase has custom utilities, helpers, or shared modules
-- The project uses specific naming conventions or code organization rules
-- There are existing tests that demonstrate the expected testing approach
 
 ## The Entry Protocol
 
@@ -75,7 +50,9 @@ digraph codebase_research_gate {
 1. **SEARCH** -- Query the codebase for similar files, functions, patterns, and conventions
 2. **ANALYZE** -- Study how existing code handles the same concerns
 3. **MATCH** -- Align your new code with established conventions
-4. **ONLY THEN** -- Begin writing
+4. **BUILD** -- Write code that looks like it belongs in the project
+
+Done when at least 2 similar files have been read and every item in the Analysis Checklist has either an answer taken from the codebase or a note that no precedent exists.
 
 ## Search Methodology
 
@@ -121,7 +98,7 @@ When about to create something new, search the codebase for each of these:
 
 ### The Consistency Principle
 
-When the codebase does something one way, you do it the same way. Personal preference is irrelevant. Project consistency outweighs individual opinion.
+When the codebase does something one way, you do it the same way. Project consistency outweighs personal preference.
 
 | Dimension | Match Exactly |
 |---|---|
@@ -196,7 +173,7 @@ Sometimes you are genuinely building something the codebase has never done befor
 
 1. **Confirm absence** -- Search at least 3 different ways to be sure no precedent exists
 2. **Check adjacent projects** -- If this is a monorepo, check sibling packages
-3. **Consult external sources** -- Use ascension:github-search to find patterns from public repositories
+3. **Consult external sources** -- Call the Skill tool with "ascension:github-search" to find patterns from public repositories
 4. **Establish deliberately** -- When creating a new convention, make it consistent with the spirit of the existing codebase
 5. **Document the decision** -- Note why a new pattern was introduced
 
@@ -219,61 +196,23 @@ When writing code after design approval:
 3. **Swap the specifics** -- replace domain details while preserving the pattern
 4. **Verify consistency** -- compare your new file against the template to catch deviations
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "My approach is cleaner than what the project uses" | Consistency across a project is worth more than local perfection. Two patterns are worse than one adequate pattern. |
-| "I will refactor the existing code to match my style" | Refactoring is a separate task. Match the existing style now. Propose a refactor later if warranted. |
-| "The project does not have a pattern for this" | Did you search thoroughly? Check 3+ similar files. If truly no precedent, establish one deliberately. |
-| "I do not need to check -- this is a new module" | New modules still live inside the existing project. They must respect its conventions. |
-| "The existing pattern is outdated" | Outdated but consistent is better than modern but inconsistent. Propose a migration, do not create a fork. |
-| "Checking conventions slows me down" | Writing code that fails review or introduces inconsistency slows you down more. |
-| "It is just a small utility function" | Small utilities are the most reused code. Getting their pattern wrong affects everything that depends on them. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Writing new code without searching the codebase for similar implementations
-- Introducing a new library when the project already uses an equivalent
-- Creating a file structure that contradicts the existing organization
-- Using a naming convention different from the project's established one
-- Skipping test pattern matching ("I will write tests my way")
-
-**Required actions:**
-- Search the codebase for at least 2 similar files before writing new code
-- Match the naming conventions of the surrounding code exactly
-- Use existing shared utilities and helpers instead of creating duplicates
-- Follow the established testing patterns for the project
-- Document your findings when no precedent exists in the codebase
-
-## Quick Reference
-
-```
-SEARCH -> ANALYZE -> MATCH -> BUILD
-
-Search: Find 2+ similar files, grep for patterns, check imports
-Analyze: Extract conventions for naming, structure, error handling, testing
-Match: Align your new code with every convention you found
-Build: Write code that looks like it belongs in the project
-```
-
-## Integration
-
-**Invoked during:**
-- **ascension:intent-discovery** -- Search codebase during "Survey project landscape" phase
-- **ascension:reference-engine** -- Routed here for internal code pattern research
-- **ascension:task-planning** -- Verify conventions before each implementation task
-- **ascension:quality-enforcement** -- Consistency checks against codebase patterns
-
-**Complementary skills:**
-- **ascension:github-search** -- For searching EXTERNAL repositories, GitHub, and package registries for open-source implementations, libraries, and patterns to study or adopt
-- **ascension:pattern-matching** -- Deeper pattern analysis within the codebase
-- **ascension:specification-first** -- Feeds codebase conventions into formal specifications
-- **ascension:project-bootstrap** -- When starting a new project (no existing codebase to research)
+- Read at least 2 similar files before writing new code.
+- Match the naming conventions of the surrounding code exactly.
+- Use the project's existing libraries and shared utilities; when the project already has an equivalent, use it rather than adding a new dependency or a duplicate helper.
+- Place new files where the existing organization puts their kind.
+- Write tests the way the project's tests for similar modules are written.
+- Document what you searched when no precedent exists in the codebase.
+- When the existing pattern looks outdated or not to your taste, match it now and propose a refactor or migration as a separate task.
+- Treat small utilities with the same care as modules: they are the most reused code, so their pattern spreads furthest.
 
 ## Surveying without flooding the window
 
 When a research question is aggregate — how many, which files, what changed most, which modules import this — compute the answer with a script and print only the result. Call the Skill tool with "ascension:think-in-code". Reading forty files to count something spends the session's attention on arithmetic.
 
 Read files when you need to *understand* them. Script the answer when you need to *tally* them.
+
+## Related
+
+Routed here by `ascension:reference-engine` and by `ascension:intent-discovery` during its project survey. `ascension:github-search` is the same discipline pointed at external repositories; `ascension:pattern-matching` goes deeper on matching once the conventions are found.

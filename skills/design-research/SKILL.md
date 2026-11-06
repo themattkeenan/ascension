@@ -1,29 +1,16 @@
 ---
 name: design-research
-description: Use when building ANY website, web app, landing page, or web-based UI - searches real template marketplaces for professionally designed layouts in the user's industry or niche, then extracts layout structure, color palettes, typography choices, and section sequences as the design blueprint instead of generating from assumptions
+description: Use when building a website, landing page, web app layout, e-commerce storefront, portfolio or agency site, SaaS marketing site, or dashboard, before laying out any page
 ---
 
 # Design Research
 
 ## Overview
 
-Professional website templates represent thousands of hours of UX testing, conversion optimization, and iterative design refinement. Leverage them as your blueprint instead of inventing layouts from nothing.
-
-**Core principle:** Before designing any website, find the strongest existing templates in the target niche. Extract their patterns. Build on proven foundations, not guesswork.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO WEBSITE LAYOUT WITHOUT TEMPLATE RESEARCH FIRST
-```
-
-If you have not surveyed template marketplaces for the user's industry or niche, you are discarding thousands of hours of professional design effort. A fitness studio website should echo the best fitness templates, not resemble a generic AI-generated page.
+Professional website templates carry hours of UX testing, conversion optimization, and iterative design refinement. Before designing any website, find the strongest existing templates in the target niche, extract their patterns, and build on proven foundations rather than inventing a layout from nothing.
 
 ## When to Use
 
-**Mandatory when:**
 - Building a website for any industry or business type
 - Designing a landing page
 - Laying out a web application
@@ -43,9 +30,9 @@ BEFORE designing any website layout:
 4. EXTRACT: Identify the common patterns (what do ALL strong templates in this niche share?)
 5. PRESENT: Show the user your references and recommended blueprint
 6. ADAPT: Build using those patterns, tailored to the user's brand
-7. ONLY THEN: Write the code
+7. BUILD: Write the code
 
-Omit any step = generic AI website indistinguishable from every other AI website
+Done when at least 3 templates from at least 2 marketplaces are documented in the Phase 3 format, the shared patterns are written out, and the user has picked A, B, C or D.
 ```
 
 ## Search Methodology
@@ -237,41 +224,14 @@ Hero (featured product or promotion) -> Categories -> Featured Products -> Best 
 ### Portfolio / Agency
 Hero (bold statement) -> Selected Work (case studies) -> Service Offerings -> Process Methodology -> Team -> Client Logos -> Contact
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "I can design this myself" | Professional templates encode 1000+ hours of UX research. You have 5 minutes. |
-| "Templates produce cookie-cutter results" | Synthesizing the best parts from multiple templates yields something unique. |
-| "I do not need a reference for a basic site" | Basic sites benefit MOST from proven layouts. Simple does not mean obvious. |
-| "I will look at templates afterward for ideas" | Research FIRST. Early design decisions are the hardest to change later. |
-| "The user did not request template research" | They requested a quality website. Template research IS how you deliver one. |
-| "Free templates are low quality" | HTML5 UP and Start Bootstrap offer elegant, well-structured free templates. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Designing a layout without checking template marketplaces first
-- Using a single template as the sole reference (synthesize from 3+)
-- Copying a template's code verbatim (extract patterns, build fresh)
-- Skipping the user presentation step
-- Ignoring industry-specific section conventions
+- Search at least 2 marketplaces and examine at least 3 templates in the target niche before designing a layout.
+- Synthesize the strongest elements from several templates, so the result is specific to this site rather than a copy of one; extract the patterns and build fresh rather than copying a template's code.
+- Write down the shared patterns and the standard section sequence for the niche, and follow the niche's section conventions.
+- Present findings with demo links and let the user pick.
+- Free sources such as HTML5 UP and Start Bootstrap are legitimate references; use them when premium marketplaces are out of reach.
 
-**Required actions:**
-- Search at least 2 marketplaces
-- Examine at least 3 templates in the target niche
-- Identify shared patterns across templates
-- Present findings with demo links to the user
-- Synthesize the strongest elements from multiple templates
-- Document the standard section sequence for the niche
+## Related
 
-## Integration
-
-**Invoked during:**
-- **ascension:intent-discovery** -- When the task involves building a website
-- **ascension:ux-patterns** -- Template research provides macro layout; UX patterns provides component-level detail
-
-**Complementary skills:**
-- **ascension:codebase-research** -- Templates for design; public repositories for code implementation
-- **ascension:ui-engineering** -- How to build the components from the template blueprint
-- **ascension:design-integration** -- Establish design tokens based on template analysis
+Invoked by `ascension:intent-discovery` when the task is a website. This skill supplies the macro layout; `ascension:ux-patterns` supplies component-level detail, and `ascension:design-integration` turns the extracted palette and typography into design tokens.

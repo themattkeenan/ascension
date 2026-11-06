@@ -1,6 +1,6 @@
 ---
 name: primary-research
-description: Investigate a question against primary sources and leave cited findings as a file in the repo. Use when a decision waits on external facts — third-party API behaviour, spec details, library internals, version differences — or when reading legwork should be delegated to a background agent.
+description: Use when a decision waits on external facts — third-party API behaviour, spec details, library internals, version differences — or when reading legwork should be delegated to a background agent. Investigates against primary sources and leaves cited findings as a file in the repo.
 ---
 
 # Primary Research
