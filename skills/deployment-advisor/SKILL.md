@@ -1,6 +1,6 @@
 ---
 name: deployment-advisor
-description: Use when making technology, hosting, or infrastructure decisions — recommends services, databases, and deployment strategies based on project requirements and what the user actually has available
+description: Use when a project needs a database, hosting, auth, file storage, or background-job choice made, when a migration between services or a scaling step is being weighed, or when an infrastructure bill needs cutting. Not for implementation help on a stack the user has already chosen.
 ---
 
 # Deployment Advisor
@@ -9,17 +9,7 @@ description: Use when making technology, hosting, or infrastructure decisions �
 
 The most expensive infrastructure mistake is not picking the wrong service — it is picking a service you do not need. Every external dependency is a bill, a failure point, and a piece of documentation you now have to read. The second most expensive mistake is ignoring what the user already has running on their machine.
 
-**Core principle:** Recommend the simplest stack that meets the project's actual requirements, using what the user already has before suggesting anything new.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO TECHNOLOGY RECOMMENDATION WITHOUT CHECKING WHAT THE USER ALREADY HAS
-```
-
-If you have not inventoried the user's existing tools, runtimes, services, and running processes, you are guessing — not advising. Guessing wastes money and time.
+Recommend the simplest stack that meets the project's actual requirements, using what the user already has before suggesting anything new. The inventory of their tools, runtimes, services and running processes comes first; a recommendation made without it is a guess.
 
 ## When to Use
 
@@ -36,18 +26,6 @@ If you have not inventoried the user's existing tools, runtimes, services, and r
 - Bug fixes within an existing deployment
 - Minor config changes to an already-deployed service
 - The user explicitly says "I want X, help me set it up" (respect their decision)
-
-## Cognitive Traps
-
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "Everyone uses Supabase now" | The right tool depends on the project, not trends. SQLite handles more than people think. |
-| "Cloud is always better" | A $4 VPS beats $50/mo in serverless for many workloads. Steady traffic favors fixed cost. |
-| "More services = more professional" | Every service is a dependency, a bill, and a failure point. Fewer moving parts means fewer things break. |
-| "They need microservices" | Most projects should be monoliths. Microservices solve organizational problems, not technical ones. |
-| "Docker is required" | Many projects deploy fine without containerization. Docker adds complexity that small teams may not need. |
-| "Serverless is cheaper" | Serverless is cheaper for spiky, low-volume traffic. For steady load, you are paying a premium for idle capacity you already rented. |
-| "Managed services save time" | They save ops time but add vendor lock-in, cost, and API surface. Calculate the full trade-off. |
 
 ## Decision Framework
 
@@ -81,9 +59,11 @@ Everything else is premature optimization.
 | Payments | One-time? Subscriptions? Marketplace with splits? |
 | Search | Full-text? Faceted? Can the database handle it? |
 
+Done when every need carries one of the four labels and only REQUIRED NOW and REQUIRED SOON go forward.
+
 ### Step 2: Cross-Reference with System Inventory
 
-**Invoke ascension:environment-awareness** to get the user's system inventory.
+Call the Skill tool with "ascension:environment-awareness" to get the user's system inventory.
 
 ```
 Check for:
@@ -99,9 +79,13 @@ Check for:
 
 **The rule:** If the user already has PostgreSQL running, do not recommend Supabase for the database. If they have the Vercel CLI and a Next.js project, Vercel is the obvious hosting choice. Work with what exists.
 
+Done when the inventory is written down against each need from Step 1.
+
 ### Step 3: Evaluate Options with Trade-Offs
 
-For each infrastructure need, present honest trade-offs.
+For each infrastructure need, present honest trade-offs, using the Stack Decision Matrix below.
+
+Done when each need has one recommended option and one alternative, each with its cost and its watch-out named.
 
 ### Step 4: Present the Recommendation
 
@@ -201,11 +185,7 @@ When evaluating a project's stack, also consider whether AI integration would ad
 - The project has complex admin operations that benefit from natural language interfaces
 - Customer support workflows could benefit from an AI agent with access to project data
 
-**Do NOT suggest MCP integration when:**
-- The project is a simple CRUD app with no complex query patterns
-- Adding AI does not solve a problem the user actually has
-- The user has not expressed interest in AI features
-- It would be a gimmick rather than a genuine productivity improvement
+Otherwise leave it out of the recommendation: a simple CRUD app with no complex query patterns, or a user who has not asked about AI features, gets no MCP suggestion.
 
 **If MCP integration is warranted:**
 ```
@@ -261,31 +241,16 @@ Keep the recommendation proportional to the project. A weekend project gets a sh
 
 ## Guardrails
 
-**Never:**
-- Recommend a service without checking if the user already has an alternative installed
-- Suggest a paid service when a free alternative covers the requirements
-- Recommend Docker to someone who does not have it and does not need it
-- Default to AWS/GCP/Azure for projects that do not need enterprise cloud
-- Stack multiple managed services when one would suffice (do not use Supabase + Auth0 + separate hosting when Supabase covers all three)
-- Recommend based on what is trendy instead of what fits
-- Ignore cost — always include a monthly estimate
-- Suggest microservices for a project that should be a monolith
+- Run the environment-awareness inventory before naming any service.
+- Prefer what is already installed over a new service, and a free option over a paid one when it covers the requirements.
+- Cover several needs with one managed service rather than stacking one per need (Supabase for database, auth and storage, rather than Supabase + Auth0 + separate hosting).
+- Match the pricing model to the traffic shape: steady load goes on fixed-cost hosting, spiky low-volume load on serverless.
+- Pick by the project's requirements, not by what is popular this year; SQLite and a single VPS cover more projects than the trend suggests.
+- Default to a monolith on a VPS or a PaaS; reach for AWS/GCP/Azure, Docker or microservices only when a named requirement demands them.
+- Present one recommended stack and one alternative, each with a monthly cost estimate and the trigger for switching.
+- Name what you deliberately left out and why.
+- When the user has already committed to a stack, help with that stack.
 
-**Always:**
-- Run environment-awareness inventory before making recommendations
-- Present at least one recommended stack and one alternative
-- Include cost estimates (even rough ones)
-- Explain when to upgrade from the simple recommendation to the alternative
-- Mention what you deliberately did not recommend and why
-- Bias toward fewer services, lower cost, and less complexity
-- Respect the user's existing choices when they have already committed to a stack
+## Related
 
-## Connections
-
-This skill integrates with the Ascension workflow at infrastructure decision points:
-
-- **ascension:environment-awareness** -- Provides the system inventory this skill depends on. Always invoke before making recommendations.
-- **ascension:rationale** -- Rationale surfaces alternatives at the feature level; deployment-advisor deepens the analysis for infrastructure-specific decisions.
-- **ascension:system-design** -- Works together for architecture decisions. System-design handles application architecture; deployment-advisor handles infrastructure and services.
-- **ascension:project-bootstrap** -- Deployment-advisor runs during project setup to establish the initial stack before any code is written.
-- **ascension:security-protocol** -- Auth and hosting recommendations must align with security requirements.
+`ascension:environment-awareness` supplies the inventory Step 2 depends on. `ascension:system-design` handles application architecture while this skill handles infrastructure and services. `ascension:security-protocol` sets the requirements the auth and hosting recommendations must meet.

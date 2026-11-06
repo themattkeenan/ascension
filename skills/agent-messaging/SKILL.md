@@ -1,51 +1,33 @@
 ---
 name: agent-messaging
-description: Use when dispatching subagents, composing prompts for teammates, structuring handoff reports, or managing context boundaries between agents. Covers both subagent prompts and team-level messaging.
+description: Use when dispatching subagents, composing prompts for teammates, structuring handoff reports, or managing context boundaries between agents.
 ---
 
 # Agent Messaging
 
 ## Overview
 
-Defective inter-agent communication is the root cause of most multi-agent breakdowns: bloated context drowns focus, imprecise prompts yield incorrect results, and sloppy handoffs lose critical data.
-
-**Core principle:** Supply agents with exactly the context they require — nothing more, nothing less. Structure every message for the recipient, not the sender.
-
-## The Prime Directive
-
-```
-NO AGENT DISPATCH WITHOUT A STRUCTURED BRIEF
-```
-
-If you have not organized the context, the agent will burn tokens deciphering your intent.
+Supply each agent exactly the context its task requires, structured for the recipient rather than the sender. Most multi-agent breakdowns trace back to the message: bloated context drowns focus, imprecise prompts yield incorrect results, and sloppy handoffs lose the data the next agent needed.
 
 ## When to Use
 
-**Apply to:**
 - Composing prompts for subagents (Agent tool dispatches)
 - Sending messages to team members (SendMessage)
 - Structuring reports back to callers or team leads
 - Handing off work between agents (implementer to reviewer, researcher to lead)
 - Deciding what context to include or exclude
 
-**Complements:**
-- **ascension:delegated-execution** — Prompt design for implementer/reviewer subagents
-- **ascension:parallel-execution** — Prompt design for concurrent investigations
-- **ascension:team-orchestration** — Message design for team coordination
-
 ## The Entry Protocol
 
-```
-BEFORE dispatching any agent or sending any message:
+Before dispatching any agent or sending any message, settle these five:
 
-1. RECIPIENT: Who receives this? (subagent, teammate, team lead)
-2. OBJECTIVE: What must they DO? (implement, investigate, review, report)
-3. CONTEXT: What must they KNOW? (only what is relevant to their task)
-4. DELIVERABLE: What must they RETURN? (format, content, detail level)
-5. CONSTRAINTS: What must they NOT do? (scope limits, file restrictions)
+1. **Recipient:** who receives this? (subagent, teammate, team lead)
+2. **Objective:** what must they do? (implement, investigate, review, report)
+3. **Context:** what must they know? (only what is relevant to their task)
+4. **Deliverable:** what must they return? (format, content, detail level)
+5. **Constraints:** where does their scope end? (file restrictions, what stays untouched)
 
-Skip any step = unfocused agent, wasted tokens
-```
+Done when all five are written into the brief; the templates below carry them.
 
 ## Subagent Prompt Design
 
@@ -90,7 +72,7 @@ You are implementing Task N: [task name]
 [Where this fits, what preceded it, architectural decisions]
 ```
 
-**Never make a subagent read a plan file.** Paste the relevant content directly. Reading files wastes tokens and attention on irrelevant sections.
+**Paste the task text into the brief.** A subagent sent to read the plan file spends tokens and attention on every other task in it.
 
 ### Subagent Brief Template
 
@@ -102,7 +84,7 @@ Every subagent brief should contain these sections:
 | **Task** | Specific work to perform | Yes |
 | **Context** | Only what is needed to understand the task | Yes |
 | **Files** | Exact paths to work with | Yes |
-| **Constraints** | What NOT to do, scope boundaries | Yes |
+| **Constraints** | Scope boundaries: which files stay untouched | Yes |
 | **Verification** | How to confirm success | Yes |
 | **Deliverable format** | What to report back | Yes |
 | **Questions** | Permission to ask before starting | Recommended |
@@ -174,19 +156,6 @@ a new endpoint for that. What do you think? Also I noticed..."
 ```
 
 ### Broadcast vs Direct Message
-
-```dot
-digraph message_type {
-    "Who needs this information?" [shape=diamond];
-    "Entire team?" [shape=diamond];
-    "broadcast (expensive)" [shape=box];
-    "SendMessage to specific teammate" [shape=box style=filled fillcolor=lightgreen];
-
-    "Who needs this information?" -> "Entire team?";
-    "Entire team?" -> "broadcast (expensive)" [label="yes - convention change, critical blocker"];
-    "Entire team?" -> "SendMessage to specific teammate" [label="no - most cases"];
-}
-```
 
 **Broadcast only when:**
 - Convention or pattern change that affects every teammate
@@ -329,43 +298,18 @@ ATTEMPTED: [what was tried]
 NEED: [what would unblock - decision, information, or fix]
 ```
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "More context is always helpful" | More context = more distraction. Lean context produces better results for independent tasks. |
-| "They can figure out what's relevant" | Agents waste tokens parsing irrelevant content. Curate context for them. |
-| "Just read the plan file" | Plan files contain all tasks. The agent gets distracted by other tasks. Paste only the relevant portion. |
-| "I'll explain informally, no structure needed" | Unstructured prompts produce unstructured results. Use the template. |
-| "Short messages seem curt" | Concise messages respect the recipient's context window. |
-| "I'll report everything I found" | Report what is actionable. Filter noise before sending. |
-
 ## Guardrails
 
-**Prohibited:**
-- Making subagents read plan files (paste content instead)
-- Sending unstructured prompts ("fix the tests")
-- Including irrelevant context ("here's the full history...")
-- Using broadcast for routine updates
-- Omitting the deliverable format section (agents will not know what to report)
-- Escalating without stating what was already attempted
+- Structure every brief with role, task, context, files, constraints, verification and deliverable; the template above is the checklist.
+- Paste the content the agent needs; point at a file only when the agent must edit or run it.
+- Give every implementation brief a verification command.
+- Name the deliverable format, so the agent knows what to report.
+- Keep messages short; brevity respects the recipient's context window.
+- Report what the recipient can act on, and filter the rest before sending.
+- Direct-message the teammate who needs the information; broadcast only for a convention change or a blocker that halts everyone.
+- Put file paths in every handoff, and send cross-cutting discoveries to every party they affect.
+- Escalate with what was already attempted.
 
-**Mandatory:**
-- Structure every prompt with role, task, context, constraints, deliverable
-- Paste content directly instead of referencing files
-- Include verification commands in implementation prompts
-- Use direct messages over broadcast
-- Include file paths in every handoff
-- Report cross-cutting discoveries to affected parties
+## Related
 
-## Integration
-
-**Consumed by:**
-- **ascension:delegated-execution** — Implementer and reviewer prompts
-- **ascension:parallel-execution** — Concurrent agent prompts
-- **ascension:team-orchestration** — Team communication patterns
-
-**Complements:**
-- **ascension:fault-diagnosis** — Structure for debug investigation reports
-- **ascension:quality-gate** — Structure for review requests
-- **ascension:completion-gate** — Structure for completion reports
+Consumed by `ascension:delegated-execution` (implementer and reviewer prompts), `ascension:parallel-execution` (concurrent agent briefs) and `ascension:team-orchestration` (team coordination messages).

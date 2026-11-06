@@ -9,17 +9,7 @@ description: Use when a task benefits from multiple Claude instances collaborati
 
 Agent Teams enable multiple Claude Code sessions to collaborate on a shared project with direct peer-to-peer messaging and shared task lists. Unlike subagents, teammates can communicate with each other, claim tasks dynamically, and coordinate on shared problems.
 
-**Core principle:** Deploy teams when tasks benefit from collaboration, not merely parallelism. If teammates will never need to message each other, use parallel subagents instead.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO TEAM WITHOUT A COLLABORATION REQUIREMENT
-```
-
-If teammates will never exchange messages, you do not need a team.
+Deploy teams when tasks benefit from collaboration, not merely parallelism. If teammates will never need to message each other, use parallel subagents instead.
 
 ## When to Use
 
@@ -49,12 +39,10 @@ digraph when_teams {
 - Debugging with competing hypotheses that need to share evidence
 - Large refactoring across multiple subsystems with shared conventions
 
-**Do not use when:**
+**Route elsewhere when:**
 - Simple independent tasks (use ascension:parallel-execution)
 - Sequential dependent tasks (use ascension:delegated-execution)
-- Single-file or single-module changes
-- Agent Teams feature not enabled
-- Fewer than 2 genuinely collaborative tasks
+- Single-file or single-module changes (a single agent)
 
 ## Prerequisites
 
@@ -73,36 +61,21 @@ Without this, TeamCreate, TaskCreate, and SendMessage tools are unavailable.
 ToolSearch: { "query": "select:SendMessage,TaskCreate,TaskUpdate,TaskList,TaskGet,EnterWorktree" }
 ```
 
-## The Entry Protocol
-
-```
-BEFORE forming a team:
-
-1. ENUMERATE: What are all the tasks?
-2. MAP: Which tasks need information from other tasks?
-3. COUNT: How many task pairs require shared discoveries?
-4. DECIDE:
-   - 0 pairs need collaboration -> Use parallel-execution
-   - 1 pair needs collaboration -> Consider single agent or subagents
-   - 2+ pairs need collaboration -> Use Agent Teams
-5. ONLY THEN: Form the team
-
-Skip any step = unnecessary team overhead
-```
-
 ## The Workflow
 
 ### Step 1: Evaluate Task-Team Fit
 
-Before reaching for TeamCreate, answer these:
+Before reaching for TeamCreate:
 
-| Question | If Yes | If No |
-|----------|--------|-------|
-| Can a single agent handle this? | Do that instead | Continue |
-| Can parallel subagents handle this? | Use parallel-execution | Continue |
-| Do agents need to share discoveries mid-work? | Teams | Subagents |
-| Do agents need to negotiate interfaces? | Teams | Subagents |
-| Is coordination overhead justified? | Teams | Simpler approach |
+1. **Enumerate:** list every task.
+2. **Map:** for each task, which other tasks does it need information from, or an interface agreed with, while the work is in progress?
+3. **Count:** how many task pairs share discoveries this way?
+4. **Decide:**
+   - 0 pairs: use ascension:parallel-execution
+   - 1 pair: a single agent or subagents
+   - 2+ pairs: Agent Teams, if the coordination overhead is justified by the work
+
+Done when the pair count is written down and the route is chosen. Form a team only on the 2+ route.
 
 ### Step 2: Architect the Team
 
@@ -142,6 +115,8 @@ Agent: {
 | 4 | Cross-cutting refactor with 4 modules | High |
 | 5 | Maximum — only for genuinely large efforts | Very High |
 
+Done when every teammate is spawned with a prompt that names the files it owns.
+
 ### Step 2b: Isolate Workspaces
 
 Each teammate should work in an isolated git worktree to prevent merge conflicts at the filesystem level:
@@ -179,9 +154,11 @@ TaskUpdate: { "taskId": "2", "owner": "frontend-eng" }
 - Clear scope: exactly which files/modules this teammate owns
 - Dependencies: use `addBlockedBy` for tasks that must complete first
 - Success criteria: what "done" looks like in the description
-- File ownership: NO overlap between teammates (prevents merge conflicts)
+- File ownership: every file has exactly one owner
 
-**File ownership is non-negotiable.** Two teammates editing the same file guarantees merge conflicts. If a shared file needs changes from multiple perspectives, assign it to ONE teammate who coordinates with others via messaging.
+**One owner per file.** When a shared file needs changes from several perspectives, it goes to one teammate, who takes the others' requirements by message.
+
+Done when every task has an owner, its file list, its done criterion, and its `addBlockedBy` wiring.
 
 ### Step 4: Coordinate as Team Lead
 
@@ -226,7 +203,7 @@ TaskUpdate: { "taskId": "1", "status": "completed" }
 ```
 
 - Arbitrate conflicts if teammates disagree on approach
-- Use broadcast ONLY for team-wide critical issues (expensive — sends N messages):
+- Reserve broadcast for team-wide critical issues; it sends N separate messages:
 
 ```json
 // Broadcast — use sparingly, sends N separate messages
@@ -237,6 +214,8 @@ SendMessage: {
 }
 ```
 
+Done when TaskList shows every task completed.
+
 ### Step 5: Integrate Results
 
 When all tasks complete:
@@ -244,7 +223,7 @@ When all tasks complete:
 2. Confirm no file conflicts between teammates
 3. Run full test suite
 4. Verify that cross-module interfaces agree
-5. **REQUIRED SUB-PROTOCOL:** Use ascension:merge-protocol
+5. Call the Skill tool with "ascension:merge-protocol" to land the work
 
 ## Team Patterns
 
@@ -281,36 +260,16 @@ Teammates are independent Claude sessions. Key behaviors:
 - **Message each other** — Teammates can and should message each other directly, not just the team lead.
 - **Self-directed** — Once given a task, teammates work autonomously. Avoid micromanagement.
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "Teams are always superior to subagents" | Teams add coordination overhead. Deploy only when collaboration is necessary. |
-| "More teammates = faster delivery" | More teammates = more coordination. 3 focused teammates outperform 6 scattered ones. |
-| "I'll form the team and figure out tasks later" | Tasks MUST be designed before team formation. No tasks = idle teammates burning tokens. |
-| "Teammates can share files" | Shared files = merge conflicts. Assign clear ownership. |
-| "Broadcast is fine for routine updates" | Broadcast sends N messages. Use SendMessage to specific teammates. |
-| "Dependencies are implied" | Undefined dependencies = teammates stepping on each other. |
-
 ## Guardrails
 
-**Prohibited:**
-- Forming teams for simple tasks (overhead not justified)
-- Allowing teammates to edit the same files (merge conflicts)
-- Skipping integration review after team completion
-- Ignoring teammate messages (they contain discoveries)
-- Forming teams with more than 5 teammates (coordination explodes)
-- Using broadcast for routine updates (use direct messages)
-- Starting a team without clearly designed tasks
-- Leaving dependencies undefined between tasks
-
-**Mandatory:**
-- Define clear file ownership boundaries
-- Set up task dependencies with blockedBy
-- Review all changes together after completion
-- Run full test suite after integration
-- Use SendMessage for teammate-to-teammate coordination
-- Mark tasks complete when done (teammates check TaskList for available work)
+- Design the tasks before creating the team, so no teammate sits idle waiting for work.
+- Give every file exactly one owner.
+- Wire dependencies with `addBlockedBy` before teammates start.
+- Add a teammate only for a module nobody else owns; each one adds coordination cost (see the count table), and five is the ceiling.
+- Read every teammate message; they carry discoveries.
+- Direct-message the teammate who needs the information; broadcast only for a convention change or a blocker that halts everyone.
+- Mark tasks complete as soon as they are done; teammates watch TaskList for available work.
+- Review all changes together and run the full test suite before landing them.
 
 ## Tool Invocation Reference
 
@@ -527,17 +486,6 @@ SendMessage: { "type": "shutdown_request", "recipient": "backend-eng", "content"
 SendMessage: { "type": "shutdown_request", "recipient": "frontend-eng", "content": "All done, wrapping up" }
 ```
 
-## Integration
+## Related
 
-**Related orchestration protocols:**
-- **ascension:parallel-execution** — For independent tasks without collaboration requirement
-- **ascension:delegated-execution** — For sequential tasks with review checkpoints
-- **ascension:task-runner** — For plan execution in a separate session
-
-**Teammates should use:**
-- **ascension:test-first** — For implementation tasks
-- **ascension:fault-diagnosis** — For diagnosis team investigations
-- **ascension:completion-gate** — Before marking tasks complete
-
-**Required for completion:**
-- **ascension:merge-protocol** — After all team tasks complete
+`ascension:parallel-execution` takes the independent tasks and `ascension:delegated-execution` the sequential ones. `ascension:merge-protocol` lands the team's worktrees once Step 5 is done.

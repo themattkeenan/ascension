@@ -7,15 +7,7 @@ description: Use when facing 2+ tasks that share no state and have no sequential
 
 ## Overview
 
-When multiple distinct failures appear across separate subsystems, tackling them one after another wastes time. Each investigation is self-contained and can run simultaneously.
-
-**Core principle:** Assign one agent per isolated problem domain. Let them operate concurrently.
-
-## Prime Directive
-
-> **NO CONCURRENT DISPATCH WITHOUT CONFIRMING ISOLATION**
-
-No exceptions. No workarounds. No shortcuts.
+When multiple distinct failures appear across separate subsystems, tackling them one after another wastes time. Each investigation is self-contained and can run simultaneously: assign one agent per isolated problem domain and let them operate concurrently, once the isolation is confirmed.
 
 ## When to Use
 
@@ -44,9 +36,10 @@ digraph dispatch_decision {
 - No shared mutable state between the work items
 
 **Not appropriate when:**
-- Failures are connected (resolving one may resolve others)
+- Failures are connected (resolving one may resolve others) — investigate holistically first
 - Understanding requires a holistic system view
-- Agents would interfere with each other's work
+- The problem space is still unknown (exploratory debugging)
+- Agents would interfere with each other's work (same files, same databases, same services)
 
 ## The Approach
 
@@ -59,13 +52,17 @@ Classify failures by root cause area:
 
 Each domain is self-contained — fixing permissions has no bearing on cancellation tests.
 
+Done when every failure sits in exactly one domain, and the files each domain will touch are listed and do not intersect.
+
 ### 2. Craft Focused Agent Briefs
 
 Each agent receives:
 - **Defined scope:** One test file or subsystem
 - **Concrete objective:** Get these tests green
-- **Boundaries:** Do not modify code outside your scope
+- **Boundaries:** The files it may modify, and nothing outside them
 - **Deliverable:** Summary of root cause and changes made
+
+Done when every brief carries all four.
 
 ### 3. Launch Concurrently
 
@@ -80,10 +77,13 @@ Agent("Fix cancellation-handling.test.ts failures")
 ### 4. Reconcile and Verify
 
 When agents complete:
-- Study each summary
-- Confirm changes do not overlap
-- Execute the full test suite
-- Integrate all results
+1. **Study each summary** — Understand what changed and why
+2. **Detect overlaps** — Did any agents touch the same code?
+3. **Run the full suite** — Confirm all fixes coexist
+4. **Spot-check** — Agents can introduce systematic errors
+5. **Finalize** — Call the Skill tool with "ascension:merge-protocol" to land the work
+
+Done when every summary is read, no two agents touched the same code, and the full suite is green.
 
 ## Agent Brief Structure
 
@@ -127,23 +127,6 @@ Return: Root cause analysis and description of changes made.
 **Vague output request:** "Fix it" — you have no idea what changed
 **Specific output request:** "Return root cause summary and list of modified files"
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|-----------------|-------|
-| "They're probably isolated enough" | Confirm isolation explicitly or agents will collide. |
-| "We'll reconcile conflicts later" | Merge conflicts from concurrent agents are harder than sequential work. |
-| "More agents = faster delivery" | Agents editing shared files = wasted effort and broken merges. |
-| "The scope is self-evident" | Vague briefs yield vague outcomes. Specify scope, boundaries, and output. |
-| "One agent can handle everything" | An agent with too wide a scope gets lost. Divide by domain. |
-
-## When NOT to Use
-
-**Coupled failures:** Resolving one may cascade fixes to others — investigate holistically first
-**Holistic understanding required:** Comprehension demands seeing the full system
-**Exploratory debugging:** The problem space is unknown
-**Shared resources:** Agents would conflict (same files, same databases, same services)
-
 ## Worked Example
 
 **Situation:** 8 test failures across 3 files after a major refactor
@@ -169,51 +152,14 @@ Agent 3 -> Fix cancellation-handling.test.ts
 
 **Reconciliation:** All fixes touched separate files, zero conflicts, full suite green
 
-**Value:** Three problems solved concurrently instead of sequentially
-
-## Advantages
-
-1. **Concurrency** — Multiple investigations proceed at once
-2. **Concentration** — Each agent manages a small context
-3. **Non-interference** — Agents stay out of each other's way
-4. **Throughput** — N problems solved in the time of one
-
-## Post-Dispatch Checks
-
-After agents return:
-1. **Study each summary** — Understand what changed and why
-2. **Detect overlaps** — Did any agents touch the same code?
-3. **Run the full suite** — Confirm all fixes coexist
-4. **Spot-check** — Agents can introduce systematic errors
-5. **Finalize** — REQUIRED SUB-SKILL: Use `ascension:merge-protocol` to land the work
-
 ## Guardrails
 
-**Prohibited:**
-- Dispatching concurrent agents without verifying task isolation
-- Allowing agents to modify the same files simultaneously
-- Integrating without reviewing agent summaries
-- Using parallel dispatch for exploratory diagnosis
-- Dispatching without defined scope, boundaries, and deliverables
+- Confirm isolation before dispatch by listing the files each agent will touch and checking the lists do not intersect.
+- Where two domains share a file, give both to one agent; resolve the overlap before dispatch, not at merge time.
+- Give each agent a narrow, explicit scope, with the error messages and failing test names pasted in.
+- Reserve parallel dispatch for failures already understood as separate; exploratory diagnosis stays with one agent.
+- Read every summary, check for overlap and run the full suite before landing anything.
 
-**Mandatory:**
-- Confirm isolation before dispatching
-- Give each agent a narrow, explicit scope
-- Include error messages and test names in agent briefs
-- Review all agent summaries before integration
-- Execute full test suite after integrating all changes
-- Check for conflicts between agent outputs
+## Related
 
-## Integration
-
-**ascension:team-orchestration:**
-- Parallel execution is a foundational pattern for team-based work
-- Use team orchestration when agents have partial dependencies
-
-**ascension:delegated-execution:**
-- Launch parallel agents for independent tasks within a development plan
-- Each agent owns one task from the plan
-
-**ascension:agent-messaging:**
-- Agents dispatched in parallel should not need inter-agent communication
-- If they need to communicate, they are not isolated enough for parallel dispatch
+`ascension:team-orchestration` is for agents with partial dependencies on each other; `ascension:delegated-execution` dispatches independent tasks from within a development plan. Briefs follow `ascension:agent-messaging`; agents that would need to message each other are not isolated enough for parallel dispatch.

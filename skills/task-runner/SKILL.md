@@ -9,19 +9,9 @@ description: Use when you have a written implementation plan to execute in a sep
 
 Load the plan, scrutinize it, execute tasks in batches, and pause for architect review between batches.
 
-**Core principle:** Batch execution with checkpoints for architect oversight.
+Plans contain errors, ambiguities, and outdated assumptions. Every task is read critically before it runs.
 
 **Announce at start:** "I'm applying the task-runner skill to execute this implementation plan."
-
-## The Prime Directive
-
-```
-NO PLAN EXECUTION WITHOUT CRITICAL REVIEW OF EACH TASK FIRST
-```
-
-No exceptions. No workarounds. No shortcuts.
-
-Plans contain errors, ambiguities, and outdated assumptions. Every task must be critically examined before execution begins. Blindly following a plan is not "efficiency" -- it is investing time in incorrect work.
 
 ## When to Use
 
@@ -68,21 +58,10 @@ Before beginning plan execution, verify ALL of these:
 3. **Concerns are addressed** - Questions and ambiguities have been raised and answered
 4. **Tests pass at baseline** - Existing tests pass before any changes are made
 5. **Branch is clean** - Working in a feature branch (not main/master), no uncommitted changes
-6. **Worktree is configured** - Using git worktree for isolation (ascension:workspace-isolation)
+6. **Worktree is configured** - Call the Skill tool with "ascension:workspace-isolation" to set up the git worktree
 7. **Task checklist is populated** - All tasks loaded into a tracking checklist
 
-**If any gate fails, STOP.** Do not proceed until every gate passes.
-
-## Cognitive Traps
-
-| Rationalization | What Is Actually True |
-|----------------|----------------------|
-| "The plan looks fine, skip review" | Plans contain errors. Review catches them before time is wasted on incorrect work. |
-| "I'll review while executing" | Reviewing during execution means you are already committed. Review before starting. |
-| "This task is self-explanatory" | Self-explanatory tasks conceal assumptions. Thirty seconds of review prevents thirty minutes of rework. |
-| "Batching is slow, I'll do everything at once" | Batches exist for human review. Skipping review lets errors compound across all tasks. |
-| "Tests are slow, skip verification this round" | Unverified batches hide failures. Debugging later costs more. |
-| "The plan says X but Y seems better" | Raise it with your human partner. Silently deviating from the plan creates confusion. |
+Done when all seven hold. A failing gate is resolved before Step 1 starts.
 
 ## The Process
 
@@ -91,6 +70,8 @@ Before beginning plan execution, verify ALL of these:
 2. Review critically -- flag any questions or concerns about each task
 3. If concerns: Raise with your human partner before starting
 4. If no concerns: Build a task checklist and proceed
+
+Done when every task has been read and every concern raised has an answer.
 
 ### Step 2: Execute Batch
 **Default batch size: 3 tasks**
@@ -101,8 +82,11 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
+Done when every task in the batch is marked completed with its verification output in hand.
+
 ### Step 3: Report
 When batch completes:
+- Call the Skill tool with "ascension:completion-gate" before asserting anything passed
 - Show what was implemented
 - Show verification output
 - Say: "Ready for feedback."
@@ -117,18 +101,18 @@ Based on feedback:
 
 After all tasks are complete and verified:
 - Announce: "I'm applying the merge-protocol skill to finalize this work."
-- **REQUIRED SUB-SKILL:** Use ascension:merge-protocol
+- Call the Skill tool with "ascension:merge-protocol"
 - Follow that skill to verify tests, present options, execute choice
 
 ## When to Stop and Ask
 
-**STOP executing immediately when:**
-- You hit a blocker mid-batch (missing dependency, test failure, unclear instruction)
-- The plan has critical gaps that prevent starting
-- You do not understand an instruction
-- Verification fails repeatedly
+Stop executing and ask your partner when you notice:
+- A blocker mid-batch (missing dependency, test failure, unclear instruction)
+- Critical gaps in the plan that prevent starting
+- An instruction you do not understand
+- Verification failing repeatedly
 
-**Ask for clarification rather than guessing.**
+Ask for clarification rather than guessing.
 
 ## When to Revisit Earlier Steps
 
@@ -136,82 +120,15 @@ After all tasks are complete and verified:
 - Partner updates the plan based on your feedback
 - The fundamental approach needs rethinking
 
-**Do not force through blockers** -- stop and ask.
-
 ## Guardrails
 
-**Never:**
-- Execute a task you have not critically reviewed first
-- Skip verification steps to "save time"
-- Silently deviate from the plan without raising it with your human partner
-- Start implementation on main/master branch without explicit user consent
+- Read each task critically before marking it in_progress.
+- Run the plan's verifications after each task.
+- Stop and ask when blocked.
+- Report the completed batch and wait for feedback before starting the next, even when the next tasks look easy; the batch boundary is where errors get caught before they compound.
+- When a task looks wrong or a better route appears, raise it with your partner before changing course, so the plan changes on the record.
+- Work on a feature branch; implementation on main/master happens only with the user's explicit consent.
 
-**Always:**
-- Review each task before marking it in_progress
-- Run verifications as specified in the plan after each task
-- Stop and ask when blocked (do not guess or improvise)
-- Report the completed batch and wait for feedback before continuing
+## Related
 
-## Batch Execution Diagram
-
-```dot
-digraph batch_flow {
-    rankdir=TB;
-
-    gate [label="Entry Protocol\n(all checks pass?)", shape=diamond];
-    gate_fail [label="STOP\nResolve before proceeding", shape=box, style=filled, fillcolor="#ffcccc"];
-    load [label="Load plan\nBuild task checklist", shape=box];
-    review_task [label="Scrutinize next task", shape=box];
-    concerns [label="Concerns?", shape=diamond];
-    raise [label="Raise with\nhuman partner", shape=box, style=filled, fillcolor="#ffffcc"];
-    execute [label="Mark in_progress\nExecute task steps\nRun verifications", shape=box];
-    mark_done [label="Mark completed", shape=box];
-    batch_done [label="Batch complete?\n(default: 3 tasks)", shape=diamond];
-    report [label="Report results\nSay: Ready for feedback", shape=box, style=filled, fillcolor="#ccffcc"];
-    feedback [label="Wait for\nhuman feedback", shape=box];
-    apply [label="Apply adjustments\nif needed", shape=box];
-    more [label="More tasks?", shape=diamond];
-    finish [label="Invoke merge-protocol\nskill", shape=box, style=filled, fillcolor="#ccccff"];
-
-    gate -> gate_fail [label="no"];
-    gate -> load [label="yes"];
-    load -> review_task;
-    review_task -> concerns;
-    concerns -> raise [label="yes"];
-    raise -> review_task [label="resolved"];
-    concerns -> execute [label="no"];
-    execute -> mark_done;
-    mark_done -> batch_done;
-    batch_done -> review_task [label="no"];
-    batch_done -> report [label="yes"];
-    report -> feedback;
-    feedback -> apply;
-    apply -> more;
-    more -> review_task [label="yes - next batch"];
-    more -> finish [label="no - all done"];
-}
-```
-
-## Reminders
-- Scrutinize the plan critically before starting
-- Follow plan steps precisely
-- Do not skip verifications
-- Reference skills when the plan calls for them
-- Between batches: report and wait
-- Stop when blocked, do not guess
-- Never start implementation on main/master without explicit user consent
-
-## Connections
-
-**Required workflow skills:**
-- **ascension:workspace-isolation** - REQUIRED: Set up isolated workspace before starting
-- **ascension:task-planning** - Creates the plan this skill executes
-- **ascension:merge-protocol** - Finalize development after all tasks
-
-**During execution, tasks may invoke:**
-- **ascension:test-first** - When plan tasks involve writing new code
-- **ascension:fault-diagnosis** - When a task encounters unexpected failures
-- **ascension:completion-gate** - Verify each batch before reporting
-
-**Alternative workflow:**
-- **ascension:delegated-execution** - Use for same-session execution with automated two-stage review instead of human-in-loop batches
+`ascension:task-planning` produces the plan this skill executes. `ascension:delegated-execution` is the same-session alternative with automated two-stage review instead of human-reviewed batches. Tasks that write new code call `ascension:test-first`; a task that hits an unexpected failure calls `ascension:fault-diagnosis`.
