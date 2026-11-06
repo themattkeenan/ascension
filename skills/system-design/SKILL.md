@@ -7,23 +7,11 @@ description: Use when making technology or structural decisions - selecting data
 
 ## Overview
 
-Select the simplest architecture that satisfies requirements. Introduce complexity only when evidence demands it.
-
-**Core principle:** Every structural decision must be driven by a current requirement, not a speculative future one.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO STRUCTURAL COMPLEXITY WITHOUT AN ESTABLISHED REQUIREMENT
-```
-
-If you cannot point to a concrete, current requirement that demands the complexity, choose the simpler option.
+Select the simplest architecture that satisfies the current requirements, and introduce complexity only when evidence demands it. Every structural decision is driven by a requirement that exists now, not a speculative future one.
 
 ## When to Use
 
-**Always before:**
+Before:
 - Selecting a database
 - Designing an API
 - Organizing a new project
@@ -32,25 +20,18 @@ If you cannot point to a concrete, current requirement that demands the complexi
 - Choosing authentication strategy
 - Deciding on monolith vs services
 
-**Especially when:**
-- "We might need to scale" (might = do not add complexity)
-- "What if we need X later?" (later = not now)
-- Multiple valid approaches exist
+Especially when someone says "we might need to scale" or "what if we need X later", or when multiple valid approaches exist.
 
 ## The Entry Protocol
 
-```
-BEFORE making ANY structural decision:
+Before making any structural decision:
 
-1. IDENTIFY: What concrete requirement drives this choice?
-2. COMPARE: What is the simplest option that satisfies it?
-3. JUSTIFY: Why is anything more complex necessary?
-   - If no justification: Use the simple option
-   - If justified: Record the requirement driving complexity
-4. DECIDE: Choose. Document. Move on.
+1. **Identify** the concrete, current requirement that drives this choice.
+2. **Compare**: what is the simplest option that satisfies it?
+3. **Justify** anything more complex. With no justification, take the simple option; with one, record the requirement driving the complexity.
+4. **Decide**, document, move on.
 
-Skip any step = over-engineering
-```
+Done when the decision record names the requirement, the option chosen, and the simpler option it beat.
 
 ## Decision Frameworks
 
@@ -82,7 +63,7 @@ digraph structure_decision {
 
 | Requirement | Select | Rationale |
 |-------------|--------|-----------|
-| Structured data, relationships, transactions | PostgreSQL | ACID guarantees, mature, covers 90% of use cases |
+| Structured data, relationships, transactions | PostgreSQL | ACID guarantees, mature, handles JSON and full-text search |
 | Document-oriented, genuinely variable schema per record | MongoDB | Only when schema truly differs per document |
 | Key-value, caching, session storage | Redis | In-memory speed, built-in TTL |
 | Full-text search at volume | Elasticsearch | Purpose-built for search workloads |
@@ -189,30 +170,17 @@ src/
 
 Capability-based organization keeps related code together. Changing one capability touches one directory.
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|-----------------|-------|
-| "We might need microservices later" | Extract when needed. Monolith-first is faster to build and debug. |
-| "NoSQL is more flexible" | PostgreSQL handles JSON. Schema flexibility usually means schema confusion. |
-| "GraphQL is the modern choice" | REST is simpler for CRUD. Modern does not mean appropriate. |
-| "JWTs are more secure" | JWTs are harder to revoke. Sessions are simpler and server-controlled. |
-| "We need a cache for performance" | Have you optimized your queries? Measure first. |
-| "Event-driven is more scalable" | Direct calls are simpler. Scaling concerns are future concerns. |
-| "This architecture handles future growth" | The future is unpredictable. Solve current problems. |
+- Build for the load measured today; write expected growth down as a requirement to revisit, not as infrastructure.
+- Pick technology for the requirement it meets, and name that requirement in the decision record; "modern" and "industry standard" are not requirements.
+- One database until a second, distinct access pattern is named.
+- Direct calls for synchronous workflows; a queue appears only where async processing or decoupling is the established requirement.
+- A single team ships a monolith.
+- When a flexible schema looks attractive, name the fields that actually vary per record; PostgreSQL's JSON columns cover variation without a second store.
+- Cache after measuring, and after the query has been optimized.
 
-## Guardrails - HALT and Simplify
-
-- Adding infrastructure for "future scale"
-- Selecting technology because it is "modern" or "industry standard"
-- Architecture diagram has more than 5 components for an MVP
-- Multiple databases without distinct access patterns
-- Message queues for synchronous workflows
-- Microservices with a single team
-- "Flexible" schemas without concrete varying fields
-- Caching before measuring
-
-**All of these mean: Simplify. Use the boring, proven option.**
+Stop and simplify when you notice: an MVP architecture past five components, or a component whose only justification is future growth.
 
 ## Module shape
 
@@ -220,20 +188,8 @@ Structural decisions above pick the *pieces*. The shape of each piece — how mu
 
 Inside a repository, call the Skill tool with "ascension:domain-modeling" so the names you choose match `CONTEXT.md` and the hard-to-reverse choices here land as ADRs.
 
-## Integration
+## Related
 
-**Complements:**
-- **ascension:module-design** — Interface shape, seam placement, depth
-- **ascension:domain-modeling** — Naming, glossary, and ADRs for these decisions
-- **ascension:performance-tuning** — When structural choices affect performance
-- **ascension:security-protocol** — Auth patterns and data flow security
-- **ascension:project-bootstrap** — File organization and initial setup
-- **ascension:task-planning** — Structural decisions during planning phase
-
-## The Bottom Line
-
-```
-Simplest architecture that works > "best" architecture that might be needed
-```
-
-PostgreSQL. REST. Monolith. Sessions. No cache. Direct calls. Start there. Introduce complexity only when you have evidence it is necessary.
+- `ascension:performance-tuning` — the measurement that earns a cache or a queue
+- `ascension:project-bootstrap` — file organization and initial setup
+- `ascension:security-protocol` — auth patterns and data flow security

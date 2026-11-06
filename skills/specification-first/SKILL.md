@@ -7,50 +7,35 @@ description: Use when building any feature, API, module, or system before writin
 
 ## Overview
 
-Author the specification before the implementation. The specification is the source of truth. Code is generated to satisfy the specification, never the reverse.
-
-**Core principle:** A behavior specification defines WHAT the system does. Code implements HOW. Without a specification, you are guessing.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO IMPLEMENTATION WITHOUT A SPECIFICATION FIRST
-```
-
-If you have not produced a specification defining inputs, outputs, edge cases, and acceptance criteria, you are not authorized to write code. This is not optional. This is not excessive. This prevents the leading cause of AI-generated code failures: building the wrong thing.
+Author the specification before the implementation. The specification is the source of truth: it defines what the system does, and code is written to satisfy it, never the reverse. Without one the implementation is a guess at intent, and building the wrong thing is the failure this skill prevents.
 
 ## When to Use
 
-**Mandatory when:**
 - Developing a new feature or module
 - Creating an API endpoint
 - Constructing a data pipeline
 - Building any system with defined inputs and outputs
 - The user says "build me X" or "create Y"
 
-**Exceptions (confirm with the human):**
+Skip, after confirming with the user, for:
 - Configuration changes
 - Single-line defect fixes with unambiguous behavior
 - Documentation updates
 
 ## The Entry Protocol
 
-```
-BEFORE writing any implementation code:
+Before writing any implementation code:
 
-1. IDENTIFY: What are the inputs?
-2. DEFINE: What are the expected outputs?
-3. CONSTRAIN: What are the boundaries and limitations?
-4. EDGE: What happens at the edges? (empty, null, maximum, concurrent)
-5. ACCEPT: What criteria demonstrate correctness?
-6. WRITE: Produce the specification document
-7. APPROVE: Obtain user confirmation
-8. ONLY THEN: Implement
+1. **Identify** the inputs.
+2. **Define** the expected outputs.
+3. **Constrain**: what are the boundaries and limitations?
+4. **Edge**: what happens at the edges? (empty, null, maximum, concurrent)
+5. **Accept**: what criteria demonstrate correctness? Each one must yield at least one test.
+6. **Write** the specification document using the template below.
+7. **Approve**: obtain the user's confirmation.
+8. **Implement**, calling the Skill tool with "ascension:test-first" so the acceptance criteria become the first tests.
 
-Omit any step = building the wrong thing
-```
+Done when the approved specification exists and every acceptance criterion in it can be turned into a test.
 
 ## Specification Document Template
 
@@ -98,22 +83,7 @@ Omit any step = building the wrong thing
 
 ## Relationship with Test-First Development
 
-```dot
-digraph spec_test_flow {
-    rankdir=LR;
-    spec [label="Author Spec\n(this skill)", shape=box style=filled fillcolor=lightyellow];
-    test [label="Write Failing Test\nfrom Spec Criteria", shape=box style=filled fillcolor="#ffcccc"];
-    code [label="Write Minimal Code\nto Pass Test", shape=box style=filled fillcolor="#ccffcc"];
-    verify [label="Verify Against\nSpec Criteria", shape=box style=filled fillcolor="#ccccff"];
-
-    spec -> test [label="acceptance criteria\nbecome test cases"];
-    test -> code [label="test-first cycle"];
-    code -> verify [label="all criteria satisfied?"];
-    verify -> spec [label="no - revise spec\nor implementation"];
-}
-```
-
-**Specification -> Tests -> Code -> Verify against Specification**
+**Specification -> Tests -> Code -> Verify against Specification.** When verification finds a criterion unmet, revise the specification or the implementation and run it again.
 
 The specification's acceptance criteria map directly to test cases. Each criterion generates at least one test. If you cannot derive a test from a criterion, the criterion is too vague -- refine the specification.
 
@@ -127,42 +97,18 @@ The specification's acceptance criteria map directly to test cases. Each criteri
 
 Scale the specification to the complexity. A utility function warrants a minimal spec. An authentication system demands an exhaustive one.
 
-## Cognitive Traps
-
-| Rationalization | Truth |
-|---|---|
-| "It is too simple to specify" | Simple features harbor hidden edge cases. A specification takes 2 minutes. |
-| "I will figure it out while coding" | You will build the wrong thing and refactor three times. |
-| "The user already described what they want" | Users describe goals, not behavior. The specification bridges that gap. |
-| "Test-first is sufficient; I do not need a spec" | Test-first tells you WHAT to verify. The specification tells you WHAT to build. Both are necessary. |
-| "Specifications slow me down" | Specifications prevent building the wrong thing. That is faster in every measurable way. |
-| "I will write the spec afterward" | Specifications written after implementation rationalize what was built, not what should have been built. |
-| "AI understands my intent" | AI produces plausible code that may diverge from intent. The specification eliminates ambiguity. |
-
 ## Guardrails
 
-**Prohibited actions:**
-- Starting implementation before specification approval
-- Writing tests without referencing specification criteria
-- Changing behavior without updating the specification
-- Shipping without verifying against acceptance criteria
-- Deferring edge cases ("we will handle those later")
-- Writing a specification after implementation is complete
+- Obtain approval of the specification before the first line of implementation; a specification written afterwards describes what was built, not what was needed.
+- Map acceptance criteria to test cases one-to-one.
+- Update the specification when requirements change, before the code changes.
+- Resolve every edge case in the specification; one that is deliberately out of scope goes under Explicitly Excluded rather than being left for later.
+- Verify every criterion passes before declaring completion.
+- When the tests feel like enough on their own, write the specification anyway: tests verify behaviour, the specification decides which behaviour to build, and its criteria feed the tests.
+- When the user's description seems complete, translate it into behaviour before coding: users describe goals; the specification names inputs, outputs and edges.
 
-**Required actions:**
-- Obtain specification approval before writing code
-- Map acceptance criteria to test cases one-to-one
-- Update the specification when requirements evolve
-- Verify all criteria pass before declaring completion
-- Include explicitly excluded features (what you are NOT building)
+## Related
 
-## Integration
-
-**Workflow sequence:**
-- **ascension:intent-discovery** -> produces design
-- **ascension:specification-first** -> produces specification from design
-- **ascension:task-planning** -> produces implementation plan from specification
-- **ascension:test-first** -> produces tests from specification criteria
-- **ascension:completion-gate** -> verifies against specification criteria
-
-**REQUIRED COMPANION SKILL:** Invoke ascension:test-first when implementing
+- `ascension:intent-discovery` -- produces the design this specification is written from
+- `ascension:task-planning` -- produces the implementation plan from the specification
+- `ascension:completion-gate` -- verifies the result against the acceptance criteria

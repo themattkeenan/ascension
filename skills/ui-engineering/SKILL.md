@@ -7,33 +7,18 @@ description: Use when constructing frontend components, selecting layout strateg
 
 ## Overview
 
-Construct UI components with disciplined architecture, not improvised markup.
+Construct UI components with disciplined architecture, not improvised markup. Every component decision -- layout strategy, state ownership, accessibility posture, responsive behavior -- follows an established pattern. `ascension:ux-patterns` says what to build; this skill says how to build it with structural integrity.
 
-**Core principle:** Every component decision -- layout strategy, state ownership, accessibility posture, responsive behavior -- follows established patterns. The UX Patterns skill tells you WHAT to build. This skill tells you HOW to build it with structural integrity.
-
-**PREREQUISITE:** Invoke ascension:ux-patterns first to identify applicable patterns and token values. This skill assumes tokens and patterns are already established.
+Call the Skill tool with "ascension:ux-patterns" first to identify the applicable patterns and token values. This skill assumes tokens and patterns are already established.
 
 ## When to Use
 
-**Mandatory when:**
 - Constructing any frontend component
 - Selecting between Grid and Flexbox
 - Deciding where state should live
 - Engineering responsive breakpoint behavior
 - Building forms, data visualizations, navigation, or overlays
 - Introducing motion or transitions
-
-**Sequenced after:**
-- Design tokens are established (ux-patterns)
-- Target UI pattern is identified (ux-patterns)
-
-## The Prime Directive
-
-```
-NO COMPONENT WITHOUT STRUCTURE, STATES, AND ACCESSIBILITY DEFINED FIRST
-```
-
-Before writing component code, establish: semantic structure (correct HTML elements), all visual states (empty, loading, error, populated, disabled), and accessibility requirements (ARIA attributes, keyboard interaction, contrast ratios).
 
 ## Component Architecture
 
@@ -63,7 +48,7 @@ Prop explosion, unmaintainable, impossible to extend.
 
 ### Pre-Implementation Checklist
 
-Before writing any component:
+Before writing any component, answer each of these:
 
 1. **Semantics** -- Which HTML element is correct? (`button` not `div onClick`, `nav` not `div className="nav"`)
 2. **Props** -- What is the minimal surface area? Can it be composed instead of configured?
@@ -72,6 +57,8 @@ Before writing any component:
 5. **Sizes** -- What size tiers exist? (sm, md, lg -- maximum 3-4)
 6. **Responsive** -- How does it transform at each breakpoint?
 7. **Accessibility** -- ARIA roles, keyboard navigation paths, screen reader announcements
+
+Done when every item has a written answer -- the semantic element, the full set of visual states, and the ARIA, keyboard and contrast requirements -- before the first line of component code.
 
 ## Layout Strategy Selection
 
@@ -341,14 +328,10 @@ Write mobile styles as the baseline, then layer complexity at wider breakpoints.
 | Only implementing the happy path | Design all states before building the happy path |
 | Testing only on desktop | Test mobile-first, verify desktop afterward |
 
-## Integration
+## Related
 
-**Prerequisite:**
-- **ascension:ux-patterns** -- Tokens and patterns must be established first
+- `ascension:ux-patterns` -- prerequisite; tokens and patterns come from here
+- `ascension:design-integration` -- when operating within an established design system
+- `ascension:test-first` -- component tests follow it
 
-**Complementary skills:**
-- **ascension:design-integration** -- When operating within an established design system
-- **ascension:test-first** -- Component tests follow test-first methodology
-
-**Supporting files:**
-- `component-patterns.md` -- Reusable component blueprints with accessibility built in
+`component-patterns.md` beside this file holds reusable component blueprints with accessibility built in.

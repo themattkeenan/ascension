@@ -7,49 +7,32 @@ description: Use when operating in a codebase that employs an existing design sy
 
 ## Overview
 
-Detect the project's design system, embrace it fully, and extend it only through sanctioned channels. Never resist it, never overlook it, never rebuild what it already offers.
+Detect the project's design system, work inside it, and extend it only through its own extension points. A component built beside the system is the failure this skill prevents: it looks almost right, drifts on its own schedule, and multiplies.
 
-**Core principle:** When a project has a design system, every component you create must consume that system's primitives, tokens, and patterns. When no system exists, establish one before writing components.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NEVER REBUILD WHAT THE DESIGN SYSTEM ALREADY PROVIDES
-```
-
-If the system ships a `<Dialog>` component, use it. Do not fabricate your own. Do not wrap it in a container with overriding styles. Consume its variant API and extend only through its documented extension points.
+When a project has a design system, every component you create consumes that system's primitives, tokens, and patterns. When no system exists, establish one before writing components.
 
 ## When to Use
 
-**Mandatory when:**
 - Entering any existing codebase with a user interface
 - Introducing new UI elements to an established application
 - Growing a project's component library
 - Initializing a new project that will have a UI layer
 
-**Specifically triggered by:**
-- Imports from `@shadcn/ui`, `@mui/material`, `antd`, `@chakra-ui`, or equivalents
-- A `components/ui` directory containing base-level primitives
-- Configuration files such as `tailwind.config`, `theme.ts`, or a design token file
-- The need to add UI to a project with no system in place
+Specific triggers: imports from `@shadcn/ui`, `@mui/material`, `antd`, `@chakra-ui`, or equivalents; a `components/ui` directory containing base-level primitives; configuration files such as `tailwind.config`, `theme.ts`, or a design token file.
 
 ## The Entry Protocol
 
-```
-BEFORE authoring any UI component:
+Before authoring any UI component:
 
-1. DETECT: What design system governs this project? (see Detection below)
-2. STUDY: Read the system's component API for the element you are building
-3. ASSESS: Does the system already provide this component?
-   - Yes -> Consume it directly. Do NOT recreate it.
-   - Partially -> Compose from existing primitives
-   - No -> Build it adhering to the system's conventions
-4. VALIDATE: Does your component feel native to the system?
+1. **Detect** which design system governs this project (Detection Sequence below). Done when you can name the system, the internal library, or the token file, or have confirmed none exists.
+2. **Study** the system's component API for the element you are building.
+3. **Assess** whether the system already provides this component:
+   - Yes: consume it directly.
+   - Partially: compose it from existing primitives.
+   - No: build it to the system's conventions (Extension below).
+4. **Validate** that the component reads as native to the system: same naming, same styling mechanism, same token references, same accessibility patterns.
 
-Omit any step = fighting the system
-```
+Done when the new component imports only the system's primitives and tokens and introduces no styling mechanism the system does not already use.
 
 ## Detection Sequence
 
@@ -127,7 +110,7 @@ Copy-and-customize components built on Radix UI + Tailwind CSS.
 **Conventions:**
 - Primitives in `components/ui/` (base building blocks)
 - Application components in `components/` (composed from primitives)
-- `cn()` helper for merging class strings
+- `cn()` helper for merging class strings and conditional class composition
 - `cva()` from `class-variance-authority` for variant definitions
 - All styling through Tailwind utility classes
 
@@ -155,12 +138,6 @@ export function ProjectCard({ project }) {
 }
 ```
 
-**Forbidden:**
-- Overriding shadcn styles with raw CSS files
-- Rebuilding a component shadcn already provides
-- Applying non-Tailwind styling alongside shadcn components
-- Ignoring the `cn()` helper for conditional class composition
-
 ### Material UI
 
 **Conventions:**
@@ -187,9 +164,7 @@ const theme = createTheme({
 **Conventions:**
 - Components imported from `antd`
 - Theming through ConfigProvider + token system
-- Global tokens via `theme.token`, per-component via `theme.components`
-
-**Forbidden:** Direct overrides of `.ant-*` CSS classes or mixing Ant with a competing component library.
+- Global tokens via `theme.token`, per-component via `theme.components`; appearance changes go through these rather than the `.ant-*` classes
 
 ### Tailwind CSS (Standalone, No Component Library)
 
@@ -262,37 +237,20 @@ When joining a project that lacks documented tokens:
 3. Check for `theme.ts` or `theme.js` exports
 4. If nothing is found, audit the 5-10 most-used components for recurring values and document them as tokens
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|---|---|
-| "The system does not have this component" | Compose from primitives or extend within conventions. Do not bypass the system. |
-| "Writing raw CSS is faster than learning the API" | Faster today, inconsistent forever. Invest in learning the system. |
-| "I will wire it into the system later" | Later never arrives. Components outside the system infect everything they touch. |
-| "The system's API is too restrictive" | The API prevents inconsistency by design. Work within it or extend properly. |
-| "Combining two systems gives us the best of both" | Combining two systems delivers the worst of both: conflicting styles, doubled bundle weight. |
-| "This is a one-off component, it does not matter" | One-off components multiply. Build it correctly or it becomes technical debt. |
-| "I will just override this one property" | One override becomes twenty. Use the system's theming mechanism. |
+- Consume the system's component where one exists; compose a missing one from its primitives, and only then build to its conventions.
+- Change appearance through the system's theming and variant mechanism. A single property that needs adjusting goes through the theme too, since one override becomes the first of many.
+- Reference the system's palette, spacing and typography tokens rather than literal values.
+- Keep one component library per project. When a second library looks attractive for a feature, extend the existing system through its extension points instead; two systems deliver conflicting styles and doubled bundle weight.
+- Put new primitives where the system keeps its own (`components/ui/`, not a parallel `components/custom/`).
+- Style with the system's own mechanism only: Tailwind utilities in a Tailwind project, `sx` or `styled()` in Material UI, tokens in Ant Design.
+- Use the system's component rather than a raw HTML element wherever the system wraps that element.
 
-## Guardrails -- HALT
+Stop and re-run the Entry Protocol when you notice: `!important` in a style, a standalone CSS file appearing in a Tailwind project, a hex literal where the system provides a palette, or a second UI library in `package.json`.
 
-- Overriding system styles with `!important`
-- Mixing two different component frameworks in one project
-- Rebuilding a component the system already ships
-- Ignoring the system's theming or token approach
-- Using raw HTML elements when system components exist
-- Creating `components/custom/` alongside `components/ui/`
-- Adding standalone CSS files in a Tailwind project
-- Hard-coding hex colors when the system provides a palette
-- Installing a second UI library when one is already present
+## Related
 
-**Every item on this list means: HALT. Consume the existing system.**
-
-## Integration
-
-**Prerequisite knowledge:**
-- **ascension:ux-patterns** -- Provides design references; this skill handles system-specific implementation
-
-**Complementary skills:**
-- **ascension:ui-engineering** -- Implementation patterns that operate within design systems
-- **ascension:project-bootstrap** -- Initialize a design system during project setup
+- `ascension:ux-patterns` -- design references; this skill handles system-specific implementation
+- `ascension:ui-engineering` -- component construction within the system
+- `ascension:project-bootstrap` -- initializing a design system during project setup

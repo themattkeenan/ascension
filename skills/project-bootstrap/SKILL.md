@@ -7,77 +7,36 @@ description: Use when launching a new project, initializing a repository, or bui
 
 ## Overview
 
-A properly initialized project prevents 80% of future structural headaches.
-
-**Core principle:** Invest 30 minutes in setup now, or spend 30 hours unwinding structural debt later.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO FEATURE CODE BEFORE PROJECT STRUCTURE IS ESTABLISHED
-```
-
-If the project lacks linting, formatting, testing infrastructure, and version control hygiene, address those gaps before writing any business logic.
+Put the foundation down before the first feature: directory layout, linter and formatter, a test runner with one passing test, version control hygiene, a committed lockfile, and a CI pipeline. Structural debt taken on at the start is the failure this skill prevents; a foundation retrofitted later costs far more than one laid first.
 
 ## When to Use
 
-**Mandatory when:**
 - Creating a new project from nothing
 - "Just get something running" (especially then)
 - Building a prototype that could evolve into production
 - Setting up a shared repository for a team
 
-**Also applicable when:**
+Also applicable when:
 - Inheriting a project with no structural foundation
 - Retrofitting test infrastructure into untested code
 - Introducing CI/CD for the first time
 
 ## The Entry Protocol
 
-```
-BEFORE writing any feature code:
+Before writing any feature code, check:
 
-1. STRUCTURE: Is the directory layout established?
-2. TOOLING: Are linter, formatter, and type checker wired up?
-3. TESTING: Is the test runner configured with a passing placeholder?
-4. VERSION CONTROL: Are .gitignore, branch conventions, and hooks set up?
-5. DEPENDENCIES: Is the package manager initialized with a committed lockfile?
-6. AUTOMATION: Does at minimum a lint + test pipeline exist?
+1. **Structure**: Is the directory layout established?
+2. **Tooling**: Are linter, formatter, and type checker wired up?
+3. **Testing**: Is the test runner configured with a passing placeholder?
+4. **Version control**: Are .gitignore, branch conventions, and hooks set up?
+5. **Dependencies**: Is the package manager initialized with a committed lockfile?
+6. **Automation**: Does at minimum a lint + test pipeline exist?
 
-If any answer is NO: fix it first.
-```
+Done when every answer is yes.
 
 ## Project Classification
 
-```dot
-digraph project_class {
-    start [label="What is being\nbuilt?", shape=diamond];
-    web [label="Web\napplication?", shape=diamond];
-    api [label="API /\nbackend?", shape=diamond];
-    cli [label="CLI tool?", shape=diamond];
-    lib [label="Library /\npackage?", shape=diamond];
-
-    web_tpl [label="Web App\nBlueprint", shape=box, style=filled, fillcolor="#ccffcc"];
-    api_tpl [label="API\nBlueprint", shape=box, style=filled, fillcolor="#ccccff"];
-    cli_tpl [label="CLI\nBlueprint", shape=box, style=filled, fillcolor="#ffffcc"];
-    lib_tpl [label="Library\nBlueprint", shape=box, style=filled, fillcolor="#ffccff"];
-    general [label="General\nBlueprint", shape=box, style=filled, fillcolor="#ffcccc"];
-
-    start -> web [label="assess"];
-    web -> web_tpl [label="yes"];
-    web -> api [label="no"];
-    api -> api_tpl [label="yes"];
-    api -> cli [label="no"];
-    cli -> cli_tpl [label="yes"];
-    cli -> lib [label="no"];
-    lib -> lib_tpl [label="yes"];
-    lib -> general [label="no"];
-}
-```
-
-Consult `templates.md` for detailed setup checklists per project classification.
+Classify the project as a web application, an API / backend, a CLI tool, a library / package, or general, and consult `templates.md` for the detailed setup checklist of that class.
 
 ## Universal Foundation (All Projects)
 
@@ -106,7 +65,7 @@ Consult `templates.md` for detailed setup checklists per project classification.
 | Rust | clippy | rustfmt (built-in) |
 | Ruby | RuboCop | RuboCop |
 
-**Install on day one.** Adopting a linter after 10,000 lines means triaging hundreds of violations on your first run.
+**Install on day one.** A linter adopted after the code exists means triaging its whole backlog of violations before it starts helping.
 
 ### 3. Test Infrastructure
 
@@ -184,42 +143,21 @@ When uncertain, write the code yourself.
 - Pin major versions, permit patch-level updates
 - Execute security audit in CI
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|---|---|
-| "It is just a prototype" | Prototypes graduate to production. Initialize properly. |
-| "I will add linting later" | After 10,000 lines you will face hundreds of violations. Now is always easier. |
-| "Tests decelerate initial development" | Test setup takes 5 minutes. Hunting bugs without tests takes hours. |
-| "CI is excessive for this" | CI catches what you forget. Wire it up on day one. |
-| "I will organize the files later" | You will not. Directory structure is harder to change than code. |
-| "The .gitignore can wait" | One committed .env file means leaked credentials. Configure it first. |
+- A linter is configured before the first feature.
+- `.gitignore` exists before the first commit, so no `.env` ever enters history; a secret committed even once persists in git history after deletion.
+- A test framework is installed, with one passing test.
+- A README explains how to run the project.
+- Build artifacts stay out of git.
+- A CI pipeline runs lint, type-check and test.
+- TypeScript types are specific: `strict: true` is on and `any` is the rare exception.
+- When the project is called a prototype or "just get something running", set it up the same way; prototypes graduate to production.
 
-## Guardrails -- HALT and Set Up
+Stop and set up when you notice feature code being written with any of these missing.
 
-- Writing features without a linter configured
-- No .gitignore in the repository
-- No test framework installed
-- Secrets committed to version history (even once, even if deleted -- they persist in git history)
-- No README explaining how to run the project
-- Build artifacts checked into git
-- No CI pipeline
-- `any` types everywhere (TypeScript)
+## Related
 
-**Every item on this list means: halt feature work. Fix the foundation first.**
-
-## Integration
-
-**Complementary skills:**
-- **ascension:system-design** -- Directory structure and technology selection
-- **ascension:quality-enforcement** -- Quality gates wired into CI from the start
-- **ascension:security-protocol** -- Secrets management and .gitignore discipline
-- **ascension:ux-patterns** -- Design system initialization for UI projects
-
-## The Bottom Line
-
-```
-30 minutes of setup now > 30 hours of structural debt later
-```
-
-Linter. Formatter. Tests. CI. .gitignore. README. Before the first feature. Every single time.
+- `ascension:system-design` -- directory structure and technology selection
+- `ascension:quality-enforcement` -- quality gates wired into CI from the start
+- `ascension:security-protocol` -- secrets management and .gitignore discipline

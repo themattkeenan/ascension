@@ -7,39 +7,9 @@ description: Use when performance is a concern - sluggish pages, slow queries, b
 
 ## Overview
 
-Blind optimization is the root of wasted effort. Measure, pinpoint the bottleneck, fix that specific thing.
-
-**Core principle:** No optimization without measurement. No measurement without a demonstrated performance problem.
-
-**No exceptions. No workarounds. No shortcuts.**
-
-## The Prime Directive
-
-```
-NO OPTIMIZATION WITHOUT A MEASUREMENT PROVING THE PROBLEM
-```
-
-If you have not profiled it, you are not qualified to optimize it. Intuitions about performance are reliably wrong.
+Measure, pinpoint the bottleneck, fix that specific thing, measure again. Optimizing without a measurement is the failure this skill prevents: the bottleneck is almost never where intuition puts it, and effort spent anywhere else is wasted.
 
 ## When to Use
-
-```dot
-digraph perf_gate {
-    problem [label="Is there a\nmeasurable\nperformance deficit?", shape=diamond];
-    measure [label="MEASURE\nProfile and locate\nthe bottleneck", shape=box, style=filled, fillcolor="#ccffcc"];
-    halt [label="HALT\nDo not optimize", shape=box, style=filled, fillcolor="#ffcccc"];
-    found [label="Bottleneck\npinpointed?", shape=diamond];
-    fix [label="FIX\nthat specific thing", shape=box, style=filled, fillcolor="#ccccff"];
-    dig [label="Investigate further\nor accept current\nperformance", shape=box];
-
-    problem -> measure [label="yes"];
-    problem -> halt [label="no"];
-    measure -> found;
-    found -> fix [label="yes"];
-    found -> dig [label="no"];
-    fix -> measure [label="re-measure"];
-}
-```
 
 **Engage when:**
 - Users report perceptible slowness
@@ -48,7 +18,7 @@ digraph perf_gate {
 - Database queries exceed 100ms for routine operations
 - API responses exceed 500ms for typical requests
 
-**Do not engage when:**
+**Leave it alone when:**
 - "It might be slow someday" (measure when it actually is)
 - "Best practice recommends optimizing X" (is X actually slow?)
 - Current performance satisfies current requirements
@@ -56,17 +26,15 @@ digraph perf_gate {
 
 ## The Entry Protocol
 
-```
-BEFORE any optimization effort:
+Before any optimization effort:
 
-1. MEASURE: What is the current performance? (Numbers, not hunches)
-2. TARGET: What performance level is required? (Specific threshold)
-3. PINPOINT: Where is the bottleneck? (Profiler data, not speculation)
-4. FIX: Address that specific bottleneck
-5. VERIFY: Did the measurement improve? By how much?
+1. **Measure** the current performance. Done when you hold numbers, not hunches.
+2. **Target** the required level. Done when a specific threshold is written down.
+3. **Pinpoint** the bottleneck. Done when profiler data names the function, query or resource.
+4. **Fix** that specific bottleneck, one change at a time.
+5. **Verify** by re-running the identical measurement.
 
-Omit any step = premature optimization
-```
+Done when the re-measurement meets the threshold, or the change has been reverted because it did not move the number.
 
 ## The Methodology
 
@@ -89,13 +57,7 @@ Record the baseline. You need it to prove the optimization was effective.
 
 **The bottleneck is almost never where you expect it.**
 
-```
-Profile -> identify the function/query/resource consuming the most time
-                                    |
-                    That is your optimization target
-                                    |
-                    Everything else is a distraction
-```
+Profile, and take the function, query or resource consuming the most time as the optimization target. Everything else waits.
 
 Check these locations in order (most common first):
 
@@ -174,7 +136,6 @@ Only when the profiler points to computation as the bottleneck:
 ```
 Baseline: API response 920ms
 After optimization: API response 145ms
-Improvement: 84% reduction
 Required threshold: < 500ms -- ACHIEVED
 ```
 
@@ -191,40 +152,18 @@ If the improvement is not measurable, revert the change. An optimization that ca
 | Optimizing in dev environment | Dev performance diverges from production | Profile in a production-like environment |
 | Caching without invalidation | Stale data, consistency bugs | Design invalidation strategy before adding cache |
 
-## Cognitive Traps
+## Guardrails
 
-| Rationalization | Truth |
-|---|---|
-| "This will be slow at scale" | Is it slow NOW? Optimize when evidence arrives. |
-| "Best practice says to add an index" | Is the query actually slow? Indexes impose write overhead. |
-| "Caching will speed everything up" | Have you measured what is actually slow? Caching adds complexity. |
-| "Async will make this faster" | Is this I/O-bound? Async adds mental overhead for no gain on CPU-bound work. |
-| "I know where the bottleneck is" | Profilers exist because human intuition about performance is unreliable. Measure. |
-| "Quick optimization while I am in here" | Unplanned optimizations are premature by definition. |
+- Have profiler output on hand before changing anything; when you are sure where the bottleneck is, profile anyway and let the profiler name the target.
+- When an optimization suggests itself while you are in the code for something else, note it and finish the current task; it gets its own measurement later.
+- A cache follows a measurement that names what is slow, and an attempt to optimize the query first.
+- Code that runs once (startup routines, one-time migrations) stays as it is.
+- Readability is traded only for a measured gain.
+- Solve the scaling problem the numbers show now.
+- One optimization at a time, re-measured between changes, so each change's effect is isolated.
 
-## Guardrails -- HALT and Measure
+## Related
 
-- Optimizing without profiler output on hand
-- "While I am here, let me tune this..."
-- Adding a cache without measuring what is slow
-- Optimizing code that runs once (startup routines, one-time migrations)
-- Sacrificing readability for unmeasured performance gains
-- Solving scaling problems that do not yet exist
-- Applying multiple optimizations simultaneously (isolate impact per change)
-
-**Every item on this list means: HALT. Measure first. Optimize only the measured bottleneck.**
-
-## Integration
-
-**Complementary skills:**
-- **ascension:system-design** -- Architectural choices that influence performance characteristics
-- **ascension:completion-gate** -- Validate optimization with measurements
-- **ascension:quality-enforcement** -- Performance budgets as automated quality gates
-
-## The Bottom Line
-
-```
-Measure -> Pinpoint bottleneck -> Fix that one thing -> Confirm improvement
-```
-
-Everything else is speculation. Speculation about performance is always wrong.
+- `ascension:system-design` -- architectural choices that influence performance characteristics
+- `ascension:completion-gate` -- validate the optimization with measurements
+- `ascension:quality-enforcement` -- performance budgets as automated quality gates
