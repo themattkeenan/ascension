@@ -1,5 +1,20 @@
 # Ascension Release Notes
 
+## v2.4.0 — Size the task, split the models
+
+Subagents were offered only under "use ascension", and model choice lived inside `delegated-execution` as "fast, standard, most capable" with no names. A session on the most capable model did most of its own bulk work.
+
+- `activation` gains **Size the task, then split it**, which is always in context. Atomic work is done directly. Small work runs **90-10**: one subagent does the 90 from a single brief, the session does the last 10 (read the diff, run the check, report). Large work runs **10-80-10**: the session does the first 10 (design, plan, briefs), subagents do the 80, the session does the last 10 (whole-result review, integration, `completion-gate`). The 10-80-10 split is Dan Martell's rule as applied to models: the most capable model at the edges, everyday models in the middle.
+- Models are named, and every dispatch names one: `haiku` for searching, reading and transcription; `sonnet` as the default builder; `opus` for integration, debugging and single-task review; the most capable model (`fable` today) for the 10s only. A session on a lesser model dispatches its final review upward.
+- The work stays in the session when the brief would mostly retell what the session already knows.
+- The four run-mode bullets under "Use ascension" are gone; the size table replaces them.
+- `delegated-execution` Model Selection uses the same names, states that a plan run there is the 80, and a blocked builder is re-dispatched one model up.
+- `activation` is 805 words, up from 580.
+
+### Tested
+
+One RED and one GREEN paper run, each a fresh `sonnet` subagent given only the start-up text and two requests (a one-component button; a several-day feature). On the old text the agent found no sizes, no rule for when to dispatch and no model, and said a subagent would inherit the session's model. On the new text it sized the first Small and the second Large, dispatched a `sonnet` builder for the 90, kept the two 10s in the session, and named a model on every dispatch. Not tested: a real session on the most capable model doing real work, and whether a 90-10 dispatch saves anything on a task small enough that writing the brief costs as much as the work.
+
 ## v2.3.0 — Smaller, and quieter at the door
 
 A usage count across the recorded sessions on the author's machine (through 2026-11-14) found the bootstrap text in 243 sessions and an Ascension skill invoked in 49 of them. Sixteen of the 49 skills had never been invoked, and seven more once or twice. The "invoke a skill before any response" mandate was followed in about one session in five, so it was costing context on every session and steering few of them. The counts include sessions from before v2.1.3 fixed the bootstrap, so read them as a floor for individual skills, not a precise rate.
