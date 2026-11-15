@@ -1,5 +1,9 @@
 # Ascension Release Notes
 
+## v2.4.1 — 90-10 as the author defined it
+
+v2.4.0 guessed at 90-10. The author's definition: `opus` scopes the task; `opus`, `sonnet` or `haiku` do the tasks the scope names; the most capable model does the final review. The Small row in `activation` now says that: an `opus` subagent scopes and returns the tasks with a model for each, subagents on those models do them, and the session does the final review and the report. The session no longer scopes small work itself. Not re-tested with a paper run.
+
 ## v2.4.0 — Size the task, split the models
 
 Subagents were offered only under "use ascension", and model choice lived inside `delegated-execution` as "fast, standard, most capable" with no names. A session on the most capable model did most of its own bulk work.
