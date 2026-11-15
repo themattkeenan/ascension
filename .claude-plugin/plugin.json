@@ -1,7 +1,7 @@
 {
   "name": "ascension",
   "description": "29 skills for coding agents behind four always-on working rules and a situation map: a laziness ladder that stops over-building, grilling in rounds, reference-first design, tracer-bullet tickets, subagent-driven execution, a tight-feedback-loop debugging discipline, and two-axis code review.",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "license": "MIT",
   "author": {
     "name": "mattkeenan91"

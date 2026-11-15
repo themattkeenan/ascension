@@ -43,14 +43,14 @@ Size every task before starting and run it on the matching split. The most capab
 | Size | Split | Who does what |
 |---|---|---|
 | Atomic: a question, a lookup, a one-file edit | direct | This session does it. |
-| Small: fits one session and needs no plan document | **90-10** | One subagent does the 90 from a single brief. This session does the last 10: read the diff, run the check, report. |
+| Small: fits one session and needs no plan document | **90-10** | An `opus` subagent scopes it and returns the tasks, each with the model to run it on. Subagents on those models do the tasks. This session does the last 10: the final review (read the diff, run the check), then the report. |
 | Large: needs a plan, tickets, or more than one session | **10-80-10** | This session does the first 10: settle the design, write the plan and the briefs. Subagents do the 80, in parallel where the parts are independent, through `delegated-execution` where they are a sequence. This session does the last 10: review the whole result, integrate, run `completion-gate`. |
 
 Name the model on every dispatch; an omitted model inherits this session's, usually the most expensive one.
 
 - `haiku`: searching, reading, and transcription from a plan that already contains the code
 - `sonnet`: the default builder
-- `opus`: multi-file integration, debugging, and review of a single task
+- `opus`: scoping a small task, multi-file integration, debugging, and review of a single task
 - the most capable model (`fable` today): the 10s only. When this session runs on a lesser model, dispatch the final review to the most capable one.
 
 Keep the 90 or the 80 in this session only when the brief would mostly retell what this session already knows.
