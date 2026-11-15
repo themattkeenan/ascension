@@ -1,5 +1,5 @@
 ---
-description: "Activate Ascension — analyzes your task, recommends the best execution approach (Agent Teams, parallel subagents, or single agent), and invokes all relevant skills automatically"
+description: "Use Ascension on this task: place it on the map, recommend how to run it (directly, parallel subagents, or delegated execution), and invoke the skills that fit"
 disable-model-invocation: true
 ---
 
@@ -8,13 +8,9 @@ Invoke the ascension:activation skill and follow it exactly as presented to you.
 The user has said "Use Ascension". This means:
 
 1. Analyze the task at hand.
-2. Locate it on the map in the activation skill — the main flow, an on-ramp, or a standalone — and say where it lands.
-3. Follow the Execution Mode tree to pick an approach:
-   - **Agent Teams** — multiple independent modules needing peer collaboration
-   - **Parallel Subagents** — independent tasks that can run simultaneously
-   - **Delegated Execution** — sequential multi-step tasks with review gates
-   - **Single agent** — straightforward work
+2. Find it on the map in the activation skill and say where it lands.
+3. Pick how to run it from the activation skill's "Use ascension" section: directly, parallel subagents, delegated execution, or in this session.
 4. Present the recommendation with its reason, and let the user redirect before you proceed.
-5. Invoke the relevant skills in the order the activation skill sets out.
+5. Invoke the skills the map names for that situation.
 
 Build from proven references, not assumptions.

@@ -52,7 +52,7 @@ End with one line per axis: how many findings, and the worst one *within that ax
 
 ## A third pass, when the diff is large
 
-Standards and Spec both ask "is this right?" Neither asks "is this *too much*?" When the diff is bigger than the change warranted, call the Skill tool with "ascension:overbuild-review" in diff mode — it reports reinvented standard library, needless dependencies, and abstractions with one implementation, and scores the result as lines that could go.
+Standards and Spec both ask "is this right?" Neither asks "is this *too much*?" When the diff is bigger than the change warranted, run the `ascension:minimalism` ladder backwards over it: report reinvented standard library, needless dependencies, and abstractions with one implementation, and count the lines that could go.
 
 Keep it a separate pass. Folding complexity findings into the Standards axis buries them under conformance issues, which is how over-engineering ships.
 
@@ -62,7 +62,7 @@ Keep it a separate pass. Folding complexity findings into the Standards axis bur
 - **Important** — resolve before advancing to the next task.
 - **Minor** — log for a later pass.
 
-Disagreeing with a finding is fine, but object with **evidence** — a test, a line of the spec, a documented standard — not with an assertion. `ascension:review-response` covers working through feedback that is ambiguous, technically suspect, or interdependent.
+Disagreeing with a finding is fine, but object with **evidence** — a test, a line of the spec, a documented standard — not with an assertion.
 
 ## When to run it
 

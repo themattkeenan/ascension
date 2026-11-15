@@ -146,7 +146,7 @@ Remove the offending code and restart from step 1.
 
 ## Related
 
-Invoked by `ascension:intent-discovery` when the design involves UI, and required of UI subagents under `ascension:delegated-execution`. `ascension:ui-engineering` covers implementation, `ascension:design-integration` adopting an existing design system, and `ascension:design-research` the page-level layout.
+Invoked by `ascension:intent-discovery` when the design involves UI, and required of UI subagents under `ascension:delegated-execution`. `ascension:ui-engineering` covers implementation and `ascension:design-research` the page-level layout.
 
 **Supporting files:**
 - `pattern-libraries.md` -- Complete pattern reference by project classification and category

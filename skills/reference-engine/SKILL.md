@@ -22,16 +22,16 @@ digraph reference_router {
 
     classify [label="Classify Task Domain" fillcolor=lightyellow];
 
-    ui [label="UI / Frontend?\n-> ux-patterns\n-> ui-engineering\n-> design-integration" fillcolor="#e8f5e9"];
+    ui [label="UI / Frontend?\n-> ux-patterns\n-> ui-engineering" fillcolor="#e8f5e9"];
     website [label="Website Design?\n-> design-research\n-> ux-patterns" fillcolor="#e8f5e9"];
-    code [label="Code / Library?\n-> github-search (external)\n-> codebase-research (internal)\n-> pattern-matching" fillcolor="#e8f5e9"];
+    code [label="Code / Library?\n-> codebase-research (this repo)\n-> GitHub search (external)\n-> pattern-matching" fillcolor="#e8f5e9"];
     api [label="API Design?\n-> API References\n(this protocol)" fillcolor="#fff3e0"];
     database [label="Database / Schema?\n-> Schema References\n(this protocol)" fillcolor="#fff3e0"];
     testing [label="Testing Strategy?\n-> Testing References\n(this protocol)" fillcolor="#fff3e0"];
     devops [label="CI/CD / DevOps?\n-> DevOps References\n(this protocol)" fillcolor="#fff3e0"];
-    arch [label="Architecture?\n-> system-design\n-> Architecture References\n(this protocol)" fillcolor="#fff3e0"];
-    quality [label="Code Quality?\n-> quality-enforcement\n-> Quality References\n(this protocol)" fillcolor="#fff3e0"];
-    perf [label="Performance?\n-> performance-tuning\n-> Perf References\n(this protocol)" fillcolor="#fff3e0"];
+    arch [label="Architecture?\n-> Architecture References\n(this protocol)" fillcolor="#fff3e0"];
+    quality [label="Code Quality?\n-> Quality References\n(this protocol)" fillcolor="#fff3e0"];
+    perf [label="Performance?\n-> Perf References\n(this protocol)" fillcolor="#fff3e0"];
     security [label="Security?\n-> security-protocol\n-> Security References\n(this protocol)" fillcolor="#fff3e0"];
     other [label="Other Domain?\n-> Research + Build Reference\n(this protocol)" fillcolor="#fce4ec"];
 
@@ -61,11 +61,11 @@ digraph reference_router {
 BEFORE building anything:
 
 1. CLASSIFY: What domain is this task in?
-2. ROUTE: Does a dedicated reference protocol exist? (ux-patterns, design-research, github-search, codebase-research, etc.)
+2. ROUTE: Does a dedicated reference protocol exist? (ux-patterns, design-research, codebase-research)
    -> YES: Call the Skill tool with "ascension:<that skill>"
    -> NO: Continue to step 3
 3. SEARCH: Locate reference implementations for this domain
-   - External: call the Skill tool with "ascension:github-search" for open-source repos, libraries, and patterns
+   - External: search GitHub and the package registry for open-source repos, libraries, and patterns
    - Internal: call the Skill tool with "ascension:codebase-research" for existing conventions and similar code
    - GitHub: Search for gold-standard implementations
    - Documentation: Find official best practices (RFC specs, framework docs, cloud provider guides)
@@ -83,11 +83,8 @@ A reference is either an **implementation** or a **principle**, and they answer 
 
 | The question | Route to |
 |---|---|
-| "What does a good one look like?" | The domain libraries below, `ascension:github-search`, `ascension:codebase-research`, `ascension:design-research` |
-| "What rule should govern this decision?" | `ascension:canon` — fourteen engineering books distilled into applicable rule sets |
-| "What is actually true about this API/spec/library?" | `ascension:primary-research` |
-
-Call the Skill tool with "ascension:canon" when the decision is architectural, when a refactor risks turning into a rewrite, when working in legacy code, when data correctness or operational resilience is at stake, or when domain modelling needs a canonical frame. Pick one book, not the shelf.
+| "What does a good one look like?" | The domain libraries below, `ascension:codebase-research`, `ascension:design-research` |
+| "What is actually true about this API/spec/library?" | The primary source: the official docs, the spec, or the code itself, read now rather than recalled |
 
 ## Domain Reference Libraries
 
@@ -425,4 +422,4 @@ Not all references are equal. Evaluate by:
 
 ## Related
 
-This skill is the router: the graph above sends UI work to `ascension:ux-patterns`, websites to `ascension:design-research`, external code to `ascension:github-search` and this repo's own conventions to `ascension:codebase-research`. Invoked by `ascension:intent-discovery` during the "what exists?" phase, and by `ascension:specification-first` and `ascension:task-planning` to ground specs and plans.
+This skill is the router: the graph above sends UI work to `ascension:ux-patterns`, websites to `ascension:design-research`, and this repo's own conventions to `ascension:codebase-research`. Invoked by `ascension:intent-discovery` during the "what exists?" phase, and by `ascension:specification-first` and `ascension:task-planning` to ground specs and plans.

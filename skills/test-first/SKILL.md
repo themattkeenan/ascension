@@ -19,7 +19,7 @@ A **seam** is the public interface you test at — the place where you observe b
 
 You cannot test everything. Agreeing the seams up front is how the effort lands on critical paths and complex logic instead of spreading evenly over every edge case.
 
-When the *shape* of the interface is itself in question — how deep the module is, where the seam belongs, what it should expose — call the Skill tool with "ascension:module-design" for the vocabulary. It is a reference to consult, not a session to run.
+When the *shape* of the interface is itself in question — how deep the module is, where the seam belongs, what it should expose — settle that with the user first; a test written against the wrong seam locks the wrong shape in.
 
 ## The loop
 
@@ -157,7 +157,7 @@ Then take the next slice.
 
 Mock at **system boundaries** only: external APIs, time and randomness, sometimes the database (prefer a real test database or an in-memory stand-in), sometimes the filesystem.
 
-Do not mock your own modules, internal collaborators, or anything you control. Needing to mock everything means the code is too coupled — inject the dependency instead (`ascension:module-design`).
+Do not mock your own modules, internal collaborators, or anything you control. Needing to mock everything means the code is too coupled — inject the dependency instead.
 
 Prefer SDK-shaped interfaces over one generic fetcher, so each mock returns one specific shape and no conditional logic is needed in test setup:
 

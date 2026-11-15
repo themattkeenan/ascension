@@ -52,7 +52,7 @@ Miss any one and skip the ADR: an easy-to-reverse decision just gets reversed, a
 
 ## Where this fits
 
-`ascension:grilling` drives this skill while interviewing, so the vocabulary and the decisions are captured as the conversation produces them. `ascension:knowledge-capture` handles the cross-project lessons; this handles the per-project language.
+`ascension:grilling` drives this skill while interviewing, so the vocabulary and the decisions are captured as the conversation produces them.
 
 ---
 *Adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT).*

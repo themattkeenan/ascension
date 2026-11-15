@@ -312,4 +312,4 @@ NEED: [what would unblock - decision, information, or fix]
 
 ## Related
 
-Consumed by `ascension:delegated-execution` (implementer and reviewer prompts), `ascension:parallel-execution` (concurrent agent briefs) and `ascension:team-orchestration` (team coordination messages).
+Consumed by `ascension:delegated-execution` (implementer and reviewer prompts) and by any brief written for agents running in parallel.

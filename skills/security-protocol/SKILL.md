@@ -202,4 +202,4 @@ Stop and fix before shipping when you notice:
 
 ## Related
 
-`ascension:system-design` settles the authentication strategy and data flow this skill checks. `ascension:quality-enforcement` runs the dependency audit as a CI gate. `ascension:test-first` is where the security test cases get written.
+`ascension:test-first` is where the security test cases get written.

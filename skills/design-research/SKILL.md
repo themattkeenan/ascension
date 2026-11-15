@@ -234,4 +234,4 @@ Hero (bold statement) -> Selected Work (case studies) -> Service Offerings -> Pr
 
 ## Related
 
-Invoked by `ascension:intent-discovery` when the task is a website. This skill supplies the macro layout; `ascension:ux-patterns` supplies component-level detail, and `ascension:design-integration` turns the extracted palette and typography into design tokens.
+Invoked by `ascension:intent-discovery` when the task is a website. This skill supplies the macro layout; `ascension:ux-patterns` supplies component-level detail, and `ascension:ui-engineering` builds it.

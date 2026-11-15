@@ -11,7 +11,8 @@ PLUGIN_BASE="$(cd "${HOOK_DIR}/.." && pwd)"
 migration_notice=""
 
 # Load the activation protocol content
-activation_content=$(cat "${PLUGIN_BASE}/skills/activation/SKILL.md" 2>&1 || echo "Error loading activation protocol")
+# The frontmatter is for the skill listing, not for the session: send the body only.
+activation_content=$(awk 'f>=2{print} /^---[[:space:]]*$/{f++}' "${PLUGIN_BASE}/skills/activation/SKILL.md" 2>&1 || echo "Error loading activation protocol")
 
 # Safely encode content for JSON transport using parameter expansion.
 # Each substitution is a single C-level pass - far faster than
@@ -28,7 +29,7 @@ json_encode() {
 
 activation_encoded=$(json_encode "$activation_content")
 notice_encoded=$(json_encode "$migration_notice")
-bootstrap_payload="<CRITICAL_OVERRIDE>\nYou have Ascension activated.\n\n**Below is the full content of your 'ascension:activation' protocol - your guide to using skills. For all other skills, use the 'Skill' tool:**\n\n${activation_encoded}\n\n${notice_encoded}\n</CRITICAL_OVERRIDE>"
+bootstrap_payload="<ascension>\nAscension is installed. Its working rules and the map of which skill fits which situation follow. Every other skill loads through the Skill tool.\n\n${activation_encoded}\n\n${notice_encoded}\n</ascension>"
 
 # Emit context injection payload as JSON.
 # Dual format for cross-platform compatibility:

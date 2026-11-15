@@ -1,6 +1,6 @@
 ---
 name: pattern-matching
-description: Use when contributing code to an existing project - guarantees that every new line mirrors the established conventions, naming schemes, architectural layering, directory layout, and stylistic choices already present in the codebase rather than drifting toward generic AI defaults
+description: Use when contributing code to an existing project, so new code matches the conventions, naming, layering, and directory layout already there
 ---
 
 # Pattern Matching
@@ -18,7 +18,7 @@ When the repository favors `snake_case`, you write `snake_case`. When services l
 - Performing refactors that reshape existing logic
 
 **Unnecessary when:**
-- Bootstrapping a greenfield project (see ascension:project-bootstrap)
+- Bootstrapping a greenfield project, where there are no conventions to match yet
 - Writing disposable scripts that will never enter version control
 
 ## The Entry Protocol
@@ -142,7 +142,7 @@ Before finalizing, confirm:
 
 ## Related
 
-`ascension:codebase-research` discovers the project's patterns; this skill applies them. `ascension:ux-patterns` and `ascension:design-integration` are the same discipline applied to UI components and design systems.
+`ascension:codebase-research` discovers the project's patterns; this skill applies them. `ascension:ux-patterns` is the same discipline applied to UI components.
 
 ## Matching the amount, not just the style
 

@@ -173,7 +173,7 @@ Sometimes you are genuinely building something the codebase has never done befor
 
 1. **Confirm absence** -- Search at least 3 different ways to be sure no precedent exists
 2. **Check adjacent projects** -- If this is a monorepo, check sibling packages
-3. **Consult external sources** -- Call the Skill tool with "ascension:github-search" to find patterns from public repositories
+3. **Consult external sources** -- Search GitHub and the package registry for how public repositories solve the same problem
 4. **Establish deliberately** -- When creating a new convention, make it consistent with the spirit of the existing codebase
 5. **Document the decision** -- Note why a new pattern was introduced
 
@@ -209,10 +209,10 @@ When writing code after design approval:
 
 ## Surveying without flooding the window
 
-When a research question is aggregate — how many, which files, what changed most, which modules import this — compute the answer with a script and print only the result. Call the Skill tool with "ascension:think-in-code". Reading forty files to count something spends the session's attention on arithmetic.
+When a research question is aggregate — how many, which files, what changed most, which modules import this — compute the answer with a script and print only the result. Reading forty files to count something spends the session's attention on arithmetic.
 
 Read files when you need to *understand* them. Script the answer when you need to *tally* them.
 
 ## Related
 
-Routed here by `ascension:reference-engine` and by `ascension:intent-discovery` during its project survey. `ascension:github-search` is the same discipline pointed at external repositories; `ascension:pattern-matching` goes deeper on matching once the conventions are found.
+Routed here by `ascension:reference-engine` and by `ascension:intent-discovery` during its project survey. `ascension:pattern-matching` goes deeper on matching once the conventions are found.

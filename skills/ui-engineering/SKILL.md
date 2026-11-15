@@ -331,7 +331,7 @@ Write mobile styles as the baseline, then layer complexity at wider breakpoints.
 ## Related
 
 - `ascension:ux-patterns` -- prerequisite; tokens and patterns come from here
-- `ascension:design-integration` -- when operating within an established design system
+- `ascension:pattern-matching` -- when the project already has a design system: use its components and tokens
 - `ascension:test-first` -- component tests follow it
 
 `component-patterns.md` beside this file holds reusable component blueprints with accessibility built in.

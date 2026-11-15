@@ -27,7 +27,7 @@ Each round of answers reshapes the tree: settled decisions push the frontier out
 
 ## Facts are yours; decisions are theirs
 
-Finding **facts** is your job, never the user's. When a frontier question needs a fact from the environment — what the config already sets, which library is installed, how the existing module is shaped — go get it. Dispatch a subagent (`ascension:codebase-research`, `ascension:github-search`, `ascension:primary-research`) rather than asking a question you could answer yourself.
+Finding **facts** is your job, never the user's. When a frontier question needs a fact from the environment — what the config already sets, which library is installed, how the existing module is shaped — go get it. Dispatch a subagent (`ascension:codebase-research` for this repo, a web or GitHub search for anything outside it) rather than asking a question you could answer yourself.
 
 Do not block on it. A running investigation is an unsettled prerequisite, so only the questions *downstream* of it wait; ask the rest of the frontier now.
 

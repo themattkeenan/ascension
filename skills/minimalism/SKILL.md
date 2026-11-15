@@ -33,7 +33,7 @@ Laziness that skips comprehension to ship a small diff is the dangerous kind: it
 
 ## Rules
 
-- **No unrequested abstractions.** No interface with one implementation. No factory for one product. No configuration for a value that never changes. (`ascension:module-design`: one adapter is a hypothetical seam; two is a real one.)
+- **No unrequested abstractions.** No interface with one implementation. No factory for one product. No configuration for a value that never changes. (One adapter is a hypothetical seam; two is a real one.)
 - **No scaffolding "for later."** Later can scaffold for itself.
 - **Deletion over addition. Boring over clever.** Clever is what someone decodes at 3am.
 - **Fewest files possible.** The shortest working diff wins — once you understand the problem.
@@ -48,7 +48,7 @@ A deliberate simplification with a known ceiling — a global lock, an O(n²) sc
 # ascension: global lock, per-account locks if throughput matters
 ```
 
-`ascension:overbuild-review` harvests these into a ledger, so a deferral cannot quietly become permanent. A marker with no upgrade trigger is the kind that rots.
+A marker with no upgrade trigger is the kind that rots.
 
 ## Output
 
@@ -90,7 +90,7 @@ Hardware is never the ideal on paper — a real clock drifts, a real sensor read
 
 ## Where it fits
 
-Runs during implementation, alongside `ascension:pattern-matching` (match the codebase's conventions) and `ascension:test-first` (prove the behaviour). `ascension:overbuild-review` is the same ladder pointed backwards, at a diff or a repo.
+Runs during implementation, alongside `ascension:pattern-matching` (match the codebase's conventions) and `ascension:test-first` (prove the behaviour). Pointed backwards at a finished diff, the same ladder is the over-build check in `ascension:quality-gate`.
 
 The shortest path to done is the right path.
 
