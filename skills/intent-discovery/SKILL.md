@@ -1,6 +1,6 @@
 ---
 name: intent-discovery
-description: Use when starting any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements, and design before implementation.
+description: Use when a new feature, component, or change in behaviour is requested and its design is not settled, before planning or writing code. Explores intent, requirements, and design with the user.
 ---
 
 # Intent Discovery
@@ -17,7 +17,7 @@ Read the project first: files, `CONTEXT.md`, ADRs, documentation, recent commits
 
 ## 2. Locate references
 
-Call the Skill tool with "ascension:reference-engine". It routes to whichever reference system fits: `github-search` for external implementations, `codebase-research` for internal patterns, `design-research` for visual themes, `ux-patterns` for interface behaviour, `primary-research` for external facts a decision waits on.
+Call the Skill tool with "ascension:reference-engine". It routes to whichever reference system fits: `codebase-research` for internal patterns, `design-research` for visual themes, `ux-patterns` for interface behaviour.
 
 Summarise what came back — *"Found references from [sources]: [what is relevant]"* — and carry it into the questions. A reference changes which questions are worth asking.
 
@@ -39,7 +39,7 @@ Propose 2-3 genuinely distinct approaches as labelled options (A, B, C) with tra
 
 ## 5. Present the design
 
-Scale each section to its complexity: a few sentences for straightforward parts, a few hundred words for the nuanced ones. Cover architecture, components, data flow, error handling, and testing strategy — including which **seams** the tests will live at (`ascension:module-design` for the vocabulary, `ascension:test-first` for why the seams are agreed up front).
+Scale each section to its complexity: a few sentences for straightforward parts, a few hundred words for the nuanced ones. Cover architecture, components, data flow, error handling, and testing strategy — including which **seams** the tests will live at (`ascension:test-first` covers why the seams are agreed up front).
 
 Confirm each section before moving to the next. Under YoloMode, present the whole design in one pass and proceed.
 

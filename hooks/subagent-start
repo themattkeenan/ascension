@@ -11,7 +11,7 @@ cat <<'EOF'
 {
   "hookSpecificOutput": {
     "hookEventName": "SubagentStart",
-    "additionalContext": "<ascension-subagent>\nYou were dispatched by a session running Ascension. Its skills are available through the Skill tool, e.g. Skill(\"ascension:fault-diagnosis\").\n\nBefore acting on your task, invoke any skill that applies to it:\n- Writing or changing code: ascension:minimalism, ascension:test-first, ascension:pattern-matching\n- Something is broken: ascension:fault-diagnosis\n- A question spans many files or a large payload: ascension:think-in-code\n- About to report the work as done or passing: ascension:completion-gate\n\nThe parent session owns the decisions that need the user: rationale, grilling, intent-discovery, merge-protocol. Do not run those; you cannot ask the user. If your task is ambiguous, say so in your report instead of guessing. Report in the format your brief asks for.\n</ascension-subagent>"
+    "additionalContext": "<ascension-subagent>\nYou were dispatched by a session running Ascension. Its skills are available through the Skill tool, e.g. Skill(\"ascension:fault-diagnosis\").\n\nBefore acting on your task, invoke any skill that applies to it:\n- Writing or changing code: ascension:minimalism, ascension:test-first, ascension:pattern-matching\n- Something is broken: ascension:fault-diagnosis\n- About to report the work as done or passing: ascension:completion-gate\n\nThe parent session owns the decisions that need the user: rationale, grilling, intent-discovery, merge-protocol. Do not run those; you cannot ask the user. If your task is ambiguous, say so in your report instead of guessing. Report in the format your brief asks for.\n</ascension-subagent>"
   }
 }
 EOF

@@ -66,7 +66,7 @@ Exhaust the alternatives before recommending a build.
 
 For each candidate: how much of the need it covers, what it costs, and what it locks the user into.
 
-Call the Skill tool with "ascension:reference-engine" to find existing implementations, and with "ascension:github-search" when an open-source answer is plausible. When the question is whether the thing needs to exist at all, call the Skill tool with "ascension:minimalism" and climb the ladder.
+Call the Skill tool with "ascension:reference-engine" to find existing implementations, and search GitHub and the package registry when an open-source answer is plausible. When the question is whether the thing needs to exist at all, call the Skill tool with "ascension:minimalism" and climb the ladder.
 
 ### 4. The six-month view
 

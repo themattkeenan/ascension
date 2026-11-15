@@ -74,7 +74,7 @@ Avoid file paths and code snippets in tickets — they go stale fast. The except
 
 The **frontier** is every ticket whose blockers are all done. Any frontier ticket can be grabbed. For a purely linear chain that means top to bottom.
 
-Start each ticket in a **fresh context** — the ticket is self-contained by construction, so the previous one's context is disposable (`ascension:context-economy`). Independent frontier tickets can run in parallel via `ascension:parallel-execution` or `ascension:delegated-execution`.
+Start each ticket in a **fresh context** — the ticket is self-contained by construction, so the previous one's context is disposable (`ascension:context-economy`). Independent frontier tickets can run in parallel as subagents via `ascension:delegated-execution`.
 
 ## Neighbours
 

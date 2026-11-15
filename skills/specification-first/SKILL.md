@@ -1,6 +1,6 @@
 ---
 name: specification-first
-description: Use when building any feature, API, module, or system before writing implementation code - produces a structured behavior specification defining inputs, outputs, constraints, edge cases, and acceptance criteria as the authoritative artifact
+description: Use when behaviour has to be pinned down before code - a public API, a module other code depends on, or a feature whose edge cases the request leaves open. Produces a behaviour specification with inputs, outputs, constraints, edge cases, and acceptance criteria.
 ---
 
 # Specification First

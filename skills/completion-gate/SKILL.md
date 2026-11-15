@@ -118,4 +118,4 @@ Stop and run the verification when you notice: hedging language in your draft, "
 
 ## Related
 
-`ascension:quality-enforcement` supplies the checks whose output is the evidence here. `ascension:test-first` owns the red-green cycle this gate confirms. `ascension:merge-protocol` runs after this gate passes.
+`ascension:test-first` owns the red-green cycle this gate confirms. `ascension:merge-protocol` runs after this gate passes.

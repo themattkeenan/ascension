@@ -1,5 +1,32 @@
 # Ascension Release Notes
 
+## v2.3.0 — Smaller, and quieter at the door
+
+A usage count across the recorded sessions on the author's machine (through 2026-11-14) found the bootstrap text in 243 sessions and an Ascension skill invoked in 49 of them. Sixteen of the 49 skills had never been invoked, and seven more once or twice. The "invoke a skill before any response" mandate was followed in about one session in five, so it was costing context on every session and steering few of them. The counts include sessions from before v2.1.3 fixed the bootstrap, so read them as a floor for individual skills, not a precise rate.
+
+### Activation rewritten
+
+- The `<CRITICAL-OVERRIDE>` mandate is gone. `activation` is now four working rules that apply to every task (say your assumptions, build the least that solves it, every changed line traces to the request, turn the task into a check and run it), a table from situation to skill, and four reply rules. 865 words down to 580. Small tasks are told to need no skill.
+- The working rules follow the shape of [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills). The reply rules (first line is the answer or the next action, say where things stand, one next step, lists of five) are adapted from [i-have-adhd](https://github.com/ayghri/i-have-adhd) (MIT). Both yield to the harness and the user's own instructions.
+- `hooks/session-start` sends the skill body without its frontmatter, inside `<ascension>` rather than `<CRITICAL_OVERRIDE>`.
+- The execution-mode graph and YoloMode shrink to a short "Use ascension" section. Agent Teams is no longer offered.
+
+### Removed (20 skills, 2 commands)
+
+Never invoked: `canon` (and `/canon`), `comprehension-check`, `deployment-advisor`, `github-search`, `knowledge-capture`, `module-design`, `overbuild-review` (and `/cut`), `parallel-execution`, `performance-tuning`, `primary-research`, `quality-enforcement`, `review-response`, `team-orchestration`, `think-in-code`, `vocabulary`.
+
+Invoked once or twice: `environment-awareness`, `project-bootstrap`, `system-design`, `error-recovery`, `design-integration`.
+
+All are recoverable from tag `v2.2.0`. Where a kept skill handed off to a removed one, the handoff now states the action in a line (search GitHub, keep a count of fix attempts, run the minimalism ladder backwards over the diff, write the gotcha where the project keeps such things). `domain-modeling` stays: `grilling`, `intent-discovery`, `rationale`, `test-first` and `work-tickets` all lean on `CONTEXT.md` and ADRs.
+
+### Descriptions
+
+`intent-discovery`, `specification-first` and `pattern-matching` no longer claim every piece of work.
+
+### Not tested
+
+No RED/GREEN run was done on the new `activation`. The claim that a shorter, calmer bootstrap gets followed more often is a hypothesis: re-run the usage count after a few weeks on v2.3.0 before drawing conclusions.
+
 ## v2.2.0 — The skills meet their own standard
 
 `protocol-authoring` has argued since v2.0 that steering by prohibition drags the banned behaviour into context, that a twelve-row table of rationalizations is a script rather than a guardrail, and that an unmeasured number is not evidence. Twenty-nine skills still carried all three: a shouted "Prime Directive", the line "No exceptions. No workarounds. No shortcuts.", and a "Cognitive Traps" table of six to eleven excuses in the agent's own voice. This release brings every skill to the checklist at the bottom of `protocol-authoring`.

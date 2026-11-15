@@ -103,7 +103,7 @@ Tool preference:
 
 **Multi-component systems:** when data crosses process, service, or environment boundaries, instrument each boundary once — what enters, what exits, what the environment holds — and run it once to see *which* boundary loses it. Then investigate only that component.
 
-**Performance branch:** for regressions, logs are usually the wrong tool. Establish a baseline measurement (timing harness, profiler, query plan), then bisect. Measure first, fix second. `ascension:performance-tuning` covers the measurement toolkit.
+**Performance branch:** for regressions, logs are usually the wrong tool. Establish a baseline measurement (timing harness, profiler, query plan), then bisect. Measure first, fix second.
 
 ## Phase 5: Fix and regression-test
 
@@ -111,7 +111,7 @@ Write the regression test **before the fix**, but only if a **correct seam** exi
 
 A correct seam is one where the test exercises the **real bug pattern as it occurs at the call site**. If the only available seam is too shallow — a single-caller test when the bug needs several, a unit test that cannot replicate the chain that triggered it — a test there gives false confidence.
 
-**If no correct seam exists, that is itself the finding.** Record it: the architecture is preventing the bug from being locked down. `ascension:module-design` names the fix (the module is the wrong shape); raise it rather than pretending the test covers you.
+**If no correct seam exists, that is itself the finding.** Record it: the architecture is preventing the bug from being locked down. The module is the wrong shape; raise it rather than pretending the test covers you.
 
 Where a correct seam exists:
 
@@ -123,7 +123,7 @@ Where a correct seam exists:
 
 ### When the fix does not work
 
-Return to Phase 1 with what you learned; do not stack another fix on top. Before the second fix attempt, call the Skill tool with "ascension:error-recovery" and keep its attempt count from then on. After **three** failed fixes, stop and question the architecture instead of attempting a fourth. The tells: each fix reveals new coupling somewhere else, each fix needs "a massive refactor", each fix creates a new symptom. That is a flawed structure, not a failed hypothesis — raise it with the user before continuing.
+Return to Phase 1 with what you learned; do not stack another fix on top. Keep a count of fix attempts. After **three** failed fixes, stop and question the architecture instead of attempting a fourth. The tells: each fix reveals new coupling somewhere else, each fix needs "a massive refactor", each fix creates a new symptom. That is a flawed structure, not a failed hypothesis — raise it with the user before continuing.
 
 ## Phase 6: Cleanup
 
@@ -144,7 +144,7 @@ In this directory:
 - **`condition-based-waiting.md`** — replace arbitrary timeouts with condition polling.
 - **`find-polluter.sh`** — bisect a test suite for the test that pollutes shared state.
 
-**Related:** `ascension:test-first` (writing the regression test), `ascension:completion-gate` (verifying before claiming), `ascension:error-recovery` (when attempts are looping).
+**Related:** `ascension:test-first` (writing the regression test), `ascension:completion-gate` (verifying before claiming).
 
 ---
 *The tight-feedback-loop discipline is adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT).*

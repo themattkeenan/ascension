@@ -89,7 +89,7 @@ It anchors twice. In the body, *execution*: the agent reaches for the same behav
 
 Hunt for refactors into leading words. "Fast, deterministic, low-overhead" → *tight*. "A test suite you believe in" → *red*, turning a fuzzy gate into a binary observable state. Assume every document is carrying restatements that leading words retire.
 
-Ascension's shared set lives in `ascension:vocabulary`. Use those words rather than synonyms.
+Use the words the other Ascension skills already use (*seam*, *tracer bullet*, *frontier*, *tight* loop, *red*) rather than synonyms.
 
 ## Negation
 

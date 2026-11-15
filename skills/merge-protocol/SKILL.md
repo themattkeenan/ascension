@@ -162,9 +162,9 @@ Done when `git worktree list` no longer shows the path (Paths 1, 4) or the user 
 
 ### Phase 6: Close the Phase
 
-Landed work is a phase boundary. Two calls, in order:
+Landed work is a phase boundary. Two steps, in order:
 
-1. If the work surfaced something a future session would otherwise rediscover — a gotcha, a correction from the user, a convention nothing records — call the Skill tool with "ascension:knowledge-capture".
+1. If the work surfaced something a future session would otherwise rediscover — a gotcha, a correction from the user, a convention nothing records — write it where the project keeps such things (its `CLAUDE.md`, its notes, or memory).
 2. Call the Skill tool with "ascension:context-economy" to decide whether the next piece of work starts in this session or a fresh one.
 
 ## Decision Matrix
