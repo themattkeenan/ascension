@@ -97,16 +97,16 @@ Present everything you find to your human partner as one batched question — ea
 
 ## Model Selection
 
-Use the least powerful model that can handle each role to conserve cost and increase speed.
+A plan executed here is the **80** of a 10-80-10 split: the most capable model wrote the plan (the first 10) and audits the whole implementation at the end (the last 10). Everything between runs on the least powerful model that can handle its role.
 
-- **Mechanical tasks** (isolated functions, clear specs, 1-2 files, or the plan text contains the complete code to write): use a fast, cheap model — this is transcription plus testing.
-- **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
-- **Architecture/design tasks and the final whole-implementation audit**: use the most capable available model.
-- **Review tasks**: match the model to the diff's size, complexity, and risk. A small mechanical diff does not need the most capable model; a subtle concurrency change does.
+- **Mechanical tasks** (isolated functions, clear specs, 1-2 files, or the plan text contains the complete code to write): `haiku` — this is transcription plus testing.
+- **Builders working from prose, and auditors of small mechanical diffs**: `sonnet`, the default.
+- **Integration and judgment tasks** (multi-file coordination, debugging) and audits of risky diffs (concurrency, auth, money, migrations): `opus`.
+- **The final whole-implementation audit**: the most capable model available (`fable` today).
 
 **Always specify the model explicitly when dispatching a subagent.** An omitted model inherits your session's model — often the most capable and most expensive — which silently defeats this section.
 
-**Turn count beats token price.** Wall-clock and context cost scale with how many turns a subagent takes, and the cheapest models routinely take 2-3× the turns on multi-step work. Use a mid-tier model as the floor for auditors and for builders working from prose descriptions.
+**Turn count beats token price.** Wall-clock and context cost scale with how many turns a subagent takes, and the cheapest models routinely take 2-3× the turns on multi-step work. `sonnet` is the floor for auditors and for builders working from prose descriptions.
 
 ## Handling Builder Status
 
@@ -115,7 +115,7 @@ Builder subagents report one of four statuses. Handle each appropriately:
 - **DONE:** Generate the review package (`scripts/review-package BASE HEAD`, from this skill's directory — BASE is the commit you recorded before dispatching the builder, never `HEAD~1`, which silently drops all but the last commit of a multi-commit task), then dispatch the spec auditor with the printed path.
 - **DONE_WITH_CONCERNS:** The builder completed the work but flagged doubts. Read them first. If they concern correctness or scope, address them before review; if they are observations, note them and proceed.
 - **NEEDS_CONTEXT:** Provide the missing context and re-dispatch.
-- **BLOCKED:** Assess the blocker — (1) context problem → provide more context, same model; (2) needs more reasoning → re-dispatch with a more capable model; (3) task too large → break it into smaller pieces; (4) plan itself is wrong → escalate to your human partner. **Never** ignore an escalation or force the same model to retry without changes.
+- **BLOCKED:** Assess the blocker — (1) context problem → provide more context, same model; (2) needs more reasoning → re-dispatch one model up (`haiku` → `sonnet` → `opus`); (3) task too large → break it into smaller pieces; (4) plan itself is wrong → escalate to your human partner. **Never** ignore an escalation or force the same model to retry without changes.
 
 ## File Handoffs
 
