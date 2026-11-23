@@ -1,5 +1,14 @@
 # Ascension Release Notes
 
+## v2.4.2 — Ready to share
+
+Housekeeping so the repository can be read by strangers. No skill behaviour changes.
+
+- `LICENSE` adds Matt Keenan beside the inherited upstream line; no upstream notice removed.
+- README credits say what each source really is: two (dictionary-of-ai-coding, andrej-karpathy-skills) publish no licence and are credited as inspiration only. A short who-it-is-for and what-it-needs note replaces "a personal merge".
+- Plugin author and marketplace owner read "Keenan Digital".
+- `rationale` no longer points at a private port.
+
 ## v2.4.1 — 90-10 as the author defined it
 
 v2.4.0 guessed at 90-10. The author's definition: `opus` scopes the task; `opus`, `sonnet` or `haiku` do the tasks the scope names; the most capable model does the final review. The Small row in `activation` now says that: an `opus` subagent scopes and returns the tasks with a model for each, subagents on those models do them, and the session does the final review and the report. The session no longer scopes small work itself. Not re-tested with a paper run.
