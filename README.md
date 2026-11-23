@@ -1,5 +1,7 @@
 # Ascension
 
+It is for people who already use Claude Code and want a worked-out process on top of it. It needs Claude Code with plugins and subagents; the skills name model tiers (`haiku`, `sonnet`, `opus`), and where one is not available they fall back to the most capable model you have.
+
 An AI development framework for coding agents: **29 composable skills** behind four always-on working rules, spanning discovery, design, planning, execution, and quality.
 
 Ascension began as a merge of god mode's breadth with [Superpowers](https://github.com/obra/superpowers)' subagent-driven depth. v2 adds the mechanisms from [mattpocock/skills](https://github.com/mattpocock/skills), the vocabulary from the [AI Coding Dictionary](https://github.com/mattpocock/dictionary-of-ai-coding), the laziness ladder from [ponytail](https://github.com/DietrichGebert/ponytail), and fourteen engineering books from [agent-rules-books](https://github.com/mattpocock/agent-rules-books) — while pruning the framework back toward what actually changes behaviour.
@@ -87,13 +89,14 @@ A few things Ascension does that are worth knowing about before you use it:
 
 ## Credits & license
 
-- **god mode** by David — the original breadth.
+- **god mode** by David — the original breadth (no current home found; its copyright line is kept in `LICENSE`).
 - **[Superpowers](https://github.com/obra/superpowers)** by Jesse Vincent / Prime Radiant (MIT) — subagent-driven execution, file handoffs, the visual companion.
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** (MIT) — grilling, domain modeling and ADRs, deep modules, the tight feedback loop, two-axis review, tracer-bullet tickets, phase boundaries, and the writing-for-agents discipline underneath `protocol-authoring`.
-- **[mattpocock/dictionary-of-ai-coding](https://github.com/mattpocock/dictionary-of-ai-coding)** (MIT) — the shared vocabulary the skills are written in.
+- **[mattpocock/dictionary-of-ai-coding](https://github.com/mattpocock/dictionary-of-ai-coding)** (no licence published) — the shared vocabulary the skills are written in.
 - **[ponytail](https://github.com/DietrichGebert/ponytail)** by DietrichGebert (MIT) — the laziness ladder, intensity levels, over-build review tags, and the deferred-shortcut ledger.
+- **[agent-rules-books](https://github.com/mattpocock/agent-rules-books)** by Maciej Ciemborowicz (MIT) — the fourteen engineering-book rule sets once vendored as the `canon` skill (removed in v2.3, kept at tag `v2.2.0`).
 - **[sandcastle](https://github.com/mattpocock/sandcastle)** (MIT) — recommended by `workspace-isolation` for container-level agent isolation.
-- **[andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)**: the shape of the four always-on working rules in `activation`.
+- **[andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)** (no licence published): the shape of the four always-on working rules in `activation`.
 - **[i-have-adhd](https://github.com/ayghri/i-have-adhd)** by ayghri (MIT): the reply rules in `activation`.
 
-All MIT. Ascension is a personal merge, MIT. See `LICENSE`.
+Ascension is released under the MIT licence, see `LICENSE`. Two credited sources, dictionary-of-ai-coding and andrej-karpathy-skills, publish no licence file, so they are credited as inspiration only.

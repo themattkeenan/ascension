@@ -147,4 +147,4 @@ Once the user picks A, B, or C, call the Skill tool with "ascension:intent-disco
 **It is genuinely trivial.** Run the five points silently. If they resolve in under thirty seconds, say so in one line and get on with it.
 
 ---
-*Descends from god mode's `rationale`. Rewritten in v2.2 to the `ascension:protocol-authoring` standard, sharing its shape with the Ascension Ops port.*
+*Descends from god mode's `rationale`. Rewritten in v2.2 to the `ascension:protocol-authoring` standard.*
